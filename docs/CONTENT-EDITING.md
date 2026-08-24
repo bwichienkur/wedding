@@ -6,6 +6,7 @@ Public wedding copy and logistics live in typed files under `data/`. Presentatio
 
 | File | Edit for |
 |------|----------|
+| `data/hero-slides.ts` | Homepage photo carousel (replace placeholders with real photos) |
 | `data/wedding.ts` | Names, date, venue facts, hero/closing copy, feature flags, site mode |
 | `data/story.ts` | Relationship milestones and perspectives |
 | `data/schedule.ts` | Wedding-day timeline |
