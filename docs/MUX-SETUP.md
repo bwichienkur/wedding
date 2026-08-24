@@ -19,8 +19,8 @@ MUX_TOKEN_SECRET=
 MUX_WEBHOOK_SECRET=
 MUX_SIGNING_KEY_ID=
 MUX_SIGNING_KEY_PRIVATE=
-ADMIN_PASSWORD=
-ADMIN_SESSION_SECRET=
+WEDDING_ADMIN_PASSWORD=
+WEDDING_ADMIN_SESSION_SECRET=
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 ```
 
@@ -28,7 +28,7 @@ Never commit real credentials or video files.
 
 ## 3. Admin upload flow
 
-1. Sign in at `/admin/login` with `ADMIN_PASSWORD`.
+1. Sign in at `/admin/login` with `WEDDING_ADMIN_PASSWORD`.
 2. Open `/admin/media`.
 3. Choose a **page section** (proposal highlight/full/teaser, or any photo placement).
 4. Upload a video. The browser PUTs bytes directly to Mux using a server-minted URL.

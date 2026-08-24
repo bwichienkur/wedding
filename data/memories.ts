@@ -23,10 +23,6 @@ export const memoryGallery: MemoryCard[] = storyMilestones
       id: milestone.id,
       title: milestone.title,
       dateLabel: milestone.dateLabel,
-      annotation:
-        milestone.id === "dating-anniversary"
-          ? "Where the thread began to braid"
-          : undefined,
       image: milestone.image!,
       depth: -2 - index * 1.35,
       offsetX: lane === 0 ? -1.15 : lane === 1 ? 0.95 : -0.25,

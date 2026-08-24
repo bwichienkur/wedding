@@ -24,15 +24,14 @@ describe("wedding config", () => {
 });
 
 describe("story milestones", () => {
-  it("includes the dating anniversary as a confirmed milestone", () => {
-    const anniversary = storyMilestones.find(
-      (m) => m.id === "dating-anniversary",
-    );
-    expect(anniversary?.dateISO).toBe("2025-03-20");
-    expect(anniversary?.perspectivesEnabled).toBe(true);
+  it("includes only how we met and the proposal", () => {
+    expect(storyMilestones.map((m) => m.id)).toEqual([
+      "how-we-met",
+      "proposal",
+    ]);
   });
 
-  it("keeps open chapters clearly incomplete", () => {
+  it("keeps placeholder copy clearly marked", () => {
     const open = storyMilestones.filter((m) =>
       m.passages.some((p) => p.isPlaceholder),
     );

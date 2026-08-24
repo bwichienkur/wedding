@@ -6,14 +6,18 @@ import { cookies } from "next/headers";
 const COOKIE_NAME = "bl_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 12;
 
+/** Wedding-site admin password — distinct from other apps sharing Vercel env. */
+export const WEDDING_ADMIN_PASSWORD_ENV = "WEDDING_ADMIN_PASSWORD";
+export const WEDDING_ADMIN_SESSION_SECRET_ENV = "WEDDING_ADMIN_SESSION_SECRET";
+
 function getAdminPassword(): string | null {
-  return process.env.ADMIN_PASSWORD ?? null;
+  return process.env[WEDDING_ADMIN_PASSWORD_ENV] ?? null;
 }
 
 function getSessionSecret(): string {
   return (
-    process.env.ADMIN_SESSION_SECRET ||
-    process.env.ADMIN_PASSWORD ||
+    process.env[WEDDING_ADMIN_SESSION_SECRET_ENV] ||
+    process.env[WEDDING_ADMIN_PASSWORD_ENV] ||
     "dev-only-insecure-secret"
   );
 }

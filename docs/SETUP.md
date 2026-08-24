@@ -32,7 +32,7 @@ Open http://localhost:3000
 ## First-run notes
 
 - Public site runs without secrets; placeholders remain visible for missing logistics/media.
-- Admin routes (`/admin`) are open in non-production when `ADMIN_PASSWORD` is unset. Set a password before any shared/staging deploy.
+- Admin routes (`/admin`) are open in non-production when `WEDDING_ADMIN_PASSWORD` is unset. Set a password before any shared/staging deploy.
 - RSVP seed data is fictional only (see `docs/RSVP.md`).
 - Mux uploads require `MUX_TOKEN_ID` / `MUX_TOKEN_SECRET` (see `docs/MUX-SETUP.md`).
 
