@@ -4,13 +4,14 @@ Editorial wedding experience for **Bright & Lexi** · May 15, 2027 · Bella Cosa
 
 ## Status
 
-Phases 1–5 are in progress across PRs:
+Phases 1–6 are in progress across PRs:
 
 1. Design proposal — `docs/PHASE-1-DESIGN-PROPOSAL.md`
 2. Foundation — tokens, nav, entry, hero, story
 3. Golden Thread + signature 3D experiences
 4. Mux video, custom player, admin media
 5. Wedding day, venue, travel, party, FAQ, registry, closing
+6. Secure RSVP + admin export
 
 ## Local development
 
@@ -54,6 +55,10 @@ Never invent logistics. Use clearly labeled placeholders until real content is s
 ## Video / Mux
 
 See [`docs/MUX-SETUP.md`](./docs/MUX-SETUP.md). Large films are never stored in Git.
+
+## RSVP
+
+See [`docs/RSVP.md`](./docs/RSVP.md). Demo lookups use fictional names only (e.g. `Alex Rivera` / `RIVERA27`).
 
 ## Environment
 
