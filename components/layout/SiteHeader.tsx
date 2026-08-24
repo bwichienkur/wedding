@@ -1,10 +1,23 @@
 "use client";
 
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { primaryNav, rsvpNav } from "@/data/navigation";
+import {
+  mobileNavGroups,
+  mobileQuickNav,
+  primaryNav,
+  rsvpNav,
+} from "@/data/navigation";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import { useEffect, useId, useState } from "react";
+
+const observedSectionIds = Array.from(
+  new Set([
+    ...primaryNav.map((item) => item.id),
+    ...mobileNavGroups.flatMap((group) => group.items.map((item) => item.id)),
+    rsvpNav.id,
+  ]),
+);
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -12,8 +25,8 @@ export function SiteHeader() {
   const menuId = useId();
 
   useEffect(() => {
-    const sections = [...primaryNav, rsvpNav]
-      .map((item) => document.querySelector(item.href))
+    const sections = observedSectionIds
+      .map((id) => document.getElementById(id))
       .filter(Boolean) as HTMLElement[];
 
     if (sections.length === 0) return;
@@ -48,7 +61,7 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-stone/50 bg-ivory/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-stone/50 bg-ivory/95 backdrop-blur-md">
       <div className="mx-auto flex min-h-14 max-w-6xl items-center justify-between gap-4 px-5 sm:min-h-16 sm:px-8 lg:px-10">
         <a
           href="#home"
@@ -115,33 +128,74 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div
-        id={menuId}
-        hidden={!open}
-        className={cn(
-          "border-t border-stone/60 bg-ivory lg:hidden",
-          open && "block",
-        )}
+      {/* Horizontal section chips — always visible on phone/tablet */}
+      <nav
+        aria-label="Sections"
+        className="border-t border-stone/40 lg:hidden"
       >
-        <nav aria-label="Mobile" className="mx-auto flex max-w-6xl flex-col px-5 py-4">
-          {primaryNav.map((item) => (
+        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 scrollbar-none sm:px-8">
+          {mobileQuickNav.map((item) => (
             <a
               key={item.id}
               href={item.href}
               aria-current={activeId === item.id ? "true" : undefined}
-              className="flex min-h-12 items-center font-sans text-base text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-              onClick={() => setOpen(false)}
+              className={cn(
+                "shrink-0 whitespace-nowrap px-3 py-2 font-sans text-xs uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
+                activeId === item.id
+                  ? "border-b-2 border-gold text-forest"
+                  : "border-b-2 border-transparent text-ink-muted",
+              )}
             >
               {item.label}
             </a>
           ))}
+        </div>
+      </nav>
+
+      {/* Full mobile drawer with grouped destinations */}
+      <div
+        id={menuId}
+        hidden={!open}
+        className={cn(
+          "absolute inset-x-0 top-full max-h-[min(80svh,36rem)] overflow-y-auto border-b border-stone/60 bg-ivory shadow-sm lg:hidden",
+          open && "block",
+        )}
+      >
+        <nav aria-label="Mobile" className="mx-auto max-w-6xl px-5 py-5 sm:px-8">
           <a
-            href="#story"
-            className="mt-2 flex min-h-12 items-center font-sans text-sm text-ink-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            href="#home"
+            className="mb-5 flex min-h-12 items-center font-display text-xl text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             onClick={() => setOpen(false)}
           >
-            Return to our story
+            Home
           </a>
+
+          <div className="space-y-6">
+            {mobileNavGroups.map((group) => (
+              <div key={group.id}>
+                <p className="mb-2 font-sans text-[0.65rem] uppercase tracking-[0.2em] text-gold">
+                  {group.label}
+                </p>
+                <ul className="divide-y divide-stone/50 border-y border-stone/50">
+                  {group.items.map((item) => (
+                    <li key={item.id}>
+                      <a
+                        href={item.href}
+                        aria-current={activeId === item.id ? "true" : undefined}
+                        className={cn(
+                          "flex min-h-12 items-center font-sans text-base text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
+                          activeId === item.id && "text-gold",
+                        )}
+                        onClick={() => setOpen(false)}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </nav>
       </div>
     </header>

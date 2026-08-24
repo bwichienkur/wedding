@@ -125,4 +125,12 @@
   .font-annotation {
     font-family: var(--font-annotation-family), cursive;
   }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }

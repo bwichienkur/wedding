@@ -4,6 +4,7 @@ Replace placeholders with approved photography and films. Never commit large ori
 
 | Asset | Orientation | Aspect | Min resolution | Format | Max size (guide) | Focal point | Accessibility |
 |-------|-------------|--------|----------------|--------|------------------|-------------|---------------|
+| Hero slideshow photos (3–6) | Mixed; crop works on mobile | 4:5 mobile / 16:9 desktop | 2400px long edge | AVIF/WebP/JPEG | ≤300KB each | Faces mid-upper | Meaningful `alt` in `data/hero-slides.ts` |
 | Hero photo | Landscape + mobile crop | 16:9 / 4:5 | 2400px long edge | AVIF/WebP/JPEG | ≤300KB mobile / ≤600KB desktop | Faces mid-upper | Meaningful `alt` |
 | Story photos | Mixed | 3:2, 4:5 | 1600px | AVIF/WebP | ≤250KB | Set in `data/story.ts` | `alt` + optional caption |
 | Proposal stills | Mixed | — | 2000px | AVIF/WebP | ≤300KB | Subject-centered | `alt` |
