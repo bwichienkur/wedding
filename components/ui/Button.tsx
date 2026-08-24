@@ -12,13 +12,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-forest text-ivory hover:bg-charcoal focus-visible:outline-rose",
+    "bg-forest text-ivory hover:bg-charcoal focus-visible:outline-gold",
   secondary:
-    "bg-transparent text-forest border border-stone hover:border-rose focus-visible:outline-rose",
+    "bg-transparent text-forest border border-stone hover:border-gold focus-visible:outline-gold",
   ghost:
-    "bg-transparent text-forest hover:text-rose-deep focus-visible:outline-rose",
+    "bg-transparent text-forest hover:text-gold focus-visible:outline-gold",
   gold:
-    "bg-rose text-ivory shadow-sm hover:bg-rose-deep hover:shadow-md focus-visible:outline-forest",
+    "bg-gold text-forest shadow-sm hover:bg-gold-soft hover:shadow-md focus-visible:outline-forest",
 };
 
 const sizes: Record<Size, string> = {
