@@ -6,7 +6,7 @@ Concept: **The Golden Thread** — an interactive love story that remains a prac
 
 ## Status
 
-Phases 1–7 implemented across PRs (foundation → story/3D → video → logistics → RSVP → polish/QA).
+All seven phases are merged to **`main`** (design → foundation → story/3D → video → logistics → RSVP → polish/QA).
 
 ## Quick start
 
