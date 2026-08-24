@@ -2,19 +2,17 @@
 
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CinematicEntry } from "@/components/sections/CinematicEntry";
+import { ClosingSection } from "@/components/sections/Closing";
+import { FaqSection } from "@/components/sections/Faq";
 import { Hero } from "@/components/sections/Hero";
-import {
-  ClosingSection,
-  FaqSection,
-  PartySection,
-  RegistrySection,
-  RsvpSection,
-  TravelSection,
-  VenueSection,
-  WeddingDaySection,
-} from "@/components/sections/LogisticsPlaceholders";
 import { OurStory } from "@/components/sections/OurStory";
+import { PartySection } from "@/components/sections/Party";
 import { ProposalConvergenceSection } from "@/components/sections/ProposalConvergence";
+import { RegistrySection } from "@/components/sections/Registry";
+import { RsvpSection } from "@/components/sections/RsvpTeaser";
+import { TravelSection } from "@/components/sections/Travel";
+import { VenueSection } from "@/components/sections/Venue";
+import { WeddingDaySection } from "@/components/sections/WeddingDay";
 import { MemoryGallerySection } from "@/components/three/MemoryGallery";
 import { mainContentId } from "@/data/navigation";
 import { useCallback, useState } from "react";
