@@ -1,18 +1,13 @@
 import { expect, test } from "@playwright/test";
+import { gotoHome } from "./helpers";
 
 test.describe("navigation", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      window.localStorage.setItem("bl-wedding-intro-seen", "1");
-    });
-  });
-
   test("desktop primary nav reaches venue and FAQ", async ({ page }) => {
     test.skip(
       test.info().project.name !== "chromium-desktop",
       "Desktop nav project only",
     );
-    await page.goto("/");
+    await gotoHome(page);
     await page
       .getByRole("navigation", { name: "Primary" })
       .getByRole("link", { name: "Venue" })
@@ -32,7 +27,7 @@ test.describe("navigation", () => {
       test.info().project.name !== "chromium-mobile",
       "Mobile project only",
     );
-    await page.goto("/");
+    await gotoHome(page);
     await expect(page.getByRole("link", { name: "RSVP" }).first()).toBeVisible();
     await page.getByRole("button", { name: "Open menu" }).click();
     await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();

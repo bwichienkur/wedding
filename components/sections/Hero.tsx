@@ -5,10 +5,9 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { MonogramSvg } from "@/components/monogram/MonogramSvg";
 import { rsvpNav } from "@/data/navigation";
 import { wedding, weddingLocationLine } from "@/data/wedding";
-import { getCountdownParts } from "@/lib/dates";
 import { cn } from "@/lib/cn";
+import { useWeddingCountdown } from "@/lib/useWeddingCountdown";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 
 const MonogramExperience = dynamic(
   () =>
@@ -22,15 +21,7 @@ const MonogramExperience = dynamic(
 );
 
 export function Hero() {
-  const [countdown, setCountdown] = useState(() => getCountdownParts());
-
-  useEffect(() => {
-    if (!wedding.featureFlags.countdown) return;
-    const id = window.setInterval(() => {
-      setCountdown(getCountdownParts());
-    }, 60_000);
-    return () => window.clearInterval(id);
-  }, []);
+  const countdown = useWeddingCountdown();
 
   return (
     <section
@@ -86,7 +77,7 @@ export function Hero() {
             </ButtonLink>
           </div>
 
-          {wedding.featureFlags.countdown ? (
+          {wedding.featureFlags.countdown && countdown ? (
             <p
               className="mt-8 font-sans text-xs uppercase tracking-[0.18em] text-ink-muted"
               aria-live="polite"

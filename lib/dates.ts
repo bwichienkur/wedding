@@ -27,3 +27,20 @@ export function getCountdownParts(now: Date = new Date()): CountdownParts {
 
   return { days, hours, minutes, isPast: false };
 }
+
+/** Minute-stable countdown snapshot for useSyncExternalStore. */
+let stableCountdown: { key: number; value: CountdownParts } | null = null;
+
+export function getStableCountdownParts(now: Date = new Date()): CountdownParts {
+  const key = Math.floor(now.getTime() / 60_000);
+  if (stableCountdown?.key === key) {
+    return stableCountdown.value;
+  }
+  const value = getCountdownParts(now);
+  stableCountdown = { key, value };
+  return value;
+}
+
+export function resetStableCountdownCache(): void {
+  stableCountdown = null;
+}
