@@ -1,9 +1,8 @@
 "use client";
 
 import { GoldenThread } from "@/components/story/GoldenThread";
-import { Button } from "@/components/ui/Button";
-import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
+import { ProposalFilmExperience } from "@/components/video/ProposalFilmExperience";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import { useExperienceCapabilities } from "@/lib/three/useExperienceCapabilities";
@@ -94,27 +93,7 @@ export function ProposalConvergenceSection() {
 
       {use3d ? <ConvergenceCanvas /> : <ConvergenceSvgFallback progress={1} />}
 
-      <div className="mx-auto mt-10 max-w-md text-center">
-        <div className="mx-auto aspect-video w-full max-w-sm border border-gold/40 bg-parchment">
-          <p className="flex h-full items-center justify-center px-6 font-sans text-sm text-ink-muted">
-            Proposal poster coming soon
-          </p>
-        </div>
-        <p className="placeholder-copy mx-auto mt-6 max-w-prose text-left text-base text-ink-muted">
-          Add a short introduction to the proposal chapter.
-        </p>
-        <div className="mt-8 flex flex-col items-stretch gap-3 sm:items-center">
-          <Button type="button" variant="gold" size="lg" disabled>
-            Watch our proposal
-          </Button>
-          <p className="text-xs text-ink-muted">
-            Film playback arrives in Phase 4 · never autoplays with sound
-          </p>
-          <ButtonLink href="#wedding-day" variant="secondary" size="md">
-            Continue our story
-          </ButtonLink>
-        </div>
-      </div>
+      <ProposalFilmExperience />
     </Section>
   );
 }
