@@ -32,7 +32,7 @@ test.describe("public invitation", () => {
 
     await page.goto("/");
     await expect(
-      page.getByRole("button", { name: "Begin our story" }),
+      page.getByRole("button", { name: "Open invitation" }),
     ).toHaveCount(0);
     await expect(page.locator("#home")).toBeVisible();
   });
