@@ -2,18 +2,13 @@
 
 Editorial wedding experience for **Bright & Lexi** · May 15, 2027 · Bella Cosa, Lake Wales, Florida.
 
+Concept: **The Golden Thread** — an interactive love story that remains a practical guest guide.
+
 ## Status
 
-Phases 1–6 are in progress across PRs:
+Phases 1–7 implemented across PRs (foundation → story/3D → video → logistics → RSVP → polish/QA).
 
-1. Design proposal — `docs/PHASE-1-DESIGN-PROPOSAL.md`
-2. Foundation — tokens, nav, entry, hero, story
-3. Golden Thread + signature 3D experiences
-4. Mux video, custom player, admin media
-5. Wedding day, venue, travel, party, FAQ, registry, closing
-6. Secure RSVP + admin export
-
-## Local development
+## Quick start
 
 ```bash
 npm install
@@ -23,43 +18,36 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Admin (local): [/admin](http://localhost:3000/admin) — set `ADMIN_PASSWORD` before production.
+Demo RSVP (fictional): `/rsvp` → `Alex Rivera` or `RIVERA27`
+
+## Documentation
+
+| Guide | Path |
+|-------|------|
+| Setup | [`docs/SETUP.md`](./docs/SETUP.md) |
+| Deployment | [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) |
+| Content editing | [`docs/CONTENT-EDITING.md`](./docs/CONTENT-EDITING.md) |
+| Asset checklist | [`docs/ASSET-CHECKLIST.md`](./docs/ASSET-CHECKLIST.md) |
+| Mux / video | [`docs/MUX-SETUP.md`](./docs/MUX-SETUP.md) |
+| RSVP | [`docs/RSVP.md`](./docs/RSVP.md) |
+| Security | [`docs/SECURITY.md`](./docs/SECURITY.md) |
+| Testing | [`docs/TESTING.md`](./docs/TESTING.md) |
+| Known limitations | [`docs/KNOWN-LIMITATIONS.md`](./docs/KNOWN-LIMITATIONS.md) |
+| Remaining content | [`docs/REMAINING-CONTENT.md`](./docs/REMAINING-CONTENT.md) |
+| Phase 1 design | [`docs/PHASE-1-DESIGN-PROPOSAL.md`](./docs/PHASE-1-DESIGN-PROPOSAL.md) |
 
 ## Scripts
 
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | Development server |
-| `npm run build` | Production build |
+| `npm run build` / `npm start` | Production |
 | `npm run typecheck` | TypeScript |
 | `npm run lint` | ESLint |
-| `npm test` | Vitest unit tests |
+| `npm test` | Vitest |
+| `npm run test:e2e` | Playwright |
+| `npm run qa` | typecheck + lint + unit + build |
 
-## Content editing
+## Stack
 
-Public wedding facts live in typed files under `data/`:
-
-- `data/wedding.ts` — couple, date, venue, flags, copy
-- `data/story.ts` — relationship milestones
-- `data/schedule.ts` — wedding-day journey
-- `data/venue.ts` — Bella Cosa details
-- `data/travel.ts` — airports, hotels, local notes
-- `data/party.ts` — wedding party
-- `data/faq.ts` — FAQ
-- `data/registry.ts` — registry links
-- `data/navigation.ts` — nav items
-- `data/video.ts` — public video placements
-
-Never invent logistics. Use clearly labeled placeholders until real content is supplied.
-
-## Video / Mux
-
-See [`docs/MUX-SETUP.md`](./docs/MUX-SETUP.md). Large films are never stored in Git.
-
-## RSVP
-
-See [`docs/RSVP.md`](./docs/RSVP.md). Demo lookups use fictional names only (e.g. `Alex Rivera` / `RIVERA27`).
-
-## Environment
-
-Copy `.env.example`. Phase 4 needs Mux + admin password for uploads; the public site still runs without them (proposal player shows unavailable/poster states).
+Next.js App Router · React · TypeScript · Tailwind · Motion · React Three Fiber · Zod · Mux · Resend · Vitest · Playwright · Vercel-compatible
