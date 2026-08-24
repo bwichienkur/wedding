@@ -21,7 +21,7 @@ type FlapSide = "top" | "bottom" | "left" | "right";
 
 /**
  * Full-viewport navy envelope with gold wax seal.
- * Delicate silvery vine embossing follows the diagonal fold lines
+ * Crisp silvery filigree embossing runs along each flap’s diagonal folds
  * (WooowInvites-style). On seal open, vines illuminate gold.
  */
 export function InvitationEnvelope({
@@ -125,7 +125,7 @@ function useShellMetrics(shell: HTMLElement | null) {
     setMetrics({
       foldAngle: (Math.atan(height / width) * 180) / Math.PI,
       // Leave room for the seal at center
-      foldLengthPx: 0.5 * Math.hypot(width, height) * 0.78,
+      foldLengthPx: 0.5 * Math.hypot(width, height) * 0.74,
     });
   }, [shell]);
 
@@ -163,26 +163,19 @@ function EnvelopeFlap({
       aria-hidden
     >
       <div className="envelope-flap-face absolute inset-0">
-        {/*
-          Only top + bottom flaps carry fold vines so each diagonal is drawn
-          once (avoids the doubled/stacked look on shared seams).
-        */}
-        {(side === "top" || side === "bottom") && (
-          <>
-            <FoldVine
-              side={side}
-              which="a"
-              foldAngle={foldAngle}
-              foldLengthPx={foldLengthPx}
-            />
-            <FoldVine
-              side={side}
-              which="b"
-              foldAngle={foldAngle}
-              foldLengthPx={foldLengthPx}
-            />
-          </>
-        )}
+        {/* Filigree along both hypotenuses of every flap (reference X look) */}
+        <FoldVine
+          side={side}
+          which="a"
+          foldAngle={foldAngle}
+          foldLengthPx={foldLengthPx}
+        />
+        <FoldVine
+          side={side}
+          which="b"
+          foldAngle={foldAngle}
+          foldLengthPx={foldLengthPx}
+        />
       </div>
     </div>
   );
@@ -227,9 +220,9 @@ function foldStyle(
   foldAngle: number,
   foldLengthPx: number,
 ): CSSProperties {
-  // Thin delicate band — reference uses fine filigree, not chunky borders
-  const band = "min(5.5vmax, 2.85rem)";
-  const inset = "2.25%";
+  // Wide enough for leaf/rose detail to read on mobile (reference look)
+  const band = "min(13vmax, 6.75rem)";
+  const inset = "4%";
   const width = `${Math.round(foldLengthPx)}px`;
 
   const base = {
