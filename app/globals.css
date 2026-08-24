@@ -254,8 +254,8 @@
   }
 
   /*
-   * Blind-emboss florals (transparent relief). Rest = navy emboss only.
-   * Illumination fades in a gold twin of the same shape — paper stays dark.
+   * Blind-emboss vines along flap edges (transparent relief).
+   * Rest = navy emboss; illumination fades in gold twin — paper stays dark.
    */
   .envelope-design {
     position: absolute;
@@ -336,70 +336,6 @@
         #12233d 60%,
         #0c1830 100%
       );
-  }
-
-  /*
-   * Design boxes intentionally fill most of each flap; the flap clip-path
-   * keeps art from crossing into neighboring flaps.
-   */
-  .envelope-design-top {
-    left: 8%;
-    right: 8%;
-    top: 0%;
-    height: 32%;
-  }
-
-  .envelope-design-bottom {
-    left: 8%;
-    right: 8%;
-    bottom: 0%;
-    height: 32%;
-  }
-
-  .envelope-design-left {
-    top: 8%;
-    bottom: 8%;
-    left: 0%;
-    width: 32%;
-  }
-
-  .envelope-design-right {
-    top: 8%;
-    bottom: 8%;
-    right: 0%;
-    width: 32%;
-  }
-
-  @media (max-aspect-ratio: 3/4) {
-    .envelope-design-top,
-    .envelope-design-bottom {
-      left: 4%;
-      right: 4%;
-      height: 28%;
-    }
-
-    .envelope-design-left,
-    .envelope-design-right {
-      top: 6%;
-      bottom: 6%;
-      width: 34%;
-    }
-  }
-
-  @media (min-aspect-ratio: 16/10) {
-    .envelope-design-top,
-    .envelope-design-bottom {
-      left: 12%;
-      right: 12%;
-      height: 36%;
-    }
-
-    .envelope-design-left,
-    .envelope-design-right {
-      top: 10%;
-      bottom: 10%;
-      width: 28%;
-    }
   }
 
   /* Dramatic slow open onto the site */
