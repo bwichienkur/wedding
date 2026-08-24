@@ -40,8 +40,9 @@ export function useIntroPhase({
   const finish = useCallback(() => {
     clearTimers();
     setPhase("opened");
-    schedule(() => onComplete(), INTRO_TIMING.exit);
-  }, [clearTimers, onComplete, schedule, setPhase]);
+    // Unmount immediately so the homepage is fully visible without a lingering overlay
+    onComplete();
+  }, [clearTimers, onComplete, setPhase]);
 
   const skip = useCallback(() => {
     if (phase === "opened" || phase === "skipped") return;

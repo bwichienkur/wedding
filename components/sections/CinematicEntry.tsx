@@ -116,14 +116,15 @@ export function CinematicEntry({
   }
 
   const exiting = phase === "opened" || phase === "skipped";
+  const openingOrExit = phase === "opening" || exiting;
 
   return (
     <div
       className={[
         "intro-overlay fixed inset-0 z-50 overflow-hidden",
-        "transition-[opacity,background-color] duration-[900ms] ease-out",
-        phase === "opening" || exiting ? "bg-transparent" : "bg-[#070e1a]",
-        exiting ? "pointer-events-none opacity-0" : "opacity-100",
+        "transition-[opacity,background-color] duration-[450ms] ease-out",
+        openingOrExit ? "bg-transparent" : "bg-[#070e1a]",
+        openingOrExit ? "pointer-events-none opacity-0" : "opacity-100",
       ].join(" ")}
       role="dialog"
       aria-modal="true"

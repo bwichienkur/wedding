@@ -55,7 +55,7 @@ export function HomeExperience({ media }: { media: HomeMediaBundle }) {
       />
       <div
         className={cn(
-          "transition-opacity duration-[2200ms] ease-out",
+          "transition-opacity duration-500 ease-out",
           siteRevealed ? "opacity-100" : "opacity-0",
         )}
       >
