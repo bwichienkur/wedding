@@ -13,8 +13,7 @@ interface EnvelopeProps {
 
 /**
  * Closed master illustration with seal hotspot.
- * After glow, the envelope fades out and the homepage takes over immediately
- * (no flap-morph / card-rise handoff).
+ * After glow, the envelope fades out and the homepage takes over immediately.
  */
 export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const opening = isOpeningPhase(phase);
@@ -22,6 +21,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const sealVisible = isSealVisiblePhase(phase);
   const floralGlow =
     phase === "activating" || phase === "glowing" || phase === "opening";
+  const monogramLit = phase === "activating" || phase === "glowing";
 
   return (
     <div
@@ -37,7 +37,9 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
           className={cn(
             "envelope-closed-master absolute inset-0 z-[6]",
             "transition-opacity ease-out",
-            opening ? "pointer-events-none opacity-0 duration-500" : "opacity-100 duration-500",
+            opening
+              ? "pointer-events-none opacity-0 duration-500"
+              : "opacity-100 duration-500",
           )}
           aria-hidden
         >
@@ -48,6 +50,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             className="h-full w-full object-cover"
             draggable={false}
           />
+          {/* Florals — full-frame overlay registered to master */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/envelope-master-glow.webp"
@@ -55,6 +58,17 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             className={cn(
               "envelope-floral-glow absolute inset-0 h-full w-full object-cover",
               floralGlow && "is-lit",
+            )}
+            draggable={false}
+          />
+          {/* Monogram — full-frame overlay registered to master seal letters */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/seal-monogram-glow.webp"
+            alt=""
+            className={cn(
+              "intro-monogram-glow absolute inset-0 h-full w-full object-cover",
+              monogramLit && "is-lit",
             )}
             draggable={false}
           />

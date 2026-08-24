@@ -24,7 +24,6 @@ export function WaxSealButton({
   const glowing = phase === "glowing";
   const opening = phase === "opening";
   const interactive = phase === "closed";
-  const monogramLit = activating || glowing;
 
   const hint =
     glowing || activating
@@ -35,23 +34,12 @@ export function WaxSealButton({
     <>
       <div
         className={cn(
-          "intro-seal-wrap absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2",
+          /* Seal sits slightly above stage center in the master art */
+          "intro-seal-wrap absolute left-1/2 top-[46.5%] z-30 -translate-x-1/2 -translate-y-1/2",
           "transition-opacity duration-500",
           !visible && "opacity-0",
         )}
       >
-        {/* Monogram-only light — wax body stays calm */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/seal-monogram-glow.webp"
-          alt=""
-          className={cn(
-            "intro-monogram-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-            monogramLit && "is-lit",
-          )}
-          draggable={false}
-        />
-
         <button
           type="button"
           onClick={(event) => {

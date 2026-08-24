@@ -509,25 +509,22 @@
     text-wrap: balance;
   }
 
-  /* Wax seal stays calm; only monogram lights */
+  /* Monogram glow — full-frame overlay; brightens baked seal letters in place */
   .intro-monogram-glow {
-    width: min(28vw, 7rem);
-    height: min(28vw, 7rem);
     opacity: 0;
-    mix-blend-mode: screen;
-    z-index: 1;
+    mix-blend-mode: normal;
+    pointer-events: none;
+    z-index: 3;
     transition: opacity var(--intro-glow, 1200ms) cubic-bezier(0.22, 1, 0.36, 1);
-    filter: drop-shadow(0 0 4px rgb(232 190 90 / 0.35));
   }
 
   .intro-monogram-glow.is-lit {
-    opacity: 0.95;
+    opacity: 1;
   }
 
-  @media (min-width: 640px) {
+  @media (prefers-reduced-motion: reduce) {
     .intro-monogram-glow {
-      width: 7.25rem;
-      height: 7.25rem;
+      transition: opacity 0.25s ease;
     }
   }
 
