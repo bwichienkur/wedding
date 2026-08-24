@@ -9,7 +9,7 @@ Public wedding copy and logistics live in typed files under `data/`. Presentatio
 | `data/hero-slides.ts` | Homepage photo carousel fallbacks (admin uploads override when published) |
 | `data/section-media.ts` | Admin placement keys for section photo/video uploads |
 | `public/images/wax-seal-bl.webp` | Intro gold wax seal (B&L monogram) |
-| `public/images/envelope-flap-*.webp` | Per-flap floral textures (top/bottom/left/right) |
+| `public/images/envelope-flap-*.webp` | Symmetrical gold foil motifs per flap (inset; illuminate on seal open) |
 | `data/wedding.ts` | Names, date, venue facts, hero/closing copy, feature flags, site mode |
 | `data/story.ts` | Relationship milestones and perspectives |
 | `data/schedule.ts` | Wedding-day timeline |
