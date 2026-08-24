@@ -204,10 +204,10 @@ export function RsvpExperience() {
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <p className="font-sans text-xs uppercase tracking-[0.22em] text-gold">
+      <p className="font-sans text-xs uppercase tracking-[0.28em] text-rose">
         RSVP
       </p>
-      <h1 className="mt-3 font-display text-4xl text-forest sm:text-5xl">
+      <h1 className="mt-3 font-display text-4xl font-medium text-forest sm:text-5xl">
         {wedding.couple.displayName}
       </h1>
       <p
@@ -234,7 +234,7 @@ export function RsvpExperience() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="min-h-12 w-full border border-stone bg-ivory px-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="field-editorial"
               autoComplete="name"
               required
               minLength={2}
@@ -244,7 +244,13 @@ export function RsvpExperience() {
             Try a fictional demo name like <strong>Alex Rivera</strong> or code{" "}
             <strong>RIVERA27</strong>.
           </p>
-          <Button type="submit" variant="gold" size="lg" disabled={pending}>
+          <Button
+            type="submit"
+            variant="gold"
+            size="lg"
+            disabled={pending}
+            className="w-full shadow-md"
+          >
             {pending ? "Searching…" : "Find invitation"}
           </Button>
         </form>
@@ -303,7 +309,7 @@ export function RsvpExperience() {
                     Plus-one name
                   </span>
                   <input
-                    className="min-h-11 w-full border border-stone bg-ivory px-3"
+                    className="field-editorial"
                     value={
                       drafts.find((draft) => draft.guestId === guest.id)
                         ?.plusOneName ?? ""
@@ -363,7 +369,7 @@ export function RsvpExperience() {
                           Meal
                         </span>
                         <select
-                          className="min-h-11 w-full border border-stone bg-ivory px-3"
+                          className="field-editorial"
                           value={draft.mealOptionId ?? ""}
                           onChange={(event) =>
                             updateDraft(guest.id, eventRecord.id, {
@@ -425,7 +431,7 @@ export function RsvpExperience() {
                       Dietary restrictions
                     </span>
                     <textarea
-                      className="min-h-20 w-full border border-stone bg-ivory px-3 py-2"
+                      className="field-editorial min-h-20"
                       value={draft.dietaryNotes}
                       onChange={(event) =>
                         updateDraft(guest.id, eventRecord.id, {
@@ -439,7 +445,7 @@ export function RsvpExperience() {
                       Accessibility needs
                     </span>
                     <textarea
-                      className="min-h-20 w-full border border-stone bg-ivory px-3 py-2"
+                      className="field-editorial min-h-20"
                       value={draft.accessibilityNotes}
                       onChange={(event) =>
                         updateDraft(guest.id, eventRecord.id, {
@@ -459,7 +465,7 @@ export function RsvpExperience() {
                   Song request
                 </span>
                 <input
-                  className="min-h-11 w-full border border-stone bg-ivory px-3"
+                  className="field-editorial"
                   value={songRequest}
                   onChange={(event) => setSongRequest(event.target.value)}
                 />
@@ -469,7 +475,7 @@ export function RsvpExperience() {
                   Message to Bright & Lexi
                 </span>
                 <textarea
-                  className="min-h-24 w-full border border-stone bg-ivory px-3 py-2"
+                  className="field-editorial min-h-24"
                   value={messageToCouple}
                   onChange={(event) => setMessageToCouple(event.target.value)}
                 />
@@ -536,15 +542,23 @@ export function RsvpExperience() {
       ) : null}
 
       {step === "done" ? (
-        <div className="mt-10 space-y-5">
-          <h2 className="font-display text-3xl text-forest">Thank you</h2>
-          <p className="text-base text-ink-muted">
+        <div className="mt-14 flex flex-col items-center space-y-5 text-center">
+          <span
+            className="heart-pulse font-display text-4xl text-rose"
+            aria-hidden
+          >
+            ♥
+          </span>
+          <h2 className="font-display text-3xl text-forest sm:text-4xl">
+            Thank you
+          </h2>
+          <p className="max-w-md text-base text-ink-muted">
             Your RSVP is saved{status ? ` (${status})` : ""}.
             {workspace?.household.email
               ? " A confirmation email will send when email is enabled."
               : ""}
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Button type="button" variant="secondary" onClick={() => setStep("respond")}>
               Update response
             </Button>

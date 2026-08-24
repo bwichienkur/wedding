@@ -2,7 +2,8 @@
 
 import { heroSlides } from "@/data/hero-slides";
 import { cn } from "@/lib/cn";
-import { useReducedMotion } from "motion/react";
+import { editorialEase } from "@/lib/motion";
+import { motion, useReducedMotion } from "motion/react";
 import {
   useCallback,
   useEffect,
@@ -15,10 +16,15 @@ import {
 const INTERVAL_MS = 5500;
 
 /**
- * Full-bleed homepage photo rotation — Zola-style multi-photo header.
- * Pauses under reduced motion; supports dots + swipe.
+ * Full-bleed homepage photo rotation with optional editorial dark veil + ken-burns entry.
  */
-export function HeroCarousel({ className }: { className?: string }) {
+export function HeroCarousel({
+  className,
+  editorial = false,
+}: {
+  className?: string;
+  editorial?: boolean;
+}) {
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -61,7 +67,11 @@ export function HeroCarousel({ className }: { className?: string }) {
 
   return (
     <div
-      className={cn("absolute inset-0 overflow-hidden bg-parchment", className)}
+      className={cn(
+        "absolute inset-0 overflow-hidden",
+        editorial ? "bg-forest" : "bg-parchment",
+        className,
+      )}
       role="region"
       aria-roledescription="carousel"
       aria-labelledby={labelId}
@@ -83,54 +93,87 @@ export function HeroCarousel({ className }: { className?: string }) {
       {slides.map((slide, slideIndex) => {
         const isActive = slideIndex === index;
         return (
-          <div
+          <motion.div
             key={slide.id}
-            className={cn(
-              "absolute inset-0 transition-opacity duration-700 ease-out",
-              isActive ? "opacity-100" : "opacity-0",
-            )}
+            className="absolute inset-0"
+            initial={false}
+            animate={{ opacity: isActive ? 1 : 0 }}
+            transition={{ duration: 1.1, ease: editorialEase }}
             aria-hidden={!isActive}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={slide.image.src}
-              alt={isActive ? slide.image.alt : ""}
-              width={slide.image.width}
-              height={slide.image.height}
-              className="h-full w-full object-cover"
-              style={
-                slide.image.focalPoint
-                  ? {
-                      objectPosition: `${slide.image.focalPoint.x}% ${slide.image.focalPoint.y}%`,
-                    }
-                  : undefined
+            <motion.div
+              className="h-full w-full"
+              initial={
+                reduceMotion || !editorial
+                  ? false
+                  : slideIndex === 0
+                    ? { scale: 1.1 }
+                    : { scale: 1.04 }
               }
-              draggable={false}
-            />
-          </div>
+              animate={
+                isActive && !reduceMotion && editorial
+                  ? { scale: 1 }
+                  : { scale: isActive ? 1 : 1.02 }
+              }
+              transition={{ duration: 1.5, ease: editorialEase }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={slide.image.src}
+                alt={isActive ? slide.image.alt : ""}
+                width={slide.image.width}
+                height={slide.image.height}
+                className="h-full w-full object-cover"
+                style={
+                  slide.image.focalPoint
+                    ? {
+                        objectPosition: `${slide.image.focalPoint.x}% ${slide.image.focalPoint.y}%`,
+                      }
+                    : undefined
+                }
+                draggable={false}
+              />
+            </motion.div>
+          </motion.div>
         );
       })}
 
-      {/* Readability veil — keeps brand typography legible over photos */}
-      <div
-        className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/55 to-ivory/15 sm:via-ivory/45"
-        aria-hidden
-      />
-      <div
-        className="grain absolute inset-0 opacity-25 mix-blend-multiply"
-        aria-hidden
-      />
+      {editorial ? (
+        <>
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-forest/55 via-transparent to-forest/75"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-forest/40 via-transparent to-transparent"
+            aria-hidden
+          />
+        </>
+      ) : (
+        <>
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/55 to-ivory/15 sm:via-ivory/45"
+            aria-hidden
+          />
+          <div
+            className="grain absolute inset-0 opacity-25 mix-blend-multiply"
+            aria-hidden
+          />
+        </>
+      )}
 
       {count > 1 ? (
-        <div className="absolute inset-x-0 bottom-5 z-10 flex items-center justify-center gap-2 sm:bottom-8">
+        <div
+          className={cn(
+            "absolute inset-x-0 z-10 flex items-center justify-center gap-2",
+            editorial ? "bottom-20 sm:bottom-24" : "bottom-5 sm:bottom-8",
+          )}
+        >
           {slides.map((slide, slideIndex) => (
             <button
               key={slide.id}
               type="button"
-              className={cn(
-                "h-2.5 min-h-11 min-w-11 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
-                "flex items-center justify-center",
-              )}
+              className="flex h-2.5 min-h-11 min-w-11 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blush"
               aria-label={`Show photo ${slideIndex + 1} of ${count}${
                 slide.label ? `: ${slide.label}` : ""
               }`}
@@ -139,10 +182,14 @@ export function HeroCarousel({ className }: { className?: string }) {
             >
               <span
                 className={cn(
-                  "block h-1.5 w-1.5 rounded-full transition-all",
+                  "block h-1.5 w-1.5 transition-all",
                   slideIndex === index
-                    ? "w-5 bg-forest"
-                    : "bg-forest/35 hover:bg-forest/55",
+                    ? editorial
+                      ? "w-5 bg-blush"
+                      : "w-5 bg-forest"
+                    : editorial
+                      ? "bg-ivory/40 hover:bg-ivory/65"
+                      : "bg-forest/35 hover:bg-forest/55",
                 )}
               />
             </button>

@@ -1,13 +1,14 @@
 import { SkipLinks } from "@/components/ui/SkipLinks";
 import { wedding } from "@/data/wedding";
 import type { Metadata, Viewport } from "next";
-import { Caveat, Fraunces, Source_Sans_3 } from "next/font/google";
+import { Caveat, Cormorant_Garamond, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
-const display = Fraunces({
+const display = Cormorant_Garamond({
   variable: "--font-display-family",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const body = Source_Sans_3({

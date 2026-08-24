@@ -1,3 +1,6 @@
+"use client";
+
+import { Reveal, RevealGroup, RevealItem, RevealLine } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
 import type { HTMLAttributes, ReactNode } from "react";
 
@@ -22,32 +25,43 @@ export function Section({
   const body = (
     <>
       {(eyebrow || title || description) && (
-        <header className="mb-10 max-w-2xl md:mb-14">
+        <RevealGroup className="mb-10 max-w-2xl md:mb-14">
           {eyebrow ? (
-            <p className="mb-3 font-sans text-xs uppercase tracking-[0.22em] text-gold">
-              {eyebrow}
-            </p>
+            <RevealItem compact>
+              <p className="mb-3 font-sans text-xs uppercase tracking-[0.28em] text-rose">
+                {eyebrow}
+              </p>
+            </RevealItem>
           ) : null}
           {title ? (
-            <h2 className="font-display text-balance text-3xl text-forest sm:text-4xl md:text-5xl">
-              {title}
-            </h2>
+            <RevealItem>
+              <h2 className="font-display text-balance text-4xl font-medium text-forest sm:text-5xl md:text-6xl">
+                {title}
+              </h2>
+            </RevealItem>
+          ) : null}
+          {title ? (
+            <RevealItem compact>
+              <RevealLine className="mt-5 w-20" />
+            </RevealItem>
           ) : null}
           {description ? (
-            <p className="mt-4 max-w-prose text-base leading-relaxed text-ink-muted sm:text-lg">
-              {description}
-            </p>
+            <RevealItem compact>
+              <p className="mt-5 max-w-prose text-base leading-relaxed text-ink-muted sm:text-lg">
+                {description}
+              </p>
+            </RevealItem>
           ) : null}
-        </header>
+        </RevealGroup>
       )}
-      {children}
+      <Reveal>{children}</Reveal>
     </>
   );
 
   return (
     <section
       id={id}
-      className={cn("relative scroll-mt-24 py-16 md:py-24", className)}
+      className={cn("relative scroll-mt-28 py-16 md:py-28", className)}
       {...props}
     >
       {contained ? (
