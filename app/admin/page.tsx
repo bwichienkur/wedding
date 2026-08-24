@@ -22,10 +22,18 @@ export default async function AdminHomePage() {
       </p>
       <h1 className="mt-3 font-display text-4xl text-forest">Bright & Lexi</h1>
       <p className="mt-4 max-w-prose text-ink-muted">
-        Secure tools for media and, in later phases, RSVP management. Public
-        wedding copy remains file-based for now.
+        Secure tools for media and RSVP management. Public wedding copy remains
+        file-based for now.
       </p>
       <ul className="mt-10 space-y-4">
+        <li>
+          <Link
+            href="/admin/rsvp"
+            className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+          >
+            RSVP management
+          </Link>
+        </li>
         <li>
           <Link
             href="/admin/media"

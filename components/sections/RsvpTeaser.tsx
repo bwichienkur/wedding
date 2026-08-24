@@ -3,14 +3,13 @@ import { Section } from "@/components/ui/Section";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 
-/** Public RSVP teaser — full secure flow arrives in Phase 6. */
 export function RsvpSection() {
   return (
     <Section
       id="rsvp"
       eyebrow="RSVP"
       title="We hope you’ll be there"
-      description="A secure household RSVP experience is next. This keeps the invitation action visible and ready."
+      description="Find your invitation by name or code, then respond for everyone in your household."
       className="bg-sage/20"
     >
       <p
