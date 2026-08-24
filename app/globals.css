@@ -368,15 +368,15 @@
   @media (max-aspect-ratio: 3/4) {
     .envelope-design-top,
     .envelope-design-bottom {
-      left: 22%;
-      right: 22%;
-      height: 22%;
+      left: 24%;
+      right: 24%;
+      height: 23%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 20%;
-      bottom: 20%;
+      top: 22%;
+      bottom: 22%;
       width: 20%;
     }
   }
