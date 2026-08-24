@@ -2,6 +2,7 @@
 
 import { Section } from "@/components/ui/Section";
 import { ProposalFilmExperience } from "@/components/video/ProposalFilmExperience";
+import type { StoryImage } from "@/data/types";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import { useReducedMotion } from "motion/react";
@@ -10,12 +11,31 @@ import { useId } from "react";
 /**
  * Two hairline paths weaving into one — ink/embroidery, not CGI tubing.
  */
-function ProposalThreadConvergence() {
+function ProposalThreadConvergence({ still }: { still?: StoryImage | null }) {
   const reduceMotion = useReducedMotion();
   const gradientId = useId().replace(/:/g, "");
 
   return (
     <div className="relative mx-auto w-full max-w-3xl px-2">
+      {still?.src ? (
+        <div className="mb-6 overflow-hidden border border-gold/35 bg-parchment">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={still.src}
+            alt={still.alt || "Proposal photograph"}
+            width={still.width}
+            height={still.height}
+            className="aspect-[16/10] w-full object-cover"
+            style={
+              still.focalPoint
+                ? {
+                    objectPosition: `${still.focalPoint.x}% ${still.focalPoint.y}%`,
+                  }
+                : undefined
+            }
+          />
+        </div>
+      ) : null}
       <svg
         viewBox="0 0 720 220"
         preserveAspectRatio="xMidYMid meet"
@@ -131,13 +151,19 @@ function ProposalThreadConvergence() {
         />
       </svg>
       <p className="mt-3 text-center font-sans text-xs text-ink-muted">
-        Proposal photograph coming soon
+        {still?.src
+          ? "Two paths become one"
+          : "Proposal photograph coming soon"}
       </p>
     </div>
   );
 }
 
-export function ProposalConvergenceSection() {
+export function ProposalConvergenceSection({
+  still,
+}: {
+  still?: StoryImage | null;
+}) {
   const headingId = useId();
 
   return (
@@ -175,7 +201,7 @@ export function ProposalConvergenceSection() {
         </p>
       </header>
 
-      <ProposalThreadConvergence />
+      <ProposalThreadConvergence still={still} />
       <ProposalFilmExperience />
     </Section>
   );

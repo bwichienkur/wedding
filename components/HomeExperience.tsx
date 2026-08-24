@@ -16,10 +16,24 @@ import { WeddingDaySection } from "@/components/sections/WeddingDay";
 import { WeddingMarquee } from "@/components/sections/WeddingMarquee";
 import { MemoryGallerySection } from "@/components/three/MemoryGallery";
 import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
+import type { HeroSlide } from "@/data/hero-slides";
+import type { VenueInfo, WeddingPartyMember } from "@/data/logistics-types";
+import type { MemoryCard } from "@/data/memories";
+import type { StoryImage, StoryMilestone } from "@/data/types";
 import { mainContentId } from "@/data/navigation";
 import { useCallback, useState } from "react";
 
-export function HomeExperience() {
+export interface HomeMediaBundle {
+  heroSlides: HeroSlide[];
+  storyMilestones: StoryMilestone[];
+  memoryCards: MemoryCard[];
+  venue: VenueInfo;
+  partyMembers: WeddingPartyMember[];
+  closingImage: StoryImage | null;
+  proposalStill: StoryImage | null;
+}
+
+export function HomeExperience({ media }: { media: HomeMediaBundle }) {
   const [introDone, setIntroDone] = useState(false);
   const completeIntro = useCallback(() => setIntroDone(true), []);
 
@@ -28,23 +42,23 @@ export function HomeExperience() {
       <CinematicEntry onComplete={completeIntro} />
       <SiteHeader />
       <main id={mainContentId} tabIndex={-1} className="outline-none">
-        <Hero />
+        <Hero slides={media.heroSlides} />
         <WeddingMarquee />
-        <OurStory />
+        <OurStory milestones={media.storyMilestones} />
         <SectionErrorBoundary title="Memories couldn’t load">
-          <MemoryGallerySection />
+          <MemoryGallerySection cards={media.memoryCards} />
         </SectionErrorBoundary>
         <SectionErrorBoundary title="Proposal chapter couldn’t load">
-          <ProposalConvergenceSection />
+          <ProposalConvergenceSection still={media.proposalStill} />
         </SectionErrorBoundary>
         <WeddingDaySection />
-        <VenueSection />
+        <VenueSection venue={media.venue} />
         <TravelSection />
-        <PartySection />
+        <PartySection members={media.partyMembers} />
         <RsvpSection />
         <FaqSection />
         <RegistrySection />
-        <ClosingSection />
+        <ClosingSection image={media.closingImage} />
       </main>
       {introDone ? null : (
         <span className="sr-only" aria-live="polite">

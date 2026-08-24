@@ -1,6 +1,6 @@
 "use client";
 
-import { heroSlides } from "@/data/hero-slides";
+import type { HeroSlide } from "@/data/hero-slides";
 import { cn } from "@/lib/cn";
 import { editorialEase } from "@/lib/motion";
 import { motion, useReducedMotion } from "motion/react";
@@ -21,16 +21,17 @@ const INTERVAL_MS = 5500;
 export function HeroCarousel({
   className,
   editorial = false,
+  slides,
 }: {
   className?: string;
   editorial?: boolean;
+  slides: HeroSlide[];
 }) {
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const labelId = useId();
-  const slides = heroSlides;
   const count = slides.length;
 
   const goTo = useCallback(

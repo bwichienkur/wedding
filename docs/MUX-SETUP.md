@@ -30,10 +30,12 @@ Never commit real credentials or video files.
 
 1. Sign in at `/admin/login` with `ADMIN_PASSWORD`.
 2. Open `/admin/media`.
-3. Choose category and placement (`proposal.teaser`, `proposal.highlight`, `proposal.full`, etc.).
+3. Choose a **page section** (proposal highlight/full/teaser, or any photo placement).
 4. Upload a video. The browser PUTs bytes directly to Mux using a server-minted URL.
 5. Wait for webhook processing (`processing` → `ready`).
 6. Publish when ready. Unpublished assets are not exposed on public playback routes.
+
+Photo uploads for section placements (hero, story, gallery, venue, party, closing) use `/api/media/photo` and do not require Mux.
 
 ## 4. Playback behavior
 

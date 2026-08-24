@@ -2,16 +2,36 @@ import { MonogramSvg } from "@/components/monogram/MonogramSvg";
 import { GoldenThread } from "@/components/story/GoldenThread";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { rsvpNav } from "@/data/navigation";
+import type { StoryImage } from "@/data/types";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 
-export function ClosingSection() {
+export function ClosingSection({ image }: { image?: StoryImage | null }) {
   return (
     <section
       id="closing"
       className="relative overflow-hidden bg-forest px-5 py-24 text-ivory sm:px-8"
       aria-labelledby="closing-title"
     >
+      {image?.src ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image.src}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-35"
+            style={
+              image.focalPoint
+                ? {
+                    objectPosition: `${image.focalPoint.x}% ${image.focalPoint.y}%`,
+                  }
+                : undefined
+            }
+            aria-hidden
+          />
+          <div className="absolute inset-0 bg-forest/70" aria-hidden />
+        </>
+      ) : null}
       <div className="grain absolute inset-0 opacity-20" aria-hidden />
       <GoldenThread
         chapter="closing"

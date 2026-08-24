@@ -2,7 +2,6 @@
 
 import { ScrollScrubbedThread } from "@/components/story/GoldenThread";
 import { Section } from "@/components/ui/Section";
-import { storyMilestones } from "@/data/story";
 import { wedding } from "@/data/wedding";
 import type { Perspective, StoryMilestone } from "@/data/types";
 import { cn } from "@/lib/cn";
@@ -151,7 +150,7 @@ function MilestoneCard({
   );
 }
 
-export function OurStory() {
+export function OurStory({ milestones }: { milestones: StoryMilestone[] }) {
   return (
     <Section
       id="story"
@@ -170,7 +169,7 @@ export function OurStory() {
         />
 
         <div className="relative pl-7 sm:pl-9 md:pl-0">
-          {storyMilestones.map((milestone, index) => (
+          {milestones.map((milestone, index) => (
             <MilestoneCard
               key={milestone.id}
               milestone={milestone}
