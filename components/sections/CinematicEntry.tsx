@@ -122,7 +122,7 @@ export function CinematicEntry({
       className={[
         "intro-overlay fixed inset-0 z-50 overflow-hidden",
         "transition-[opacity,background-color] duration-[900ms] ease-out",
-        phase === "opening" || exiting ? "bg-transparent" : "bg-[#0a1220]",
+        phase === "opening" || exiting ? "bg-transparent" : "bg-[#070e1a]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
       ].join(" ")}
       role="dialog"

@@ -10,6 +10,8 @@ interface WaxSealButtonProps {
   reduceMotion: boolean;
   onActivate: () => void;
   visible: boolean;
+  /** Invisible hit-target over baked-in seal in the closed master image */
+  hotspotOnly?: boolean;
 }
 
 export function WaxSealButton({
@@ -17,6 +19,7 @@ export function WaxSealButton({
   reduceMotion,
   onActivate,
   visible,
+  hotspotOnly = false,
 }: WaxSealButtonProps) {
   const activating = phase === "activating";
   const glowing = phase === "glowing";
@@ -72,39 +75,46 @@ export function WaxSealButton({
             glowing && !reduceMotion && "is-glowing",
             opening && !reduceMotion && "is-lifting",
             opening && reduceMotion && "opacity-0",
+            hotspotOnly && "intro-seal-hotspot",
           )}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/wax-seal-bl.webp"
-            alt=""
-            width={200}
-            height={200}
-            draggable={false}
-            className={cn(
-              "intro-seal-image pointer-events-none select-none",
-              "drop-shadow-[0_14px_28px_rgba(8,16,40,0.6)]",
-            )}
-          />
+          {hotspotOnly ? (
+            <span className="intro-seal-hotspot-area" aria-hidden />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/images/wax-seal-bl.webp"
+              alt=""
+              width={220}
+              height={220}
+              draggable={false}
+              className={cn(
+                "intro-seal-image pointer-events-none select-none",
+                "drop-shadow-[0_16px_32px_rgba(8,16,40,0.65)]",
+              )}
+            />
+          )}
         </button>
       </div>
 
+      {/* Hint is baked into closed master; show live hint only while activating/glowing */}
       <p
         className={cn(
           "intro-seal-hint pointer-events-none absolute left-1/2 z-20 -translate-x-1/2",
-          "font-sans uppercase tracking-[0.18em] text-[#e0c56a]",
+          "font-sans uppercase tracking-[0.2em] text-[#e0c56a]",
           "transition-opacity duration-500",
-          !visible && "opacity-0",
-          (glowing || opening) && "opacity-90",
+          !(glowing || activating) || opening || !visible
+            ? "opacity-0"
+            : "opacity-100",
         )}
         aria-live="polite"
       >
         <span className="intro-seal-hint-flourish" aria-hidden>
-          ✦
+          —
         </span>
         {hint}
         <span className="intro-seal-hint-flourish" aria-hidden>
-          ✦
+          —
         </span>
       </p>
     </>

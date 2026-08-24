@@ -7,12 +7,11 @@ interface InvitationContentProps {
   hidden?: boolean;
 }
 
-/** Split editorial typography in the upper envelope area */
 export function InvitationContent({ hidden }: InvitationContentProps) {
   return (
     <div
       className={cn(
-        "intro-invite-copy pointer-events-none absolute left-1/2 top-[8%] z-20 w-[min(88%,24rem)] -translate-x-1/2 text-center",
+        "intro-invite-copy pointer-events-none absolute left-1/2 z-20 -translate-x-1/2 text-center",
         "transition-opacity duration-700",
         hidden && "opacity-0",
       )}

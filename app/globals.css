@@ -228,14 +228,12 @@
     }
   }
 
-  /* ── Luxury wedding envelope intro ── */
+  /* ── Luxury wedding envelope intro (master illustration) ── */
   .intro-overlay {
-    --intro-navy-deep: #0a1220;
-    --intro-navy-paper: #0f213d;
-    --intro-navy-edge: #182f50;
+    --intro-navy-deep: #070e1a;
+    --intro-navy-paper: #0c1a30;
     --intro-gold: #d4b65c;
     --intro-gold-soft: #e8c872;
-    --intro-gold-glow: rgb(212 168 79 / 0.55);
   }
 
   .intro-envelope-viewport {
@@ -245,55 +243,57 @@
     align-items: center;
     justify-content: center;
     padding:
-      max(0.75rem, env(safe-area-inset-top))
-      max(0.5rem, env(safe-area-inset-right))
-      max(0.5rem, env(safe-area-inset-bottom))
-      max(0.5rem, env(safe-area-inset-left));
+      max(0.35rem, env(safe-area-inset-top))
+      max(0.35rem, env(safe-area-inset-right))
+      max(0.35rem, env(safe-area-inset-bottom))
+      max(0.35rem, env(safe-area-inset-left));
     min-height: 100svh;
     min-height: 100dvh;
+    background: var(--intro-navy-deep);
   }
 
   .intro-envelope-stage {
     position: relative;
-    width: min(96vw, 28rem);
-    height: min(96svh, 52rem);
-    height: min(96dvh, 52rem);
-    max-height: calc(100svh - 5rem);
-    max-height: calc(100dvh - 5rem);
+    width: min(98vw, 26.5rem);
+    aspect-ratio: 2 / 3;
+    height: auto;
+    max-height: calc(100svh - 1rem);
+    max-height: calc(100dvh - 1rem);
   }
 
   @media (min-width: 768px) {
     .intro-envelope-stage {
-      width: min(94vw, 32rem);
-      height: min(94svh, 56rem);
-      height: min(94dvh, 56rem);
+      width: min(92vw, 30rem);
     }
   }
 
   @media (min-width: 1280px) {
     .intro-envelope-stage {
-      width: min(420px, 38vw);
+      width: min(440px, 34vw);
+    }
+  }
+
+  /* Keep portrait envelope filling stage when height is the constraint */
+  @supports (height: 1svh) {
+    .intro-envelope-stage {
+      height: min(98svh, calc(98vw * 1.5), 52rem);
+      width: min(98vw, calc(98svh / 1.5), 26.5rem);
+      aspect-ratio: auto;
     }
   }
 
   .intro-envelope {
-    border-radius: 2px;
+    border-radius: 1px;
     box-shadow:
-      0 24px 80px rgb(4 8 20 / 0.55),
-      0 4px 16px rgb(4 8 20 / 0.35);
+      0 28px 90px rgb(2 6 16 / 0.7),
+      0 4px 18px rgb(2 6 16 / 0.45);
   }
 
-  .envelope-paper {
-    background-color: var(--intro-navy-paper);
-    background-image:
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"),
-      linear-gradient(
-        145deg,
-        rgb(255 255 255 / 0.04) 0%,
-        transparent 42%,
-        rgb(0 0 0 / 0.08) 100%
-      );
-    background-blend-mode: overlay, normal;
+  .envelope-master-face {
+    background-color: #0c1a30;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
   }
 
   .envelope-interior {
@@ -311,58 +311,6 @@
     opacity: 1;
   }
 
-  .envelope-flap-fold-line {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 3;
-    opacity: 0.35;
-  }
-
-  .envelope-flap-top .envelope-flap-fold-line {
-    background: linear-gradient(
-      135deg,
-      transparent 49.2%,
-      rgb(210 230 255 / 0.12) 49.8%,
-      rgb(4 10 24 / 0.45) 50.2%,
-      transparent 50.8%
-    );
-  }
-
-  .envelope-flap-bottom .envelope-flap-fold-line {
-    background: linear-gradient(
-      45deg,
-      transparent 49.2%,
-      rgb(210 230 255 / 0.1) 49.8%,
-      rgb(4 10 24 / 0.45) 50.2%,
-      transparent 50.8%
-    );
-  }
-
-  .envelope-flap-left .envelope-flap-fold-line {
-    background: linear-gradient(
-      135deg,
-      transparent 49.2%,
-      rgb(210 230 255 / 0.1) 49.8%,
-      rgb(4 10 24 / 0.4) 50.2%,
-      transparent 50.8%
-    );
-  }
-
-  .envelope-flap-right .envelope-flap-fold-line {
-    background: linear-gradient(
-      45deg,
-      transparent 49.2%,
-      rgb(210 230 255 / 0.1) 49.8%,
-      rgb(4 10 24 / 0.4) 50.2%,
-      transparent 50.8%
-    );
-  }
-
-  .envelope-liner {
-    background: transparent;
-  }
-
   .envelope-flap {
     overflow: hidden;
     transform: none;
@@ -371,113 +319,59 @@
   }
 
   .envelope-flap-face {
-    box-shadow:
-      inset 0 1px 0 rgb(210 230 255 / 0.07),
-      inset 0 -14px 28px rgb(4 10 24 / 0.35);
+    box-shadow: none;
   }
 
-  /* Illustrated embossed artwork — per flap, clipped by parent triangle */
-  .envelope-flap-art {
+  .envelope-flap-rim {
     position: absolute;
+    inset: 0;
     pointer-events: none;
-    z-index: 1;
-    background-repeat: no-repeat;
-    transition:
-      opacity var(--intro-glow, 1400ms) ease,
-      filter var(--intro-glow, 1400ms) cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .envelope-flap-art-emboss {
-    opacity: 0.88;
-    mix-blend-mode: normal;
-    filter:
-      brightness(1.28)
-      contrast(1.14)
-      saturate(0.86)
-      drop-shadow(0 1px 1px rgb(4 10 24 / 0.45));
-  }
-
-  .envelope-flap-art-glow {
-    opacity: 0;
-    mix-blend-mode: screen;
-    filter: brightness(1.05);
-  }
-
-  .envelope-flap-art-glow.is-lit,
-  .intro-envelope-stage.is-illuminated .envelope-flap-art-glow {
-    opacity: 0.78;
-    filter:
-      brightness(1.08)
-      drop-shadow(0 0 6px rgb(205 168 79 / 0.32))
-      drop-shadow(0 0 14px rgb(212 182 92 / 0.18));
-  }
-
-  .intro-envelope-stage.is-illuminated .envelope-flap-art-emboss {
+    z-index: 2;
     opacity: 0.55;
-    filter:
-      brightness(1.35)
-      contrast(1.1)
-      saturate(0.8)
-      drop-shadow(0 0 4px rgb(205 168 79 / 0.18));
+    mix-blend-mode: soft-light;
   }
 
-  /* Top corner vines — wide, airy, clears text + seal */
-  .envelope-flap-art-top {
-    top: 1%;
-    left: 0;
-    right: 0;
-    height: 48%;
-    background-position: center top;
-    background-size: 118% auto;
+  .envelope-flap-top .envelope-flap-rim {
+    background: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.07) 0%,
+      transparent 34%,
+      transparent 70%,
+      rgb(0 0 0 / 0.18) 100%
+    );
   }
 
-  .envelope-flap-art-bottom {
-    left: 2%;
-    right: 2%;
-    bottom: 0;
-    height: 54%;
-    background-position: center bottom;
-    background-size: 108% auto;
+  .envelope-flap-bottom .envelope-flap-rim {
+    background: linear-gradient(
+      0deg,
+      rgb(255 255 255 / 0.05) 0%,
+      transparent 30%,
+      transparent 72%,
+      rgb(0 0 0 / 0.2) 100%
+    );
   }
 
-  .envelope-flap-art-side-left {
-    top: 6%;
-    left: 0;
-    width: 58%;
-    height: 88%;
-    background-position: left center;
-    background-size: contain;
+  .envelope-flap-left .envelope-flap-rim {
+    background: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0.05) 0%,
+      transparent 40%,
+      rgb(0 0 0 / 0.16) 100%
+    );
   }
 
-  .envelope-flap-art-side-right {
-    top: 6%;
-    right: 0;
-    width: 58%;
-    height: 88%;
-    background-position: right center;
-    background-size: contain;
+  .envelope-flap-right .envelope-flap-rim {
+    background: linear-gradient(
+      270deg,
+      rgb(255 255 255 / 0.05) 0%,
+      transparent 40%,
+      rgb(0 0 0 / 0.16) 100%
+    );
   }
 
-  .envelope-shell-open .envelope-flap-art {
-    opacity: 0.45;
-    transition: opacity 1.35s ease;
-  }
-
-  @media (max-aspect-ratio: 3/4) {
-    .envelope-flap-art-top {
-      height: 50%;
-    }
-
-    .envelope-flap-art-bottom {
-      left: 1%;
-      right: 1%;
-      height: 50%;
-    }
-
-    .envelope-flap-art-side-left,
-    .envelope-flap-art-side-right {
-      width: 78%;
-    }
+  .intro-envelope-stage.is-illuminated .envelope-master-face {
+    filter: brightness(1.04) saturate(1.05);
+    transition: filter var(--intro-glow, 1400ms) ease;
   }
 
   /* Four-flap geometry */
@@ -505,27 +399,6 @@
     z-index: 2;
   }
 
-  .envelope-flap-top .envelope-flap-face {
-    background:
-      linear-gradient(180deg, #182f50 0%, #0f213d 52%, #0f213d 100%);
-  }
-
-  .envelope-flap-bottom .envelope-flap-face {
-    background:
-      linear-gradient(0deg, #182f50 0%, #0f213d 52%, #0f213d 100%);
-  }
-
-  .envelope-flap-left .envelope-flap-face {
-    background:
-      linear-gradient(90deg, #182f50 0%, #0f213d 55%, #0f213d 100%);
-  }
-
-  .envelope-flap-right .envelope-flap-face {
-    background:
-      linear-gradient(270deg, #182f50 0%, #0f213d 55%, #0f213d 100%);
-  }
-
-  /* Opening sequence */
   .envelope-shell-open .envelope-flap {
     transition:
       transform var(--intro-open, 2800ms) cubic-bezier(0.16, 1, 0.3, 1),
@@ -534,26 +407,26 @@
 
   .envelope-flap-top.is-open {
     transform: rotateX(-162deg);
-    opacity: 0.35;
+    opacity: 0.3;
     transition-delay: 0.18s;
     z-index: 6;
   }
 
   .envelope-flap-bottom.is-open {
     transform: rotateX(162deg);
-    opacity: 0.35;
+    opacity: 0.3;
     transition-delay: 0.32s;
   }
 
   .envelope-flap-left.is-open {
     transform: rotateY(-162deg);
-    opacity: 0.35;
+    opacity: 0.3;
     transition-delay: 0.08s;
   }
 
   .envelope-flap-right.is-open {
     transform: rotateY(162deg);
-    opacity: 0.35;
+    opacity: 0.3;
     transition-delay: 0.24s;
   }
 
@@ -562,32 +435,39 @@
     transition: none;
   }
 
-  /* Invitation typography */
+  /* Invitation typography — upper third */
+  .intro-invite-copy {
+    top: 9%;
+    width: min(86%, 22rem);
+  }
+
   .intro-invite-preamble {
-    font-size: clamp(0.85rem, 0.75rem + 0.6vw, 1.05rem);
-    line-height: 1.45;
+    font-size: clamp(0.78rem, 0.7rem + 0.55vw, 0.98rem);
+    line-height: 1.4;
     text-wrap: balance;
+    text-shadow: 0 1px 2px rgb(4 10 24 / 0.65);
   }
 
   .intro-invite-names {
-    margin-top: 0.35rem;
-    font-size: clamp(1.65rem, 1.2rem + 2.8vw, 2.35rem);
-    line-height: 1.15;
+    margin-top: 0.4rem;
+    font-size: clamp(1.7rem, 1.25rem + 2.6vw, 2.4rem);
+    line-height: 1.12;
     text-wrap: balance;
     filter: drop-shadow(0 1px 3px rgb(8 16 32 / 0.75));
   }
 
   .intro-invite-subline {
-    margin-top: 0.65rem;
-    font-size: clamp(0.58rem, 0.52rem + 0.35vw, 0.72rem);
-    line-height: 1.5;
+    margin-top: 0.7rem;
+    font-size: clamp(0.55rem, 0.5rem + 0.3vw, 0.68rem);
+    line-height: 1.45;
+    letter-spacing: 0.2em;
     text-wrap: balance;
   }
 
   /* Wax seal */
   .intro-seal-glow {
-    width: min(52vw, 14rem);
-    height: min(52vw, 14rem);
+    width: min(58vw, 15rem);
+    height: min(58vw, 15rem);
     border-radius: 50%;
     background: radial-gradient(
       circle,
@@ -601,12 +481,12 @@
   }
 
   .intro-seal-glow.is-activating {
-    opacity: 0.35;
+    opacity: 0.4;
     transform: scale(1.05);
     background: radial-gradient(
       circle,
-      rgb(212 168 79 / 0.25) 0%,
-      rgb(212 168 79 / 0.08) 45%,
+      rgb(212 168 79 / 0.28) 0%,
+      rgb(212 168 79 / 0.1) 45%,
       transparent 70%
     );
   }
@@ -621,46 +501,69 @@
       transform: scale(0.85);
       background: radial-gradient(
         circle,
-        rgb(212 168 79 / 0.55) 0%,
-        rgb(212 168 79 / 0.2) 40%,
+        rgb(212 168 79 / 0.6) 0%,
+        rgb(212 168 79 / 0.22) 40%,
         transparent 68%
       );
     }
     45% {
-      transform: scale(1.15);
+      transform: scale(1.18);
       background: radial-gradient(
         circle,
-        rgb(232 190 90 / 0.65) 0%,
-        rgb(212 168 79 / 0.28) 42%,
+        rgb(232 190 90 / 0.7) 0%,
+        rgb(212 168 79 / 0.3) 42%,
         transparent 72%
       );
     }
     100% {
-      transform: scale(1.35);
+      transform: scale(1.4);
       background: radial-gradient(
         circle,
-        rgb(212 168 79 / 0.35) 0%,
-        rgb(212 168 79 / 0.12) 50%,
+        rgb(212 168 79 / 0.38) 0%,
+        rgb(212 168 79 / 0.14) 50%,
         transparent 75%
       );
     }
   }
 
+  .intro-seal-hotspot {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .intro-seal-hotspot-area {
+    display: block;
+    width: min(36vw, 9rem);
+    height: min(36vw, 9rem);
+    border-radius: 50%;
+  }
+
+  @media (min-width: 640px) {
+    .intro-seal-hotspot-area {
+      width: 9.5rem;
+      height: 9.5rem;
+    }
+  }
+
+  .envelope-closed-master img {
+    display: block;
+  }
+
   .intro-seal-image {
-    width: min(34vw, 8.5rem);
-    height: min(34vw, 8.5rem);
+    width: min(36vw, 9rem);
+    height: min(36vw, 9rem);
     filter:
-      sepia(0.35)
-      saturate(1.4)
-      hue-rotate(5deg)
-      brightness(1.08)
+      sepia(0.28)
+      saturate(1.35)
+      hue-rotate(4deg)
+      brightness(1.1)
       contrast(1.05);
   }
 
   @media (min-width: 640px) {
     .intro-seal-image {
-      width: 9rem;
-      height: 9rem;
+      width: 9.5rem;
+      height: 9.5rem;
     }
   }
 
@@ -674,12 +577,12 @@
 
   .intro-seal-button.is-glowing .intro-seal-image {
     filter:
-      sepia(0.4)
-      saturate(1.6)
-      hue-rotate(8deg)
+      sepia(0.35)
+      saturate(1.55)
+      hue-rotate(6deg)
       brightness(1.22)
       contrast(1.08)
-      drop-shadow(0 0 12px rgb(212 168 79 / 0.45));
+      drop-shadow(0 0 14px rgb(212 168 79 / 0.5));
   }
 
   .intro-seal-button.is-lifting {
@@ -691,18 +594,17 @@
   }
 
   .intro-seal-hint {
-    bottom: calc(14% + env(safe-area-inset-bottom, 0px));
-    font-size: clamp(0.62rem, 0.58rem + 0.25vw, 0.75rem);
+    top: calc(50% + min(20vw, 5.6rem));
+    font-size: clamp(0.58rem, 0.54rem + 0.22vw, 0.7rem);
     white-space: nowrap;
+    text-shadow: 0 1px 2px rgb(4 10 24 / 0.7);
   }
 
   .intro-seal-hint-flourish {
-    margin: 0 0.45em;
-    opacity: 0.7;
-    font-size: 0.65em;
+    margin: 0 0.5em;
+    opacity: 0.75;
   }
 
-  /* Gold particles */
   .intro-seal-particle {
     position: absolute;
     left: 50%;
@@ -711,7 +613,7 @@
     height: var(--ps, 2px);
     margin: calc(var(--ps, 2px) / -2);
     border-radius: 50%;
-    background: rgb(232 190 90 / 0.85);
+    background: rgb(232 190 90 / 0.9);
     opacity: 0;
     transform: translate(0, 0);
   }
@@ -726,7 +628,7 @@
       transform: translate(0, 0) scale(0.5);
     }
     20% {
-      opacity: 0.9;
+      opacity: 0.95;
     }
     100% {
       opacity: 0;
@@ -734,7 +636,6 @@
     }
   }
 
-  /* Rising invitation card */
   .intro-invitation-card {
     top: 52%;
     width: 72%;
@@ -773,24 +674,23 @@
       inset 0 1px 0 rgb(255 255 255 / 0.6);
   }
 
-  /* Bottom navigation */
   .intro-bottom-nav-inner {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
     padding:
-      0.75rem 1rem
-      calc(0.85rem + env(safe-area-inset-bottom, 0px));
+      0.65rem 1rem
+      calc(0.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   .intro-nav-link {
     min-height: 44px;
     padding-inline: 0.85rem !important;
-    font-size: clamp(0.62rem, 0.58rem + 0.2vw, 0.72rem) !important;
+    font-size: clamp(0.6rem, 0.56rem + 0.2vw, 0.7rem) !important;
     letter-spacing: 0.16em !important;
     text-transform: uppercase !important;
-    color: rgb(224 197 106 / 0.92) !important;
+    color: rgb(224 197 106 / 0.95) !important;
   }
 
   .intro-nav-link:hover {
@@ -809,10 +709,6 @@
     .intro-invitation-card.is-rising {
       animation: none;
     }
-
-    .envelope-flap-art,
-    .intro-seal-floral-stems {
-      transition: none;
-    }
   }
+
 }

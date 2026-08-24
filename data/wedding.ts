@@ -51,7 +51,7 @@ export const wedding: WeddingConfig = {
     invitePreamble: "You’re cordially invited to the wedding of",
     inviteNames: "Bright & Lexi",
     inviteSubline: "May 15, 2027 · Bella Cosa · Lake Wales, Florida",
-    tapHint: "Tap the seal to open",
+    tapHint: "Tap the glowing seal to open",
     openingHint: "Opening your invitation",
   },
   closing: {
