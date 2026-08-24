@@ -63,8 +63,7 @@ export async function listPublishedMedia(): Promise<MediaAsset[]> {
     (asset) =>
       asset.isPublished &&
       asset.status === "ready" &&
-      !asset.isPrivate &&
-      asset.status !== "archived",
+      !asset.isPrivate,
   );
 }
 

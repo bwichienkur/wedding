@@ -42,7 +42,10 @@ export async function resolveHeroSlides(): Promise<HeroSlide[]> {
     .filter(Boolean) as Array<HeroSlide & { sortOrder: number }>;
 
   if (slides.length === 0) return heroSlides;
-  return slides.map(({ sortOrder: _sort, ...slide }) => slide);
+  return slides.map(({ sortOrder, ...slide }) => {
+    void sortOrder;
+    return slide;
+  });
 }
 
 export async function resolveStoryMilestones(): Promise<StoryMilestone[]> {
