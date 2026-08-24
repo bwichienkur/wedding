@@ -8,6 +8,8 @@ Concept: **The Golden Thread** — an interactive love story that remains a prac
 
 All seven phases are merged to **`main`** (design → foundation → story/3D → video → logistics → RSVP → polish/QA).
 
+CI runs on every push/PR to `main`. Deploy via [Vercel](https://vercel.com) — see [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md).
+
 ## Quick start
 
 ```bash

@@ -1,20 +1,42 @@
-# Deployment (Vercel-compatible)
+# Deployment (Vercel)
 
-## Recommended platform
+## Option A — Vercel GitHub integration (recommended)
 
-Deploy on Vercel (or any Node host that supports Next.js App Router).
+1. Sign in at [vercel.com](https://vercel.com) and **Add New → Project**.
+2. Import **`bwichienkur/wedding`** from GitHub.
+3. Framework preset: **Next.js** (auto-detected). Build command: `npm run build`. Install: `npm ci`.
+4. Add environment variables from `.env.example` (Production + Preview):
+   - `NEXT_PUBLIC_SITE_URL` → your Vercel URL or custom domain
+   - `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `RSVP_SESSION_SECRET` (required before sharing publicly)
+   - Mux / Resend vars when video and email are ready
+5. Deploy. Every push to **`main`** triggers a production deployment; PRs get preview URLs.
 
-## Steps
+After the first deploy, update:
 
-1. Create a Vercel project from this repository.
-2. Set environment variables from `.env.example` (never commit `.env.local`).
-3. Deploy the production branch.
-4. Point the custom domain and update:
-   - `NEXT_PUBLIC_SITE_URL`
-   - `data/wedding.ts` → `site.canonicalUrl`
-5. Configure Mux webhook to `https://YOUR_DOMAIN/api/media/webhook`.
-6. Set `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` before sharing the URL.
-7. Optionally enable email with Resend (`EMAIL_ENABLED=true`).
+- Vercel **Settings → Environment Variables** → `NEXT_PUBLIC_SITE_URL`
+- `data/wedding.ts` → `site.canonicalUrl` (or keep in sync with your domain)
+
+Configure Mux webhook to `https://YOUR_DOMAIN/api/media/webhook`.
+
+## Option B — GitHub Actions deploy (optional)
+
+If you prefer deploys via Actions instead of (or in addition to) the Vercel GitHub app, add these **repository secrets**:
+
+| Secret | Where to find it |
+|--------|------------------|
+| `VERCEL_TOKEN` | [vercel.com/account/tokens](https://vercel.com/account/tokens) |
+| `VERCEL_ORG_ID` | Project **Settings → General** (team/personal id) |
+| `VERCEL_PROJECT_ID` | Same page, **Project ID** |
+
+The workflow `.github/workflows/deploy-vercel.yml` runs on push to `main` when all three secrets exist. Until then it is skipped — use Option A.
+
+## CI
+
+GitHub Actions runs on every push/PR to `main`:
+
+- **`ci.yml`** — `npm run qa` (typecheck, lint, unit, build) + Playwright e2e
+
+See [`docs/TESTING.md`](./TESTING.md).
 
 ## Environment checklist
 
@@ -32,13 +54,13 @@ Deploy on Vercel (or any Node host that supports Next.js App Router).
 
 ## Persistence note
 
-Phase 6/4 local JSON stores (`.data/*.json`) are fine for development. For production, migrate media + RSVP stores to Supabase using the SQL in `supabase/migrations/` and replace the file-backed repositories. Do not rely on ephemeral serverless disk for guest responses.
+File-backed `.data/*.json` stores are for local development only. For production RSVP and media metadata, migrate to Supabase using `supabase/migrations/` before relying on guest data in production.
 
 ## Post-deploy smoke test
 
-1. `/` loads and skip-intro works
-2. `/rsvp` lookup with a seed name (staging only) or a real invite code (production)
-3. `/admin/login` rejects bad passwords
+1. `/` loads; intro skip works; reduced-motion path works
+2. `/rsvp` lookup (seed names in staging only, or real invite codes in production)
+3. `/admin/login` rejects bad passwords when `ADMIN_PASSWORD` is set
 4. Schedule ICS download works
-5. FAQ deep links work
-6. robots/sitemap reflect site mode
+5. FAQ search and deep links work
+6. `robots.txt` / `sitemap.xml` reflect site mode
