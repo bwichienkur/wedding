@@ -37,6 +37,15 @@ test.describe("public invitation", () => {
     await expect(page.locator("#home")).toBeVisible();
   });
 
+  test("opens sealed invitation via wax seal", async ({ page }) => {
+    await page.goto("/");
+    const seal = page.getByRole("button", { name: "Open invitation" });
+    await expect(seal).toBeVisible();
+    await seal.click();
+    await expect(page.locator("#home")).toBeVisible({ timeout: 5000 });
+    await expect(seal).toHaveCount(0);
+  });
+
   test("schedule includes ceremony time and calendar actions", async ({
     page,
   }) => {
