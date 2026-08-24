@@ -7,9 +7,11 @@ import type { MediaAsset, UpdateMediaInput } from "@/lib/media/types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "media-assets.json");
+const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
 
 async function ensureStore(): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.mkdir(UPLOADS_DIR, { recursive: true });
   try {
     await fs.access(DATA_FILE);
   } catch {
@@ -17,10 +19,26 @@ async function ensureStore(): Promise<void> {
   }
 }
 
+function normalizeAsset(raw: MediaAsset): MediaAsset {
+  return {
+    ...raw,
+    kind: raw.kind ?? "video",
+    storagePath: raw.storagePath ?? null,
+    publicUrl: raw.publicUrl ?? null,
+    alt: raw.alt ?? "",
+    width: raw.width ?? null,
+    height: raw.height ?? null,
+    focalX: raw.focalX ?? null,
+    focalY: raw.focalY ?? null,
+    mimeType: raw.mimeType ?? null,
+  };
+}
+
 async function readAll(): Promise<MediaAsset[]> {
   await ensureStore();
   const raw = await fs.readFile(DATA_FILE, "utf8");
-  return JSON.parse(raw) as MediaAsset[];
+  const parsed = JSON.parse(raw) as MediaAsset[];
+  return parsed.map(normalizeAsset);
 }
 
 async function writeAll(assets: MediaAsset[]): Promise<void> {
@@ -28,15 +46,25 @@ async function writeAll(assets: MediaAsset[]): Promise<void> {
   await fs.writeFile(DATA_FILE, JSON.stringify(assets, null, 2), "utf8");
 }
 
+export function getUploadsDir(): string {
+  return UPLOADS_DIR;
+}
+
 export async function listMediaAssets(): Promise<MediaAsset[]> {
   const assets = await readAll();
-  return assets.sort((a, b) => a.sortOrder - b.sortOrder || a.createdAt.localeCompare(b.createdAt));
+  return assets.sort(
+    (a, b) => a.sortOrder - b.sortOrder || a.createdAt.localeCompare(b.createdAt),
+  );
 }
 
 export async function listPublishedMedia(): Promise<MediaAsset[]> {
   const assets = await listMediaAssets();
   return assets.filter(
-    (asset) => asset.isPublished && asset.status === "ready" && !asset.isPrivate,
+    (asset) =>
+      asset.isPublished &&
+      asset.status === "ready" &&
+      !asset.isPrivate &&
+      asset.status !== "archived",
   );
 }
 
@@ -48,15 +76,23 @@ export async function getMediaById(id: string): Promise<MediaAsset | null> {
 export async function getMediaByPlacement(
   placementKey: string,
 ): Promise<MediaAsset | null> {
+  const assets = await listPublishedByPlacement(placementKey);
+  return assets[0] ?? null;
+}
+
+/** All published ready assets for a placement, sorted. */
+export async function listPublishedByPlacement(
+  placementKey: string,
+): Promise<MediaAsset[]> {
   const assets = await listMediaAssets();
-  return (
-    assets.find(
+  return assets
+    .filter(
       (asset) =>
         asset.placementKey === placementKey &&
         asset.isPublished &&
         asset.status === "ready",
-    ) ?? null
-  );
+    )
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.createdAt.localeCompare(b.createdAt));
 }
 
 export async function createMediaAsset(
@@ -67,35 +103,45 @@ export async function createMediaAsset(
     status?: MediaAsset["status"];
     muxAssetId?: string | null;
     muxPlaybackId?: string | null;
+    kind?: MediaAsset["kind"];
   },
 ): Promise<MediaAsset> {
   const now = new Date().toISOString();
   const asset: MediaAsset = {
     id: randomUUID(),
+    kind: input.kind ?? "video",
     muxAssetId: input.muxAssetId ?? null,
     muxPlaybackId: input.muxPlaybackId ?? null,
-    muxUploadId: input.muxUploadId,
+    muxUploadId: input.muxUploadId ?? null,
+    storagePath: input.storagePath ?? null,
+    publicUrl: input.publicUrl ?? null,
+    alt: input.alt ?? "",
+    width: input.width ?? null,
+    height: input.height ?? null,
+    focalX: input.focalX ?? null,
+    focalY: input.focalY ?? null,
+    mimeType: input.mimeType ?? null,
     status: input.status ?? "waiting",
     category: input.category,
     title: input.title,
-    description: input.description,
-    mediaDate: input.mediaDate,
-    posterUrl: input.posterUrl,
-    customPosterPath: input.customPosterPath,
-    durationSeconds: input.durationSeconds,
-    aspectRatio: input.aspectRatio,
-    captionsUrl: input.captionsUrl,
-    transcript: input.transcript,
-    chaptersJson: input.chaptersJson,
-    isPublished: input.isPublished,
-    isPrivate: input.isPrivate,
-    sortOrder: input.sortOrder,
-    storyMomentId: input.storyMomentId,
-    placementKey: input.placementKey,
-    errorMessage: input.errorMessage,
+    description: input.description ?? "",
+    mediaDate: input.mediaDate ?? null,
+    posterUrl: input.posterUrl ?? null,
+    customPosterPath: input.customPosterPath ?? null,
+    durationSeconds: input.durationSeconds ?? null,
+    aspectRatio: input.aspectRatio ?? null,
+    captionsUrl: input.captionsUrl ?? null,
+    transcript: input.transcript ?? "",
+    chaptersJson: input.chaptersJson ?? [],
+    isPublished: input.isPublished ?? false,
+    isPrivate: input.isPrivate ?? false,
+    sortOrder: input.sortOrder ?? 0,
+    storyMomentId: input.storyMomentId ?? null,
+    placementKey: input.placementKey ?? null,
+    errorMessage: input.errorMessage ?? null,
     createdAt: now,
     updatedAt: now,
-    createdBy: input.createdBy,
+    createdBy: input.createdBy ?? null,
   };
 
   const assets = await readAll();
@@ -106,7 +152,25 @@ export async function createMediaAsset(
 
 export async function updateMediaAsset(
   id: string,
-  patch: UpdateMediaInput & Partial<Pick<MediaAsset, "muxAssetId" | "muxPlaybackId" | "muxUploadId" | "durationSeconds" | "aspectRatio" | "errorMessage" | "posterUrl">>,
+  patch: UpdateMediaInput &
+    Partial<
+      Pick<
+        MediaAsset,
+        | "muxAssetId"
+        | "muxPlaybackId"
+        | "muxUploadId"
+        | "durationSeconds"
+        | "aspectRatio"
+        | "errorMessage"
+        | "posterUrl"
+        | "storagePath"
+        | "publicUrl"
+        | "width"
+        | "height"
+        | "mimeType"
+        | "kind"
+      >
+    >,
 ): Promise<MediaAsset | null> {
   const assets = await readAll();
   const index = assets.findIndex((asset) => asset.id === id);
@@ -134,4 +198,26 @@ export async function findByUploadId(uploadId: string): Promise<MediaAsset | nul
 export async function findByMuxAssetId(muxAssetId: string): Promise<MediaAsset | null> {
   const assets = await readAll();
   return assets.find((asset) => asset.muxAssetId === muxAssetId) ?? null;
+}
+
+export async function writeUploadFile(
+  assetId: string,
+  extension: string,
+  bytes: Buffer,
+): Promise<string> {
+  await ensureStore();
+  const filename = `${assetId}.${extension.replace(/^\./, "")}`;
+  const fullPath = path.join(UPLOADS_DIR, filename);
+  await fs.writeFile(fullPath, bytes);
+  return filename;
+}
+
+export async function readUploadFile(
+  storagePath: string,
+): Promise<Buffer | null> {
+  try {
+    return await fs.readFile(path.join(UPLOADS_DIR, storagePath));
+  } catch {
+    return null;
+  }
 }

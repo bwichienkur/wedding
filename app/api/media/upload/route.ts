@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getSectionPlacement } from "@/data/section-media";
 import { createDirectUpload, isMuxConfigured } from "@/lib/media/mux";
 import { createMediaAsset } from "@/lib/media/store";
 import { createUploadSchema } from "@/lib/media/types";
@@ -36,14 +37,36 @@ export async function POST(request: Request) {
     );
   }
 
+  const placementKey = parsed.data.placementKey ?? null;
+  const placement = placementKey ? getSectionPlacement(placementKey) : null;
+  if (placement && !placement.accepts.includes("video")) {
+    return NextResponse.json(
+      { error: "This section only accepts photos. Use photo upload instead." },
+      { status: 400 },
+    );
+  }
+
+  const category = placement?.defaultCategory ?? parsed.data.category;
+  const storyMomentId =
+    parsed.data.storyMomentId ?? placement?.storyMomentId ?? null;
+
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL ||
     request.headers.get("origin") ||
     "http://localhost:3000";
 
   const draft = await createMediaAsset({
+    kind: "video",
     muxUploadId: null,
-    category: parsed.data.category,
+    storagePath: null,
+    publicUrl: null,
+    alt: "",
+    width: null,
+    height: null,
+    focalX: null,
+    focalY: null,
+    mimeType: null,
+    category,
     title: parsed.data.title,
     description: parsed.data.description ?? "",
     mediaDate: parsed.data.mediaDate ?? null,
@@ -57,8 +80,8 @@ export async function POST(request: Request) {
     isPublished: false,
     isPrivate: parsed.data.isPrivate ?? false,
     sortOrder: 0,
-    storyMomentId: parsed.data.storyMomentId ?? null,
-    placementKey: parsed.data.placementKey ?? null,
+    storyMomentId,
+    placementKey,
     errorMessage: null,
     createdBy: "admin",
     status: "waiting",

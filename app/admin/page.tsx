@@ -39,7 +39,7 @@ export default async function AdminHomePage() {
             href="/admin/media"
             className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
           >
-            Media management
+            Media — photos & videos by section
           </Link>
         </li>
         <li>

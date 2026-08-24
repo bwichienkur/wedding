@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const mediaKindSchema = z.enum(["video", "image"]);
+
 export const mediaCategorySchema = z.enum([
   "proposal_teaser",
   "proposal_highlight",
@@ -7,6 +9,8 @@ export const mediaCategorySchema = z.enum([
   "relationship_memory",
   "background_atmosphere",
   "post_wedding_film",
+  "section_photo",
+  "section_video",
 ]);
 
 export const mediaStatusSchema = z.enum([
@@ -20,9 +24,20 @@ export const mediaStatusSchema = z.enum([
 
 export const mediaAssetSchema = z.object({
   id: z.string().uuid(),
+  kind: mediaKindSchema.default("video"),
   muxAssetId: z.string().nullable(),
   muxPlaybackId: z.string().nullable(),
   muxUploadId: z.string().nullable(),
+  /** Relative path under .data/uploads for local image files */
+  storagePath: z.string().nullable().default(null),
+  /** Public URL path for images, e.g. /api/media/file/<id> */
+  publicUrl: z.string().nullable().default(null),
+  alt: z.string().max(300).default(""),
+  width: z.number().int().positive().nullable().default(null),
+  height: z.number().int().positive().nullable().default(null),
+  focalX: z.number().min(0).max(100).nullable().default(null),
+  focalY: z.number().min(0).max(100).nullable().default(null),
+  mimeType: z.string().nullable().default(null),
   status: mediaStatusSchema,
   category: mediaCategorySchema,
   title: z.string().min(1).max(160),
@@ -61,6 +76,7 @@ export const createUploadSchema = z.object({
   storyMomentId: z.string().optional(),
   placementKey: z.string().optional(),
   mediaDate: z.string().optional(),
+  kind: mediaKindSchema.optional().default("video"),
 });
 
 export const updateMediaSchema = z.object({
@@ -77,8 +93,13 @@ export const updateMediaSchema = z.object({
   storyMomentId: z.string().nullable().optional(),
   placementKey: z.string().nullable().optional(),
   status: mediaStatusSchema.optional(),
+  alt: z.string().max(300).optional(),
+  focalX: z.number().min(0).max(100).nullable().optional(),
+  focalY: z.number().min(0).max(100).nullable().optional(),
+  kind: mediaKindSchema.optional(),
 });
 
+export type MediaKind = z.infer<typeof mediaKindSchema>;
 export type MediaCategory = z.infer<typeof mediaCategorySchema>;
 export type MediaStatus = z.infer<typeof mediaStatusSchema>;
 export type MediaAsset = z.infer<typeof mediaAssetSchema>;
@@ -92,4 +113,16 @@ export const MEDIA_CATEGORY_LABELS: Record<MediaCategory, string> = {
   relationship_memory: "Relationship memory",
   background_atmosphere: "Background atmosphere",
   post_wedding_film: "Post-wedding film",
+  section_photo: "Section photo",
+  section_video: "Section video",
 };
+
+export const IMAGE_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+]);
+
+export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;

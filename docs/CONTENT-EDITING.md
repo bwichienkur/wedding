@@ -6,7 +6,8 @@ Public wedding copy and logistics live in typed files under `data/`. Presentatio
 
 | File | Edit for |
 |------|----------|
-| `data/hero-slides.ts` | Homepage photo carousel (replace placeholders with real photos) |
+| `data/hero-slides.ts` | Homepage photo carousel fallbacks (admin uploads override when published) |
+| `data/section-media.ts` | Admin placement keys for section photo/video uploads |
 | `data/wedding.ts` | Names, date, venue facts, hero/closing copy, feature flags, site mode |
 | `data/story.ts` | Relationship milestones and perspectives |
 | `data/schedule.ts` | Wedding-day timeline |
@@ -33,5 +34,10 @@ Public wedding copy and logistics live in typed files under `data/`. Presentatio
 
 ## Media & RSVP
 
-- Videos: upload in `/admin/media` (see `docs/MUX-SETUP.md`)
+- **Photos & videos by section:** `/admin/media` — pick a page section (hero, story milestones, gallery, proposal, venue layers, party, closing), upload a photo (local) or video (Mux), then publish.
+- Placement catalog: `data/section-media.ts`
+- Photos are stored under `.data/uploads/` and served at `/api/media/file/<id>` (ephemeral on serverless — use Blob/CDN later for durable production photos).
+- Videos: Mux direct upload (see `docs/MUX-SETUP.md`)
 - Guests: manage via `/admin/rsvp` after production DB migration (see `docs/RSVP.md`)
+
+Repo image files under `public/images` and `data/hero-slides.ts` / `data/story.ts` remain the fallback when no published upload is assigned.

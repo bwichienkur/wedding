@@ -2,12 +2,12 @@
 
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
-import { venue } from "@/data/venue";
+import type { VenueInfo } from "@/data/logistics-types";
 import { cn } from "@/lib/cn";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-export function VenueSection() {
+export function VenueSection({ venue }: { venue: VenueInfo }) {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);

@@ -23,6 +23,9 @@ export default async function AdminMediaPage() {
             Administration
           </p>
           <h1 className="mt-2 font-display text-4xl text-forest">Media</h1>
+          <p className="mt-2 max-w-prose text-sm text-ink-muted">
+            Upload photos and videos to each section of the wedding page.
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <Link

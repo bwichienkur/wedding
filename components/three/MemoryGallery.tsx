@@ -3,7 +3,7 @@
 import { GoldenThread } from "@/components/story/GoldenThread";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
-import { memoryGallery, type MemoryCard } from "@/data/memories";
+import type { MemoryCard } from "@/data/memories";
 import { wedding } from "@/data/wedding";
 import { useExperienceCapabilities } from "@/lib/three/useExperienceCapabilities";
 import dynamic from "next/dynamic";
@@ -25,13 +25,15 @@ const MemoryGalleryCanvas = dynamic(
 );
 
 function MemoryTimelineFallback({
+  cards,
   onOpen,
 }: {
+  cards: MemoryCard[];
   onOpen?: (card: MemoryCard) => void;
 }) {
   return (
     <ol className="space-y-8">
-      {memoryGallery.map((card) => (
+      {cards.map((card) => (
         <li
           key={card.id}
           className="grid gap-4 md:grid-cols-[160px_1fr] md:items-center"
@@ -153,7 +155,7 @@ function MemoryDialog({
   );
 }
 
-export function MemoryGallerySection() {
+export function MemoryGallerySection({ cards }: { cards: MemoryCard[] }) {
   const capabilities = useExperienceCapabilities();
   const [selected, setSelected] = useState<MemoryCard | null>(null);
   const [forceSimple, setForceSimple] = useState(false);
@@ -164,7 +166,7 @@ export function MemoryGallerySection() {
     !forceSimple;
 
   function openById(id: string) {
-    const card = memoryGallery.find((item) => item.id === id) ?? null;
+    const card = cards.find((item) => item.id === id) ?? null;
     setSelected(card);
   }
 
@@ -194,10 +196,13 @@ export function MemoryGallerySection() {
             chapter="gallery"
             className="pointer-events-none absolute inset-x-0 top-6 h-20 w-full opacity-55"
           />
-          <MemoryGalleryCanvas onSelect={openById} />
+          <MemoryGalleryCanvas cards={cards} onSelect={openById} />
         </div>
       ) : (
-        <MemoryTimelineFallback onOpen={(card) => setSelected(card)} />
+        <MemoryTimelineFallback
+          cards={cards}
+          onOpen={(card) => setSelected(card)}
+        />
       )}
 
       {selected ? (

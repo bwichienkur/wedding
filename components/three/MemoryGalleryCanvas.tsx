@@ -2,13 +2,15 @@
 
 import { CanvasShell } from "@/components/three/CanvasShell";
 import { MemoryGalleryScene } from "@/components/three/MemoryGalleryScene";
-import { memoryGallery } from "@/data/memories";
+import type { MemoryCard } from "@/data/memories";
 import { useExperienceCapabilities } from "@/lib/three/useExperienceCapabilities";
 import { useEffect, useRef, useState } from "react";
 
 export function MemoryGalleryCanvas({
+  cards,
   onSelect,
 }: {
+  cards: MemoryCard[];
   onSelect: (id: string) => void;
 }) {
   const capabilities = useExperienceCapabilities();
@@ -49,7 +51,7 @@ export function MemoryGalleryCanvas({
         camera={{ position: [0, 0, 3.4], fov: 42 }}
       >
         <MemoryGalleryScene
-          cards={memoryGallery}
+          cards={cards}
           scrollProgress={capabilities.reducedMotion ? 0.35 : scrollProgress}
           reducedMotion={capabilities.reducedMotion}
           onSelect={onSelect}

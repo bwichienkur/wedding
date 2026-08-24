@@ -2,6 +2,7 @@
 
 import { HeroCarousel } from "@/components/sections/HeroCarousel";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import type { HeroSlide } from "@/data/hero-slides";
 import { rsvpNav } from "@/data/navigation";
 import { wedding, weddingLocationLine } from "@/data/wedding";
 import { cn } from "@/lib/cn";
@@ -16,7 +17,7 @@ import { motion, useReducedMotion } from "motion/react";
 /**
  * Editorial hero — parallax photo, staggered typography, scroll cue.
  */
-export function Hero() {
+export function Hero({ slides }: { slides: HeroSlide[] }) {
   const countdown = useWeddingCountdown();
   const reduceMotion = useReducedMotion();
 
@@ -26,7 +27,7 @@ export function Hero() {
       className="relative flex min-h-[100svh] items-end overflow-hidden bg-forest"
       aria-labelledby="hero-title"
     >
-      <HeroCarousel editorial />
+      <HeroCarousel editorial slides={slides} />
 
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-5 pb-24 pt-32 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10">
         <motion.div

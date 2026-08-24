@@ -1,8 +1,8 @@
 import { Section } from "@/components/ui/Section";
-import { weddingParty } from "@/data/party";
+import type { WeddingPartyMember } from "@/data/logistics-types";
 import { cn } from "@/lib/cn";
 
-export function PartySection() {
+export function PartySection({ members }: { members: WeddingPartyMember[] }) {
   return (
     <Section
       id="party"
@@ -11,7 +11,7 @@ export function PartySection() {
       description="An editorial introduction to the people celebrating with Bright and Lexi. Names and photographs remain placeholders until supplied."
     >
       <div className="space-y-16">
-        {weddingParty.map((member, index) => {
+        {members.map((member, index) => {
           const reverse = index % 2 === 1;
           return (
             <article
