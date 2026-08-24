@@ -7,7 +7,7 @@
 3. Framework preset: **Next.js** (auto-detected). Build command: `npm run build`. Install: `npm ci`.
 4. Add environment variables from `.env.example` (Production + Preview):
    - `NEXT_PUBLIC_SITE_URL` → your Vercel URL or custom domain
-   - `WEDDING_ADMIN_PASSWORD`, `WEDDING_ADMIN_SESSION_SECRET`, `RSVP_SESSION_SECRET` (required before sharing publicly)
+   - `WEDDING_ADMIN_PASSWORD`, `WEDDING_ADMIN_SESSION_SECRET`, `BLOB_READ_WRITE_TOKEN`, `RSVP_SESSION_SECRET` (required before sharing publicly)
    - Mux / Resend vars when video and email are ready
 5. Deploy. Every push to **`main`** triggers a production deployment; PRs get preview URLs.
 
@@ -45,6 +45,7 @@ See [`docs/TESTING.md`](./TESTING.md).
 | `NEXT_PUBLIC_SITE_URL` | Absolute links, CORS for Mux uploads |
 | `WEDDING_ADMIN_PASSWORD` | Production admin lock |
 | `WEDDING_ADMIN_SESSION_SECRET` | Signed admin sessions |
+| `BLOB_READ_WRITE_TOKEN` | Persistent photo uploads (Vercel Blob) |
 | `RSVP_SESSION_SECRET` | Household RSVP sessions |
 | `MUX_TOKEN_ID` / `MUX_TOKEN_SECRET` | Video uploads |
 | `MUX_WEBHOOK_SECRET` | Webhook verification |
@@ -54,7 +55,9 @@ See [`docs/TESTING.md`](./TESTING.md).
 
 ## Persistence note
 
-File-backed `.data/*.json` stores are for local development only. For production RSVP and media metadata, migrate to Supabase using `supabase/migrations/` before relying on guest data in production.
+Photo uploads and media metadata use **Vercel Blob** in production when `BLOB_READ_WRITE_TOKEN` is set (Vercel → Storage → Blob → Connect to project). Without it, uploads on Vercel are ephemeral and will not persist.
+
+File-backed `.data/*.json` stores work for local development only. For production RSVP data, migrate to Supabase using `supabase/migrations/` before relying on guest data in production.
 
 ## Post-deploy smoke test
 

@@ -4,31 +4,35 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { getSectionPlacement } from "@/data/section-media";
 import {
   createMediaAsset,
+  isBlobStorageEnabled,
   updateMediaAsset,
-  writeUploadFile,
+  writeUploadFileWithUrl,
 } from "@/lib/media/store";
 import {
-  IMAGE_MIME_TYPES,
-  MAX_IMAGE_BYTES,
-  type MediaCategory,
-} from "@/lib/media/types";
+  extensionForMime,
+  isHeicFile,
+  resolveImageMime,
+} from "@/lib/media/image-upload";
+import { MAX_IMAGE_BYTES, type MediaCategory } from "@/lib/media/types";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-
-function extensionForMime(mime: string): string {
-  if (mime === "image/png") return "png";
-  if (mime === "image/webp") return "webp";
-  if (mime === "image/gif") return "gif";
-  if (mime === "image/avif") return "avif";
-  return "jpg";
-}
 
 export async function POST(request: Request) {
   try {
     await requireAdmin();
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (process.env.NODE_ENV === "production" && !isBlobStorageEnabled()) {
+    return NextResponse.json(
+      {
+        error:
+          "Photo storage is not configured for production. Add BLOB_READ_WRITE_TOKEN in Vercel (Storage → Blob), redeploy, then try again.",
+      },
+      { status: 503 },
+    );
   }
 
   let form: FormData;
@@ -43,9 +47,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing image file." }, { status: 400 });
   }
 
-  if (!IMAGE_MIME_TYPES.has(file.type)) {
+  const mimeType = resolveImageMime(file);
+  if (!mimeType) {
+    if (isHeicFile(file)) {
+      return NextResponse.json(
+        {
+          error:
+            "HEIC photos from iPhone are not supported yet. Change Settings → Camera → Formats → Most Compatible, or export the photo as JPEG before uploading.",
+        },
+        { status: 400 },
+      );
+    }
     return NextResponse.json(
-      { error: "Unsupported image type. Use JPEG, PNG, WebP, GIF, or AVIF." },
+      {
+        error:
+          "Unsupported image type. Use JPEG, PNG, WebP, GIF, or AVIF.",
+      },
       { status: 400 },
     );
   }
@@ -86,7 +103,7 @@ export async function POST(request: Request) {
     height: null,
     focalX: 50,
     focalY: 40,
-    mimeType: file.type,
+    mimeType,
     category,
     title,
     description,
@@ -108,9 +125,13 @@ export async function POST(request: Request) {
     status: "ready",
   });
 
-  const extension = extensionForMime(file.type);
-  const storagePath = await writeUploadFile(asset.id, extension, bytes);
-  const publicUrl = `/api/media/file/${asset.id}`;
+  const extension = extensionForMime(mimeType);
+  const { storagePath, publicUrl } = await writeUploadFileWithUrl(
+    asset.id,
+    extension,
+    bytes,
+    mimeType,
+  );
 
   const updated = await updateMediaAsset(asset.id, {
     storagePath,
