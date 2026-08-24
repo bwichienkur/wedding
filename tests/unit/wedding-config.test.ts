@@ -16,6 +16,11 @@ describe("wedding config", () => {
     expect(wedding.proposal.dateIsPlaceholder).toBe(true);
     expect(weddingLocationLine()).toContain("Lake Wales");
   });
+
+  it("defaults to flat SVG thread language (no metallic 3D)", () => {
+    expect(wedding.featureFlags.threeMonogram).toBe(false);
+    expect(wedding.featureFlags.floatingGallery).toBe(false);
+  });
 });
 
 describe("story milestones", () => {

@@ -28,44 +28,58 @@ interface GoldenThreadProps {
   decorative?: boolean;
 }
 
+/**
+ * Hairline filament paths — editorial ink/embroidery, not extruded metal.
+ * Keep strokes thin; avoid thick “pipe” curves.
+ */
 const PATHS: Record<
   ThreadChapter,
   { single: string; bright?: string; lexi?: string }
 > = {
   entry: {
-    single: "M20 70 C90 20, 170 120, 250 70 S410 20, 480 70",
+    single: "M40 88 C140 48, 220 118, 320 78 S480 42, 560 82",
   },
   hero: {
-    single: "M0 90 C120 40, 220 130, 340 80 S520 30, 640 95",
+    single: "M0 88 C110 52, 200 118, 310 78 S470 42, 600 90 S700 108, 760 86",
   },
   story: {
     single:
-      "M40 20 C60 120, 20 220, 48 320 S20 480, 52 600 S24 760, 48 900 S30 1040, 40 1180",
+      "M40 16 C54 110, 28 210, 44 310 S28 470, 46 590 S30 750, 42 890 S34 1030, 40 1160",
     bright:
-      "M28 20 C18 140, 8 260, 22 380 S10 560, 26 720 S12 920, 24 1100",
+      "M30 16 C22 130, 16 250, 28 380 S18 560, 30 720 S20 920, 28 1100",
     lexi:
-      "M52 20 C72 140, 88 260, 74 380 S90 560, 70 720 S92 920, 60 1100",
+      "M50 16 C64 130, 74 250, 60 380 S74 560, 58 720 S72 920, 54 1100",
   },
   gallery: {
-    single: "M30 40 C120 80, 60 160, 150 210 S80 320, 180 380",
+    single: "M40 36 C120 72, 80 150, 160 190 S100 300, 200 360",
   },
   proposal: {
-    single: "M40 100 C160 40, 280 160, 400 100 S560 40, 680 110",
-    bright: "M40 40 C180 60, 260 20, 360 90 C460 160, 520 120, 680 110",
-    lexi: "M40 160 C180 140, 260 190, 360 110 C460 40, 540 90, 680 110",
+    single: "M48 100 C180 56, 280 140, 400 100 S540 56, 680 104",
+    bright: "M48 52 C170 64, 260 44, 360 92 C430 124, 520 110, 680 104",
+    lexi: "M48 148 C170 136, 260 158, 360 108 C430 76, 540 96, 680 104",
   },
   wedding: {
-    single: "M20 80 C140 40, 200 120, 320 70 S480 20, 620 90 S740 140, 780 100",
+    single: "M24 82 C130 48, 210 112, 320 72 S470 36, 600 88 S700 122, 760 96",
   },
   closing: {
     single:
-      "M40 100 C160 40, 260 140, 360 80 S500 20, 560 70 C600 95, 620 110, 640 120",
+      "M48 96 C150 52, 250 128, 360 84 S490 40, 560 72 C600 92, 628 112, 652 122",
   },
+};
+
+const STROKE: Record<ThreadChapter, { single: number; split: number }> = {
+  entry: { single: 1.15, split: 1 },
+  hero: { single: 1.1, split: 1 },
+  story: { single: 1.25, split: 1.05 },
+  gallery: { single: 1.1, split: 1 },
+  proposal: { single: 1.2, split: 1.05 },
+  wedding: { single: 1.1, split: 1 },
+  closing: { single: 1.15, split: 1 },
 };
 
 /**
  * Editorial antique-gold filament.
- * SVG-first — refined curves, not a progress bar or decorative squiggle.
+ * SVG hairline — refined curves, not a progress bar or metallic tube.
  */
 export function GoldenThread({
   chapter = "story",
@@ -77,8 +91,11 @@ export function GoldenThread({
   const reduceMotion = useReducedMotion();
   const gradientId = useId().replace(/:/g, "");
   const paths = PATHS[chapter];
+  const stroke = STROKE[chapter];
   const drawProgress =
-    reduceMotion || progress === undefined ? 1 : Math.min(1, Math.max(0, progress));
+    reduceMotion || progress === undefined
+      ? 1
+      : Math.min(1, Math.max(0, progress));
 
   const strokeStyle = {
     strokeDasharray: 1,
@@ -88,16 +105,24 @@ export function GoldenThread({
   return (
     <svg
       viewBox={chapter === "story" ? "0 0 80 1200" : "0 0 800 200"}
-      preserveAspectRatio={chapter === "story" ? "none" : "xMidYMid meet"}
+      preserveAspectRatio={
+        chapter === "story" ? "xMidYMin meet" : "xMidYMid meet"
+      }
       className={cn("pointer-events-none text-gold", className)}
       aria-hidden={decorative ? true : undefined}
       role={decorative ? "presentation" : "img"}
     >
       <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.25" />
-          <stop offset="45%" stopColor="currentColor" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0.35" />
+        <linearGradient
+          id={gradientId}
+          x1="0%"
+          y1={chapter === "story" ? "0%" : "0%"}
+          x2={chapter === "story" ? "0%" : "100%"}
+          y2={chapter === "story" ? "100%" : "0%"}
+        >
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
+          <stop offset="40%" stopColor="currentColor" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0.28" />
         </linearGradient>
       </defs>
 
@@ -107,21 +132,25 @@ export function GoldenThread({
             d={paths.bright}
             fill="none"
             stroke={`url(#${gradientId})`}
-            strokeWidth="1.35"
+            strokeWidth={stroke.split}
             strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="nonScalingStroke"
             pathLength={1}
             style={strokeStyle}
-            opacity={0.75}
+            opacity={0.8}
           />
           <path
             d={paths.lexi}
             fill="none"
             stroke={`url(#${gradientId})`}
-            strokeWidth="1.35"
+            strokeWidth={stroke.split}
             strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="nonScalingStroke"
             pathLength={1}
             style={strokeStyle}
-            opacity={0.75}
+            opacity={0.8}
           />
         </>
       ) : (
@@ -129,8 +158,10 @@ export function GoldenThread({
           d={paths.single}
           fill="none"
           stroke={`url(#${gradientId})`}
-          strokeWidth="1.5"
+          strokeWidth={stroke.single}
           strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="nonScalingStroke"
           pathLength={1}
           style={strokeStyle}
         />

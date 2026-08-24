@@ -17,7 +17,7 @@ const MemoryGalleryCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[70vh] min-h-[28rem] items-center justify-center bg-parchment/50">
+      <div className="flex h-[50vh] min-h-[20rem] items-center justify-center bg-parchment/50">
         <p className="font-sans text-sm text-ink-muted">Loading gallery…</p>
       </div>
     ),
@@ -38,7 +38,7 @@ function MemoryTimelineFallback({
         >
           <button
             type="button"
-            className="relative aspect-[4/5] overflow-hidden bg-parchment text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="relative aspect-[3/2] overflow-hidden bg-parchment text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold md:aspect-[4/5]"
             onClick={() => onOpen?.(card)}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -172,25 +172,27 @@ export function MemoryGallerySection() {
     <Section
       id="gallery"
       eyebrow="Memories"
-      title="Floating moments"
-      description="Selected photographs along the golden thread. A spatial gallery when your device allows — a calm timeline when it does not."
+      title="Moments along the thread"
+      description="Selected photographs from Bright and Lexi’s story — a calm timeline you can browse at your own pace."
       className="bg-parchment/40"
     >
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        <Button
-          variant="secondary"
-          aria-pressed={forceSimple || !use3d}
-          onClick={() => setForceSimple((value) => !value)}
-        >
-          {use3d ? "Use simplified gallery" : "Simplified gallery on"}
-        </Button>
-      </div>
+      {wedding.featureFlags.floatingGallery ? (
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <Button
+            variant="secondary"
+            aria-pressed={forceSimple || !use3d}
+            onClick={() => setForceSimple((value) => !value)}
+          >
+            {use3d ? "Use simplified gallery" : "Simplified gallery on"}
+          </Button>
+        </div>
+      ) : null}
 
       {use3d ? (
         <div className="relative">
           <GoldenThread
             chapter="gallery"
-            className="pointer-events-none absolute inset-x-0 top-6 h-24 w-full opacity-70"
+            className="pointer-events-none absolute inset-x-0 top-6 h-20 w-full opacity-55"
           />
           <MemoryGalleryCanvas onSelect={openById} />
         </div>

@@ -94,8 +94,9 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
               d="M40 90 C160 40, 280 130, 400 80 S640 30, 760 90"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.25"
+              strokeWidth="1.1"
               strokeLinecap="round"
+              vectorEffect="nonScalingStroke"
               initial={
                 reduceMotion
                   ? { pathLength: 1, opacity: 0.7 }

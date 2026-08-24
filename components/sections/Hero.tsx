@@ -14,19 +14,17 @@ const MonogramExperience = dynamic(
     import("@/components/three/MonogramExperience").then(
       (mod) => mod.MonogramExperience,
     ),
-  {
-    ssr: false,
-    loading: () => <MonogramSvg className="h-28 w-28 sm:h-32 sm:w-32" />,
-  },
+  { ssr: false },
 );
 
 export function Hero() {
   const countdown = useWeddingCountdown();
+  const useDimensionalMonogram = wedding.featureFlags.threeMonogram;
 
   return (
     <section
       id="home"
-      className="relative flex min-h-[100svh] items-end overflow-hidden bg-parchment"
+      className="relative flex min-h-[85svh] items-end overflow-hidden bg-parchment sm:min-h-[100svh]"
       aria-labelledby="hero-title"
     >
       <div className="absolute inset-0">
@@ -41,11 +39,11 @@ export function Hero() {
         />
         <GoldenThread
           chapter="hero"
-          className="absolute inset-x-0 top-[18%] h-40 w-full opacity-60"
+          className="absolute inset-x-0 top-[22%] h-28 w-full opacity-50 sm:top-[18%] sm:h-36 sm:opacity-55"
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-28 sm:px-8 sm:pb-20 lg:flex-row lg:items-end lg:justify-between lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-14 pt-24 sm:px-8 sm:pb-20 sm:pt-28 lg:flex-row lg:items-end lg:justify-between lg:px-10">
         <div className="max-w-xl">
           <p className="mb-4 font-sans text-xs uppercase tracking-[0.28em] text-gold">
             {wedding.wedding.dateDisplay}
@@ -95,7 +93,11 @@ export function Hero() {
         </div>
 
         <div className="flex flex-col items-start gap-6 lg:items-end">
-          <MonogramExperience showDate={false} />
+          {useDimensionalMonogram ? (
+            <MonogramExperience showDate={false} />
+          ) : (
+            <MonogramSvg className="h-28 w-28 sm:h-32 sm:w-32" />
+          )}
           <a
             href="#story"
             className="group inline-flex min-h-11 items-center gap-3 font-sans text-xs uppercase tracking-[0.2em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
