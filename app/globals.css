@@ -254,8 +254,7 @@
   }
 
   /*
-   * Blind-emboss vines along flap edges (transparent relief).
-   * Rest = navy emboss; illumination fades in gold twin — paper stays dark.
+   * Spread filigree along outer flap edges + corners (not seal-hugging diagonals).
    */
   .envelope-design {
     position: absolute;
@@ -265,14 +264,18 @@
     pointer-events: none;
   }
 
+  .envelope-design-mirror {
+    transform: scaleX(-1);
+  }
+
   .envelope-design-emboss {
-    opacity: 1;
-    filter: brightness(1.4) contrast(1.25) saturate(0.92);
+    opacity: 0.92;
+    filter: brightness(1.18) contrast(1.14) saturate(0.88);
     transition: opacity 1.55s ease, filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .envelope-design-glow {
-    opacity: 0.1;
+    opacity: 0.08;
     mix-blend-mode: plus-lighter;
     transition:
       opacity 1.55s cubic-bezier(0.22, 1, 0.36, 1),
@@ -281,16 +284,92 @@
   }
 
   .envelope-shell.is-illuminated .envelope-design-emboss {
-    opacity: 0.28;
+    opacity: 0.3;
     filter: brightness(1.05) contrast(1.05);
   }
 
   .envelope-shell.is-illuminated .envelope-design-glow {
     opacity: 1;
     filter:
-      brightness(1.15)
-      drop-shadow(0 0 12px rgb(232 200 120 / 0.45))
-      drop-shadow(0 0 26px rgb(212 182 92 / 0.3));
+      brightness(1.12)
+      drop-shadow(0 0 10px rgb(232 200 120 / 0.4))
+      drop-shadow(0 0 22px rgb(212 182 92 / 0.28));
+  }
+
+  /* Outer-edge + corner placement per flap */
+  .envelope-ornament-top-edge {
+    left: 12%;
+    right: 12%;
+    top: 1%;
+    height: min(15vmax, 7.5rem);
+  }
+
+  .envelope-ornament-top-left {
+    left: 0.5%;
+    top: 0.5%;
+    width: min(30vmax, 15rem);
+    height: min(30vmax, 15rem);
+  }
+
+  .envelope-ornament-top-right {
+    right: 0.5%;
+    top: 0.5%;
+    width: min(30vmax, 15rem);
+    height: min(30vmax, 15rem);
+  }
+
+  .envelope-ornament-left-edge {
+    left: 0.5%;
+    top: 8%;
+    bottom: 8%;
+    width: min(17vmax, 8.5rem);
+  }
+
+  .envelope-ornament-right-edge {
+    right: 0.5%;
+    top: 8%;
+    bottom: 8%;
+    width: min(17vmax, 8.5rem);
+  }
+
+  .envelope-ornament-bottom-edge {
+    left: 12%;
+    right: 12%;
+    bottom: 1%;
+    height: min(15vmax, 7.5rem);
+  }
+
+  .envelope-ornament-bottom-center {
+    left: 50%;
+    bottom: 1.5%;
+    width: min(42vmax, 21rem);
+    height: min(13vmax, 6.5rem);
+    transform: translateX(-50%);
+  }
+
+  @media (max-aspect-ratio: 3/4) {
+    .envelope-ornament-top-edge,
+    .envelope-ornament-bottom-edge {
+      left: 8%;
+      right: 8%;
+      height: min(13vmax, 6.5rem);
+    }
+
+    .envelope-ornament-top-left,
+    .envelope-ornament-top-right {
+      width: min(26vmax, 13rem);
+      height: min(26vmax, 13rem);
+    }
+
+    .envelope-ornament-left-edge,
+    .envelope-ornament-right-edge {
+      width: min(15vmax, 7.5rem);
+    }
+
+    .envelope-ornament-bottom-center {
+      width: min(38vmax, 19rem);
+      height: min(11vmax, 5.5rem);
+    }
   }
 
   /* Flaps fill the viewport and meet exactly at center — no extra segments */
