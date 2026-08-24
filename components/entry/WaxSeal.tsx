@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { motion } from "motion/react";
 
 interface WaxSealProps {
   open: boolean;
@@ -13,6 +12,7 @@ interface WaxSealProps {
 
 /**
  * Photorealistic wax seal CTA — stock crimson seal with B&L monogram.
+ * Centering stays on a non-animated wrapper so Motion never knocks it off-center.
  */
 export function WaxSeal({
   open,
@@ -22,53 +22,46 @@ export function WaxSeal({
   className,
 }: WaxSealProps) {
   return (
-    <motion.button
-      type="button"
-      onClick={onOpen}
-      disabled={open}
-      aria-label="Open invitation"
+    <div
       className={cn(
         "absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2",
-        "rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ivory",
-        "disabled:cursor-default",
         className,
       )}
-      initial={false}
-      animate={
-        reduceMotion
-          ? { opacity: open ? 0 : 1, scale: 1 }
-          : open
-            ? { opacity: 0, scale: 1.35, y: -28 }
-            : glowing
-              ? { opacity: 1, scale: 1.06, y: 0 }
-              : { opacity: 1, scale: 1, y: 0 }
-      }
-      transition={
-        reduceMotion
-          ? { duration: 0 }
-          : open
-            ? { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
-            : { duration: 0.35, ease: "easeOut" }
-      }
-      whileHover={
-        reduceMotion || open ? undefined : { scale: 1.05 }
-      }
-      whileTap={reduceMotion || open ? undefined : { scale: 0.97 }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/images/wax-seal-bl.webp"
-        alt=""
-        width={160}
-        height={160}
-        draggable={false}
+      <button
+        type="button"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (!open) onOpen();
+        }}
+        disabled={open}
+        aria-label="Open invitation"
         className={cn(
-          "h-[min(22vw,5.75rem)] w-[min(22vw,5.75rem)] sm:h-24 sm:w-24",
-          "select-none drop-shadow-[0_10px_18px_rgba(40,16,18,0.45)]",
-          glowing && !open && !reduceMotion && "brightness-110",
+          "block rounded-full transition-transform duration-300 ease-out",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f3ebe2]",
+          "disabled:cursor-default",
+          !reduceMotion && !open && "hover:scale-105 active:scale-95",
+          open && !reduceMotion && "-translate-y-7 scale-125 opacity-0",
+          open && reduceMotion && "opacity-0",
+          glowing && !open && !reduceMotion && "scale-105",
         )}
-      />
-      <span className="sr-only">Open invitation</span>
-    </motion.button>
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/wax-seal-bl.webp"
+          alt=""
+          width={160}
+          height={160}
+          draggable={false}
+          className={cn(
+            "pointer-events-none h-[min(22vw,5.75rem)] w-[min(22vw,5.75rem)] sm:h-24 sm:w-24",
+            "select-none drop-shadow-[0_10px_18px_rgba(40,16,18,0.45)]",
+            glowing && !open && !reduceMotion && "brightness-110",
+          )}
+        />
+        <span className="sr-only">Open invitation</span>
+      </button>
+    </div>
   );
 }
