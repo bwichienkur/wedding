@@ -266,21 +266,23 @@
   }
 
   .envelope-design-emboss {
-    opacity: 0.92;
+    opacity: 1;
+    filter: brightness(1.28) contrast(1.18) saturate(1.05);
     transition: opacity 1.55s ease, filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .envelope-design-glow {
-    opacity: 0;
+    opacity: 0.12;
     mix-blend-mode: plus-lighter;
     transition:
       opacity 1.55s cubic-bezier(0.22, 1, 0.36, 1),
       filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
-    filter: brightness(0.9);
+    filter: brightness(0.85);
   }
 
   .envelope-shell.is-illuminated .envelope-design-emboss {
-    opacity: 0.35;
+    opacity: 0.28;
+    filter: brightness(1.05) contrast(1.05);
   }
 
   .envelope-shell.is-illuminated .envelope-design-glow {
@@ -336,64 +338,67 @@
       );
   }
 
-  /* Safe zones: larger coverage while keeping motifs inside each triangle */
+  /*
+   * Design boxes intentionally fill most of each flap; the flap clip-path
+   * keeps art from crossing into neighboring flaps.
+   */
   .envelope-design-top {
-    left: 26%;
-    right: 26%;
-    top: 1%;
-    height: 25%;
+    left: 8%;
+    right: 8%;
+    top: 0%;
+    height: 32%;
   }
 
   .envelope-design-bottom {
-    left: 26%;
-    right: 26%;
-    bottom: 1%;
-    height: 25%;
+    left: 8%;
+    right: 8%;
+    bottom: 0%;
+    height: 32%;
   }
 
   .envelope-design-left {
-    top: 23%;
-    bottom: 23%;
-    left: 1%;
-    width: 22%;
+    top: 8%;
+    bottom: 8%;
+    left: 0%;
+    width: 32%;
   }
 
   .envelope-design-right {
-    top: 23%;
-    bottom: 23%;
-    right: 1%;
-    width: 22%;
+    top: 8%;
+    bottom: 8%;
+    right: 0%;
+    width: 32%;
   }
 
   @media (max-aspect-ratio: 3/4) {
     .envelope-design-top,
     .envelope-design-bottom {
-      left: 24%;
-      right: 24%;
-      height: 23%;
+      left: 4%;
+      right: 4%;
+      height: 28%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 22%;
-      bottom: 22%;
-      width: 20%;
+      top: 6%;
+      bottom: 6%;
+      width: 34%;
     }
   }
 
   @media (min-aspect-ratio: 16/10) {
     .envelope-design-top,
     .envelope-design-bottom {
-      left: 28%;
-      right: 28%;
-      height: 27%;
+      left: 12%;
+      right: 12%;
+      height: 36%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 24%;
-      bottom: 24%;
-      width: 18%;
+      top: 10%;
+      bottom: 10%;
+      width: 28%;
     }
   }
 

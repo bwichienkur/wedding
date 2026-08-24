@@ -15,7 +15,7 @@ type FlapSide = "top" | "bottom" | "left" | "right";
 
 /**
  * Full-viewport navy envelope with gold wax seal.
- * Each flap shows a navy blind-emboss floral. On seal open, only that
+ * Each flap shows an extended navy blind-emboss vine. On seal open, only that
  * embossed relief illuminates gold — the paper stays dark.
  */
 export function InvitationEnvelope({
@@ -52,7 +52,7 @@ export function InvitationEnvelope({
           (glowing || open) && "opacity-0",
         )}
       >
-        <p className="font-annotation text-[1.45rem] leading-snug text-[#e8c872] drop-shadow-[0_1px_3px_rgba(8,16,32,0.75)] sm:text-[1.85rem]">
+        <p className="font-display text-[1.35rem] font-medium italic leading-snug tracking-[0.01em] text-[#e8c872] drop-shadow-[0_1px_3px_rgba(8,16,32,0.75)] sm:text-[1.7rem]">
           {wedding.entry.inviteHeadline}
         </p>
         <p className="mt-3 font-sans text-[0.68rem] uppercase tracking-[0.28em] text-[#d4b65c] sm:text-[0.72rem]">
