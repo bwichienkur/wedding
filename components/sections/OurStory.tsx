@@ -49,12 +49,12 @@ function MilestoneCard({
     <article
       id={`story-${milestone.id}`}
       className={cn(
-        "grid items-center gap-8 border-t border-stone/70 py-14 md:grid-cols-12 md:gap-10 md:py-20",
+        "grid items-center gap-6 border-t border-stone/70 py-10 md:grid-cols-12 md:gap-10 md:py-20",
         reverse && "md:[&>*:first-child]:order-2",
       )}
     >
       <div className="md:col-span-5">
-        <div className="relative overflow-hidden bg-parchment aspect-[4/5] md:aspect-[3/4]">
+        <div className="relative aspect-[3/2] overflow-hidden bg-parchment md:aspect-[3/4]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={milestone.image?.src}
@@ -161,12 +161,15 @@ export function OurStory() {
       className="bg-ivory"
     >
       <div className="relative">
+        {/* Mobile: single left-rail filament */}
+        <ScrollScrubbedThread className="pointer-events-none absolute left-1 top-0 w-5 sm:left-2 sm:w-6 md:hidden" />
+        {/* Desktop: split paths meeting through the story */}
         <ScrollScrubbedThread
           split
-          className="pointer-events-none absolute left-3 top-0 hidden w-10 md:left-1/2 md:block md:-translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-0 hidden w-10 -translate-x-1/2 md:block"
         />
 
-        <div className="relative">
+        <div className="relative pl-7 sm:pl-9 md:pl-0">
           {storyMilestones.map((milestone, index) => (
             <MilestoneCard
               key={milestone.id}

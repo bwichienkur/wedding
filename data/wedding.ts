@@ -79,8 +79,9 @@ export const wedding: WeddingConfig = {
   featureFlags: {
     cinematicEntry: true,
     countdown: true,
-    threeMonogram: true,
-    floatingGallery: true,
+    // Flat SVG monogram + hairline thread — metallic TubeGeometry reads as CGI, not filament.
+    threeMonogram: false,
+    floatingGallery: false,
     perspectives: true,
   },
   colors: {

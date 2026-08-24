@@ -8,8 +8,8 @@ export interface MonogramSvgProps {
 }
 
 /**
- * Static monogram fallback — abstract interlaced B & L formed as a golden knot.
- * Used when WebGL is unavailable or reduced-motion is preferred.
+ * Static monogram — interlaced hairline strokes with B & L.
+ * Prefer this over metallic TubeGeometry; reads as print/embroidery, not CGI.
  */
 export function MonogramSvg({
   className,
@@ -33,33 +33,40 @@ export function MonogramSvg({
         r="54"
         fill="none"
         stroke="currentColor"
-        strokeWidth="0.75"
-        opacity="0.55"
+        strokeWidth="0.65"
+        opacity="0.45"
+        vectorEffect="nonScalingStroke"
       />
+      {/* Outer filament — soft loop */}
       <path
-        d="M34 78 C34 42, 52 28, 60 28 C68 28, 78 36, 78 52 C78 68, 68 76, 60 76 C52 76, 46 70, 46 60"
+        d="M36 76 C36 44, 50 30, 60 30 C72 30, 82 40, 82 54 C82 70, 70 78, 60 78 C50 78, 44 70, 44 60"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.75"
+        strokeWidth="1.35"
         strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="nonScalingStroke"
       />
+      {/* Crossing filament */}
       <path
-        d="M42 34 C58 34, 86 46, 86 72 C86 90, 74 98, 60 98 C46 98, 36 90, 36 78"
+        d="M44 36 C58 34, 84 48, 84 72 C84 90, 72 98, 60 98 C48 98, 38 90, 38 78"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.25"
+        strokeWidth="1.05"
         strokeLinecap="round"
-        opacity="0.85"
+        strokeLinejoin="round"
+        opacity="0.8"
+        vectorEffect="nonScalingStroke"
       />
       <text
         x="60"
         y="64"
         textAnchor="middle"
         className="fill-forest font-display"
-        style={{ fontSize: "18px", letterSpacing: "0.12em" }}
+        style={{ fontSize: "17px", letterSpacing: "0.14em" }}
       >
         {b}
-        <tspan dx="2">{l}</tspan>
+        <tspan dx="3">{l}</tspan>
       </text>
     </svg>
   );

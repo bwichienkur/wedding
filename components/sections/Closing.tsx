@@ -15,7 +15,7 @@ export function ClosingSection() {
       <div className="grain absolute inset-0 opacity-20" aria-hidden />
       <GoldenThread
         chapter="closing"
-        className="pointer-events-none absolute inset-x-0 top-10 h-32 w-full text-gold-soft opacity-50"
+        className="pointer-events-none absolute inset-x-0 top-10 h-28 w-full text-gold-soft opacity-40 sm:h-32 sm:opacity-45"
       />
       <div className="relative mx-auto max-w-3xl text-center">
         <MonogramSvg className="mx-auto mb-8 h-20 w-20 text-gold-soft" />

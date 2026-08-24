@@ -1,49 +1,144 @@
 "use client";
 
-import { GoldenThread } from "@/components/story/GoldenThread";
 import { Section } from "@/components/ui/Section";
 import { ProposalFilmExperience } from "@/components/video/ProposalFilmExperience";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
-import { useExperienceCapabilities } from "@/lib/three/useExperienceCapabilities";
-import dynamic from "next/dynamic";
-import { useId, useState } from "react";
+import { useReducedMotion } from "motion/react";
+import { useId } from "react";
 
-const ConvergenceCanvas = dynamic(
-  () =>
-    import("@/components/three/ConvergenceCanvas").then(
-      (mod) => mod.ConvergenceCanvas,
-    ),
-  {
-    ssr: false,
-    loading: () => <ConvergenceSvgFallback progress={1} />,
-  },
-);
+/**
+ * Two hairline paths weaving into one — ink/embroidery, not CGI tubing.
+ */
+function ProposalThreadConvergence() {
+  const reduceMotion = useReducedMotion();
+  const gradientId = useId().replace(/:/g, "");
 
-function ConvergenceSvgFallback({ progress }: { progress: number }) {
   return (
-    <div className="relative mx-auto flex h-64 max-w-3xl items-center justify-center sm:h-80">
-      <GoldenThread
-        chapter="proposal"
-        split={progress < 0.7}
-        progress={progress}
-        className="h-full w-full"
-      />
-      <div
-        className="absolute right-[12%] top-1/2 h-28 w-44 -translate-y-1/2 border border-gold/70 bg-parchment/90 sm:h-36 sm:w-56"
-        aria-hidden
-      />
+    <div className="relative mx-auto w-full max-w-3xl px-2">
+      <svg
+        viewBox="0 0 720 220"
+        preserveAspectRatio="xMidYMid meet"
+        className="h-48 w-full text-gold sm:h-56"
+        role="img"
+        aria-label="Two golden threads weaving into one"
+      >
+        <title>Two golden threads weaving into one</title>
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.22" />
+            <stop offset="45%" stopColor="currentColor" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0.35" />
+          </linearGradient>
+        </defs>
+
+        {/* Bright’s path */}
+        <path
+          d="M28 48 C150 58, 240 40, 330 92 C390 124, 450 112, 510 104"
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          vectorEffect="nonScalingStroke"
+          pathLength={1}
+          style={
+            reduceMotion
+              ? undefined
+              : { strokeDasharray: 1, strokeDashoffset: 0 }
+          }
+        >
+          {reduceMotion ? null : (
+            <animate
+              attributeName="stroke-dashoffset"
+              from="1"
+              to="0"
+              dur="1.6s"
+              fill="freeze"
+              calcMode="spline"
+              keySplines="0.4 0 0.2 1"
+            />
+          )}
+        </path>
+
+        {/* Lexi’s path */}
+        <path
+          d="M28 172 C150 162, 240 178, 330 118 C390 84, 450 96, 510 104"
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          vectorEffect="nonScalingStroke"
+          pathLength={1}
+          style={
+            reduceMotion
+              ? undefined
+              : { strokeDasharray: 1, strokeDashoffset: 0 }
+          }
+        >
+          {reduceMotion ? null : (
+            <animate
+              attributeName="stroke-dashoffset"
+              from="1"
+              to="0"
+              dur="1.6s"
+              begin="0.15s"
+              fill="freeze"
+              calcMode="spline"
+              keySplines="0.4 0 0.2 1"
+            />
+          )}
+        </path>
+
+        {/* United filament */}
+        <path
+          d="M510 104 C560 98, 600 108, 648 104"
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeWidth="1.35"
+          strokeLinecap="round"
+          vectorEffect="nonScalingStroke"
+          pathLength={1}
+        />
+
+        {/* Soft meeting node — embroidery knot, not a metal ball */}
+        <circle
+          cx="510"
+          cy="104"
+          r="2.25"
+          fill="currentColor"
+          opacity="0.85"
+        />
+
+        {/* Quiet photo frame — line, not a floating 3D slab */}
+        <rect
+          x="560"
+          y="58"
+          width="120"
+          height="92"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.9"
+          opacity="0.55"
+          vectorEffect="nonScalingStroke"
+        />
+        <rect
+          x="568"
+          y="66"
+          width="104"
+          height="76"
+          fill="currentColor"
+          opacity="0.06"
+        />
+      </svg>
+      <p className="mt-3 text-center font-sans text-xs text-ink-muted">
+        Proposal photograph coming soon
+      </p>
     </div>
   );
 }
 
 export function ProposalConvergenceSection() {
-  const capabilities = useExperienceCapabilities();
-  const [forceSimple, setForceSimple] = useState(false);
   const headingId = useId();
-
-  const use3d =
-    capabilities.webgl && !capabilities.simplified && !forceSimple;
 
   return (
     <Section
@@ -80,19 +175,7 @@ export function ProposalConvergenceSection() {
         </p>
       </header>
 
-      <div className="mb-4">
-        <button
-          type="button"
-          className="min-h-11 rounded-sm border border-stone px-3 font-sans text-xs uppercase tracking-[0.14em] text-ink-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          onClick={() => setForceSimple((value) => !value)}
-          aria-pressed={!use3d}
-        >
-          {use3d ? "Use simplified transition" : "Simplified transition on"}
-        </button>
-      </div>
-
-      {use3d ? <ConvergenceCanvas /> : <ConvergenceSvgFallback progress={1} />}
-
+      <ProposalThreadConvergence />
       <ProposalFilmExperience />
     </Section>
   );

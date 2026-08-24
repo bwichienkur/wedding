@@ -21,7 +21,7 @@ export function WeddingDaySection() {
       className="bg-parchment/60"
     >
       <div className="relative mb-12">
-        <GoldenThread chapter="wedding" className="h-24 w-full opacity-80" />
+        <GoldenThread chapter="wedding" className="h-20 w-full opacity-55 sm:h-24" />
         <p className="mt-4 font-sans text-xs uppercase tracking-[0.18em] text-ink-muted">
           The golden thread becomes the day’s route
         </p>
