@@ -122,3 +122,48 @@ export function GoldBud({ cx, cy, r = 0.45 }: { cx: number; cy: number; r?: numb
     </>
   );
 }
+
+/** Closed rosebud matching embossed filigree artwork. */
+export function EmbossedRosebud({
+  cx,
+  cy,
+  scale = 1,
+  goldAccent = false,
+}: {
+  cx: number;
+  cy: number;
+  scale?: number;
+  goldAccent?: boolean;
+}) {
+  const d = `M 0 0 C ${0.5 * scale} ${-0.9 * scale}, ${1.3 * scale} ${-0.6 * scale}, ${1.3 * scale} ${0.1 * scale} C ${1.3 * scale} ${0.75 * scale}, ${0.65 * scale} ${1.15 * scale}, 0 ${0.95 * scale} C ${-0.65 * scale} ${1.15 * scale}, ${-1.3 * scale} ${0.75 * scale}, ${-1.3 * scale} ${0.1 * scale} C ${-1.3 * scale} ${-0.6 * scale}, ${-0.5 * scale} ${-0.9 * scale}, 0 0 Z`;
+  return (
+    <g transform={`translate(${cx} ${cy})`}>
+      <EmbossedPath
+        d={d}
+        strokeWidth={0.12}
+        fill={VINE_COLORS.base}
+        goldAccent={goldAccent}
+      />
+    </g>
+  );
+}
+
+/** Tight curling tendril spiral. */
+export function EmbossedSpiral({
+  cx,
+  cy,
+  scale = 1,
+  rotation = 0,
+}: {
+  cx: number;
+  cy: number;
+  scale?: number;
+  rotation?: number;
+}) {
+  const d = `M 0 0 C ${0.8 * scale} ${-0.2 * scale}, ${1.1 * scale} ${0.4 * scale}, ${0.6 * scale} ${0.9 * scale} C ${0.1 * scale} ${1.3 * scale}, ${-0.7 * scale} ${0.9 * scale}, ${-0.6 * scale} ${0.2 * scale}`;
+  return (
+    <g transform={`translate(${cx} ${cy}) rotate(${rotation})`}>
+      <EmbossedPath d={d} strokeWidth={0.14} />
+    </g>
+  );
+}
