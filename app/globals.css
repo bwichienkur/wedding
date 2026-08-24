@@ -370,8 +370,54 @@
   }
 
   .intro-envelope-stage.is-illuminated .envelope-master-face {
-    filter: brightness(1.04) saturate(1.05);
+    filter: brightness(1.06) saturate(1.08);
     transition: filter var(--intro-glow, 1400ms) ease;
+  }
+
+  /* Gold floral rim-light — fades in when seal is activated */
+  .envelope-floral-glow {
+    opacity: 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 2;
+    transition: opacity var(--intro-glow, 1400ms) cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .envelope-floral-glow.is-lit {
+    opacity: 0.92;
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 10px rgb(212 168 79 / 0.35))
+      drop-shadow(0 0 22px rgb(212 168 79 / 0.2));
+  }
+
+  .envelope-floral-glow-face {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    opacity: 0;
+    mix-blend-mode: screen;
+    z-index: 2;
+    transition: opacity var(--intro-glow, 1400ms) cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .envelope-floral-glow-face.is-lit {
+    opacity: 0.88;
+    filter:
+      brightness(1.05)
+      drop-shadow(0 0 8px rgb(212 168 79 / 0.28));
+  }
+
+  .intro-envelope-stage.is-floral-glow .envelope-closed-master img:first-child {
+    filter: brightness(1.03) saturate(1.04);
+    transition: filter var(--intro-glow, 1400ms) ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .envelope-floral-glow,
+    .envelope-floral-glow-face {
+      transition: opacity 0.25s ease;
+    }
   }
 
   /* Four-flap geometry */

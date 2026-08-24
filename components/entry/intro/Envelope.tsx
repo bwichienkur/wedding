@@ -16,18 +16,23 @@ interface EnvelopeProps {
 /**
  * Closed state uses the full master mockup for exact visual match.
  * Opening swaps to four clipped flaps of the blank master + live seal.
+ * Floral gold glow overlays light up when the seal is activated.
  */
 export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const opening = isOpeningPhase(phase);
   const illuminated = isIlluminatedPhase(phase);
-  const closedVisual = phase === "closed" || phase === "activating" || phase === "glowing";
+  const closedVisual =
+    phase === "closed" || phase === "activating" || phase === "glowing";
   const sealVisible = isSealVisiblePhase(phase) || phase === "opening";
+  const floralGlow =
+    phase === "activating" || phase === "glowing" || phase === "opening";
 
   return (
     <div
       className={cn(
         "intro-envelope-stage",
         illuminated && "is-illuminated",
+        floralGlow && "is-floral-glow",
         opening && !reduceMotion && "intro-envelope-opening",
       )}
     >
@@ -58,6 +63,17 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             src="/images/envelope-master-closed.webp"
             alt=""
             className="h-full w-full object-cover"
+            draggable={false}
+          />
+          {/* Gold rim light on embossed florals after seal click */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/envelope-master-glow.webp"
+            alt=""
+            className={cn(
+              "envelope-floral-glow absolute inset-0 h-full w-full object-cover",
+              floralGlow && closedVisual && "is-lit",
+            )}
             draggable={false}
           />
         </div>

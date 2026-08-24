@@ -32,6 +32,15 @@ export function EnvelopeFlap({ side, phase, reduceMotion }: EnvelopeFlapProps) {
           backgroundImage: "url(/images/envelope-master.webp)",
         }}
       />
+      <div
+        className={cn(
+          "envelope-flap-face absolute inset-0 envelope-floral-glow-face",
+          illuminated && "is-lit",
+        )}
+        style={{
+          backgroundImage: "url(/images/envelope-master-glow.webp)",
+        }}
+      />
       <div className="envelope-flap-rim" />
     </div>
   );
