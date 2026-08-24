@@ -87,6 +87,8 @@ export interface WeddingConfig {
     beginLabel: string;
     skipDetailsLabel: string;
     rsvpLabel: string;
+    inviteHeadline: string;
+    inviteSubline: string;
   };
   closing: {
     message: string;

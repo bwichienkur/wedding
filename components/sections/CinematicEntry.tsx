@@ -20,12 +20,13 @@ import {
 
 interface CinematicEntryProps {
   onComplete: () => void;
+  /** Fired when the seal is opened and the homepage should begin fading in */
+  onRevealStart?: () => void;
 }
 
-/** Slower, more dramatic: gold foil glow → flap open → reveal site */
 const GLOW_MS = 1600;
 const OPEN_MS = 1800;
-const EXIT_MS = 700;
+const EXIT_MS = 900;
 
 function subscribeNoop() {
   return () => {};
@@ -44,9 +45,12 @@ function useForceSkipIntro() {
 }
 
 /**
- * Full-bleed navy envelope + gold seal. Opens onto the live homepage.
+ * Full-bleed navy envelope + gold seal. Opens onto a slowly fading homepage.
  */
-export function CinematicEntry({ onComplete }: CinematicEntryProps) {
+export function CinematicEntry({
+  onComplete,
+  onRevealStart,
+}: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
   const isClient = useIsClient();
   const forceSkip = useForceSkipIntro();
@@ -57,6 +61,7 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const finishTimer = useRef<number | null>(null);
   const openedRef = useRef(false);
   const completedRef = useRef(false);
+  const revealedRef = useRef(false);
 
   const finish = useCallback(() => {
     if (finishTimer.current != null) {
@@ -71,6 +76,12 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     }
   }, [onComplete]);
 
+  const startReveal = useCallback(() => {
+    if (revealedRef.current) return;
+    revealedRef.current = true;
+    onRevealStart?.();
+  }, [onRevealStart]);
+
   useEffect(() => {
     return () => {
       if (finishTimer.current != null) {
@@ -82,23 +93,27 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   useEffect(() => {
     if (!isClient) return;
     if (!wedding.featureFlags.cinematicEntry || forceSkip) {
+      startReveal();
       if (!completedRef.current) {
         completedRef.current = true;
         onComplete();
       }
     }
-  }, [isClient, forceSkip, onComplete]);
+  }, [isClient, forceSkip, onComplete, startReveal]);
 
   function openInvitation() {
     if (openedRef.current || opening || dismissed || exiting) return;
     openedRef.current = true;
 
     if (reduceMotion) {
+      startReveal();
       finish();
       return;
     }
 
     setGlowing(true);
+    // Begin homepage fade during the gold illumination
+    startReveal();
     finishTimer.current = window.setTimeout(() => {
       setOpening(true);
       finishTimer.current = window.setTimeout(() => {
@@ -111,6 +126,7 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   }
 
   function skipToDetails() {
+    startReveal();
     finish();
     window.requestAnimationFrame(() => {
       document.querySelector(weddingDetailsHref)?.scrollIntoView({
@@ -132,7 +148,7 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     <div
       className={[
         "fixed inset-0 z-50 overflow-hidden",
-        "transition-[opacity,background-color] duration-700 ease-out",
+        "transition-[opacity,background-color] duration-[900ms] ease-out",
         opening || exiting ? "bg-transparent" : "bg-[#0f1c33]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
       ].join(" ")}
@@ -172,7 +188,10 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
         <ButtonLink
           href={rsvpNav.href}
           variant="ghost"
-          onClick={finish}
+          onClick={() => {
+            startReveal();
+            finish();
+          }}
           className="text-[#e0c56a]/90 hover:text-[#f0d98a]"
         >
           {wedding.entry.rsvpLabel}

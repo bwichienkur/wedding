@@ -46,6 +46,9 @@ export const wedding: WeddingConfig = {
     beginLabel: "Open invitation",
     skipDetailsLabel: "Skip to wedding details",
     rsvpLabel: "RSVP",
+    inviteHeadline:
+      "You’re cordially invited to the wedding of Bright & Lexi",
+    inviteSubline: "May 15, 2027 · Bella Cosa · Lake Wales, Florida",
   },
   closing: {
     message:

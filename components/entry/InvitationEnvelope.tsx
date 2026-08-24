@@ -11,9 +11,12 @@ interface InvitationEnvelopeProps {
   onOpen: () => void;
 }
 
+type FlapSide = "top" | "bottom" | "left" | "right";
+
 /**
  * Full-viewport navy envelope with gold wax seal.
- * Flaps open onto the live site (transparent liner) — no interstitial card.
+ * Each flap has its own contained floral texture; illumination tints
+ * that same art gold. Flaps meet cleanly at center and open onto the site.
  */
 export function InvitationEnvelope({
   open,
@@ -34,26 +37,26 @@ export function InvitationEnvelope({
           : { perspective: 1800, transformStyle: "preserve-3d" }
       }
     >
-      {/* Transparent so opening flaps reveal the homepage underneath */}
       <div className="envelope-liner absolute inset-0" aria-hidden />
 
-      <EnvelopeFlap side="top" open={open} reduceMotion={reduceMotion} />
+      {/* Stack like a real envelope: bottom → sides → top */}
       <EnvelopeFlap side="bottom" open={open} reduceMotion={reduceMotion} />
       <EnvelopeFlap side="left" open={open} reduceMotion={reduceMotion} />
       <EnvelopeFlap side="right" open={open} reduceMotion={reduceMotion} />
+      <EnvelopeFlap side="top" open={open} reduceMotion={reduceMotion} />
 
       <div
         className={cn(
-          "pointer-events-none absolute left-1/2 top-[12%] z-20 w-[min(92%,24rem)] -translate-x-1/2 text-center",
+          "pointer-events-none absolute left-1/2 top-[10%] z-20 w-[min(92%,26rem)] -translate-x-1/2 text-center",
           "transition-opacity duration-700",
           (glowing || open) && "opacity-0",
         )}
       >
-        <p className="font-annotation text-[1.65rem] leading-snug text-[#e8c872] drop-shadow-[0_1px_2px_rgba(8,16,32,0.65)] sm:text-3xl">
-          For {wedding.couple.partnerOne} & {wedding.couple.partnerTwo}
+        <p className="font-annotation text-[1.45rem] leading-snug text-[#e8c872] drop-shadow-[0_1px_3px_rgba(8,16,32,0.75)] sm:text-[1.85rem]">
+          {wedding.entry.inviteHeadline}
         </p>
-        <p className="mt-3 font-sans text-[0.7rem] uppercase tracking-[0.32em] text-[#d4b65c]">
-          {wedding.wedding.dateDisplay}
+        <p className="mt-3 font-sans text-[0.68rem] uppercase tracking-[0.28em] text-[#d4b65c] sm:text-[0.72rem]">
+          {wedding.entry.inviteSubline}
         </p>
       </div>
 
@@ -84,14 +87,14 @@ function EnvelopeFlap({
   open,
   reduceMotion,
 }: {
-  side: "top" | "bottom" | "left" | "right";
+  side: FlapSide;
   open: boolean;
   reduceMotion: boolean;
 }) {
   return (
     <div
       className={cn(
-        "envelope-flap absolute pointer-events-none",
+        "envelope-flap absolute inset-0 pointer-events-none",
         `envelope-flap-${side}`,
         open && !reduceMotion && "is-open",
         open && reduceMotion && "is-open-instant",
@@ -99,8 +102,12 @@ function EnvelopeFlap({
       aria-hidden
     >
       <div className="envelope-flap-face absolute inset-0">
-        <div className="envelope-texture envelope-texture-rest" />
-        <div className="envelope-texture envelope-texture-foil" />
+        <div
+          className={cn("envelope-texture", `envelope-texture-${side}`)}
+          style={{
+            backgroundImage: `url(/images/envelope-flap-${side}.webp)`,
+          }}
+        />
       </div>
     </div>
   );
