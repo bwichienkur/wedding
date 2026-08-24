@@ -1,6 +1,7 @@
 "use client";
 
 import { WaxSeal } from "@/components/entry/WaxSeal";
+import { EnvelopeVines } from "@/components/entry/vines/EnvelopeVines";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 
@@ -12,12 +13,10 @@ interface InvitationEnvelopeProps {
 }
 
 type FlapSide = "top" | "bottom" | "left" | "right";
-type VineAsset = "h" | "v" | "corner" | "bottom";
 
 /**
  * Full-viewport navy envelope with gold wax seal.
- * Silvery filigree spreads along outer flap edges and corners
- * (WooowInvites-style). On seal open, only the emboss illuminates gold.
+ * Engraved SVG botanicals live inside each flap and move with it on open.
  */
 export function InvitationEnvelope({
   open,
@@ -40,10 +39,30 @@ export function InvitationEnvelope({
     >
       <div className="envelope-liner absolute inset-0" aria-hidden />
 
-      <EnvelopeFlap side="bottom" open={open} reduceMotion={reduceMotion} />
-      <EnvelopeFlap side="left" open={open} reduceMotion={reduceMotion} />
-      <EnvelopeFlap side="right" open={open} reduceMotion={reduceMotion} />
-      <EnvelopeFlap side="top" open={open} reduceMotion={reduceMotion} />
+      <EnvelopeFlap
+        side="bottom"
+        open={open}
+        reduceMotion={reduceMotion}
+        glowing={glowing}
+      />
+      <EnvelopeFlap
+        side="left"
+        open={open}
+        reduceMotion={reduceMotion}
+        glowing={glowing}
+      />
+      <EnvelopeFlap
+        side="right"
+        open={open}
+        reduceMotion={reduceMotion}
+        glowing={glowing}
+      />
+      <EnvelopeFlap
+        side="top"
+        open={open}
+        reduceMotion={reduceMotion}
+        glowing={glowing}
+      />
 
       <div
         className={cn(
@@ -86,10 +105,12 @@ function EnvelopeFlap({
   side,
   open,
   reduceMotion,
+  glowing,
 }: {
   side: FlapSide;
   open: boolean;
   reduceMotion: boolean;
+  glowing: boolean;
 }) {
   return (
     <div
@@ -102,71 +123,8 @@ function EnvelopeFlap({
       aria-hidden
     >
       <div className="envelope-flap-face absolute inset-0">
-        {side === "top" && (
-          <>
-            <VineOrnament asset="h" className="envelope-ornament-top-edge" />
-            <VineOrnament asset="corner" className="envelope-ornament-top-left" />
-            <VineOrnament
-              asset="corner"
-              className="envelope-ornament-top-right"
-              mirror
-            />
-          </>
-        )}
-        {side === "left" && (
-          <VineOrnament asset="v" className="envelope-ornament-left-edge" />
-        )}
-        {side === "right" && (
-          <VineOrnament asset="v" className="envelope-ornament-right-edge" />
-        )}
-        {side === "bottom" && (
-          <>
-            <VineOrnament asset="h" className="envelope-ornament-bottom-edge" />
-            <VineOrnament
-              asset="bottom"
-              className="envelope-ornament-bottom-center"
-            />
-          </>
-        )}
+        <EnvelopeVines side={side} glowing={glowing} />
       </div>
     </div>
-  );
-}
-
-function VineOrnament({
-  asset,
-  className,
-  mirror,
-}: {
-  asset: VineAsset;
-  className?: string;
-  mirror?: boolean;
-}) {
-  const src = {
-    h: "envelope-vine-h",
-    v: "envelope-vine-v",
-    corner: "envelope-vine-corner",
-    bottom: "envelope-vine-bottom",
-  }[asset];
-
-  return (
-    <>
-      <div
-        className={cn(
-          "envelope-design envelope-design-emboss",
-          className,
-          mirror && "envelope-design-mirror",
-        )}
-        style={{ backgroundImage: `url(/images/${src}.webp)` }}
-      />
-      <div
-        className={cn(
-          "envelope-design envelope-design-glow",
-          className,
-          mirror && "envelope-design-mirror",
-        )}
-        style={{ backgroundImage: `url(/images/${src}-glow.webp)` }}
-      />
-    </>
   );
 }
