@@ -1,4 +1,5 @@
 import { HomeExperience } from "@/components/HomeExperience";
+import { WeddingEventJsonLd } from "@/components/seo/WeddingEventJsonLd";
 import { wedding } from "@/data/wedding";
 import type { Metadata } from "next";
 
@@ -11,5 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HomeExperience />;
+  return (
+    <>
+      <WeddingEventJsonLd />
+      <HomeExperience />
+    </>
+  );
 }

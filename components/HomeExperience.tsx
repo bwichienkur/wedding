@@ -14,6 +14,7 @@ import { TravelSection } from "@/components/sections/Travel";
 import { VenueSection } from "@/components/sections/Venue";
 import { WeddingDaySection } from "@/components/sections/WeddingDay";
 import { MemoryGallerySection } from "@/components/three/MemoryGallery";
+import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { mainContentId } from "@/data/navigation";
 import { useCallback, useState } from "react";
 
@@ -28,8 +29,12 @@ export function HomeExperience() {
       <main id={mainContentId} tabIndex={-1} className="outline-none">
         <Hero />
         <OurStory />
-        <MemoryGallerySection />
-        <ProposalConvergenceSection />
+        <SectionErrorBoundary title="Memories couldn’t load">
+          <MemoryGallerySection />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary title="Proposal chapter couldn’t load">
+          <ProposalConvergenceSection />
+        </SectionErrorBoundary>
         <WeddingDaySection />
         <VenueSection />
         <TravelSection />

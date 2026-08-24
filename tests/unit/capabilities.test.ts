@@ -1,10 +1,16 @@
 import {
   getExperienceCapabilities,
   maxDevicePixelRatio,
+  resetExperienceCapabilityCache,
 } from "@/lib/three/capabilities";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("experience capabilities", () => {
+  afterEach(() => {
+    resetExperienceCapabilityCache();
+    vi.restoreAllMocks();
+  });
+
   it("reports simplified mode when WebGL is unavailable", () => {
     Object.defineProperty(window, "matchMedia", {
       writable: true,

@@ -13,27 +13,36 @@ interface CinematicEntryProps {
   onComplete: () => void;
 }
 
-function subscribeNoop() {
+function subscribeIdentity() {
   return () => {};
+}
+
+/** True only after client hydration — used to read localStorage safely. */
+function useIsClient() {
+  return useSyncExternalStore(
+    subscribeIdentity,
+    () => true,
+    () => false,
+  );
 }
 
 export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
-  const introAlreadySeen = useSyncExternalStore(
-    subscribeNoop,
-    hasSeenIntro,
-    () => false,
-  );
+  const isClient = useIsClient();
   const [dismissed, setDismissed] = useState(false);
 
+  const introAlreadySeen = isClient && hasSeenIntro();
   const shouldShow =
-    wedding.featureFlags.cinematicEntry && !introAlreadySeen && !dismissed;
+    wedding.featureFlags.cinematicEntry &&
+    !dismissed &&
+    (!isClient || !introAlreadySeen);
 
   useEffect(() => {
-    if (!shouldShow) {
+    if (!isClient) return;
+    if (!wedding.featureFlags.cinematicEntry || introAlreadySeen || dismissed) {
       onComplete();
     }
-  }, [shouldShow, onComplete]);
+  }, [isClient, introAlreadySeen, dismissed, onComplete]);
 
   function dismiss() {
     markIntroSeen();

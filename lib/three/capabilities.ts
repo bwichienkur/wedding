@@ -9,18 +9,34 @@ export interface ExperienceCapabilities {
   simplified: boolean;
 }
 
+let cachedWebGL: boolean | null = null;
+
 function detectWebGL(): boolean {
-  if (typeof document === "undefined") return false;
+  if (cachedWebGL !== null) return cachedWebGL;
+  if (typeof document === "undefined") {
+    cachedWebGL = false;
+    return cachedWebGL;
+  }
+
   try {
     const canvas = document.createElement("canvas");
     const gl =
       canvas.getContext("webgl2") ||
       canvas.getContext("webgl") ||
       canvas.getContext("experimental-webgl");
-    return Boolean(gl);
+    cachedWebGL = Boolean(gl);
+    // Release the probe context so production canvases keep the GPU budget.
+    if (gl && "getExtension" in gl) {
+      const lose = (
+        gl as WebGLRenderingContext
+      ).getExtension("WEBGL_lose_context");
+      lose?.loseContext();
+    }
   } catch {
-    return false;
+    cachedWebGL = false;
   }
+
+  return cachedWebGL;
 }
 
 function detectTier(): PerformanceTier {
@@ -60,4 +76,9 @@ export function maxDevicePixelRatio(tier: PerformanceTier): number {
   if (tier === "low") return 1;
   if (tier === "medium") return 1.25;
   return 1.5;
+}
+
+/** Test helper — clears the WebGL probe cache between Vitest cases. */
+export function resetExperienceCapabilityCache(): void {
+  cachedWebGL = null;
 }
