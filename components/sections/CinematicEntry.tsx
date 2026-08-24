@@ -7,31 +7,37 @@ import { rsvpNav, weddingDetailsHref } from "@/data/navigation";
 import { wedding, weddingLocationLine } from "@/data/wedding";
 import { hasSeenIntro, markIntroSeen } from "@/lib/intro-storage";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore, useState } from "react";
 
 interface CinematicEntryProps {
   onComplete: () => void;
 }
 
+function subscribeNoop() {
+  return () => {};
+}
+
 export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
-  const [visible, setVisible] = useState(false);
-  const [ready, setReady] = useState(false);
+  const introAlreadySeen = useSyncExternalStore(
+    subscribeNoop,
+    hasSeenIntro,
+    () => false,
+  );
+  const [dismissed, setDismissed] = useState(false);
+
+  const shouldShow =
+    wedding.featureFlags.cinematicEntry && !introAlreadySeen && !dismissed;
 
   useEffect(() => {
-    const seen = hasSeenIntro();
-    if (seen || !wedding.featureFlags.cinematicEntry) {
+    if (!shouldShow) {
       onComplete();
-      return;
     }
-    setVisible(true);
-    setReady(true);
-  }, [onComplete]);
+  }, [shouldShow, onComplete]);
 
   function dismiss() {
     markIntroSeen();
-    setVisible(false);
-    window.setTimeout(onComplete, reduceMotion ? 0 : 320);
+    setDismissed(true);
   }
 
   function beginStory() {
@@ -54,13 +60,9 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     });
   }
 
-  if (!ready) {
-    return null;
-  }
-
   return (
     <AnimatePresence>
-      {visible ? (
+      {shouldShow ? (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-ivory"
           initial={{ opacity: 1 }}
@@ -91,7 +93,10 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
                   : { pathLength: 0, opacity: 0.4 }
               }
               animate={{ pathLength: 1, opacity: 0.85 }}
-              transition={{ duration: reduceMotion ? 0 : 2.2, ease: "easeInOut" }}
+              transition={{
+                duration: reduceMotion ? 0 : 2.2,
+                ease: "easeInOut",
+              }}
             />
           </svg>
 
