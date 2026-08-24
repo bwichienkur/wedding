@@ -2,9 +2,10 @@ import "server-only";
 
 import { requireAdmin } from "@/lib/auth/admin";
 import { getSectionPlacement } from "@/data/section-media";
+import { isBlobStorageEnabled } from "@/lib/media/blob-env";
 import {
+  archiveMediaAsset,
   createMediaAsset,
-  isBlobStorageEnabled,
   updateMediaAsset,
   writeUploadFileWithUrl,
 } from "@/lib/media/store";
@@ -17,6 +18,7 @@ import { MAX_IMAGE_BYTES, type MediaCategory } from "@/lib/media/types";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Photo storage is not configured for production. Add BLOB_READ_WRITE_TOKEN in Vercel (Storage → Blob), redeploy, then try again.",
+          "Photo storage is not configured. In Vercel: Storage → Blob → Connect to this project, then redeploy so BLOB_READ_WRITE_TOKEN is available.",
       },
       { status: 503 },
     );
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            "HEIC photos from iPhone are not supported yet. Change Settings → Camera → Formats → Most Compatible, or export the photo as JPEG before uploading.",
+            "HEIC photos from iPhone are not supported. Use Settings → Camera → Formats → Most Compatible, or AirDrop/export as JPEG.",
         },
         { status: 400 },
       );
@@ -69,7 +71,7 @@ export async function POST(request: Request) {
 
   if (file.size > MAX_IMAGE_BYTES) {
     return NextResponse.json(
-      { error: "Image must be 8MB or smaller." },
+      { error: "Image must be 4 MB or smaller." },
       { status: 400 },
     );
   }
@@ -91,54 +93,79 @@ export async function POST(request: Request) {
 
   const category = (placement?.defaultCategory ??
     "section_photo") as MediaCategory;
-  const bytes = Buffer.from(await file.arrayBuffer());
 
-  const asset = await createMediaAsset({
-    kind: "image",
-    muxUploadId: null,
-    storagePath: null,
-    publicUrl: null,
-    alt,
-    width: null,
-    height: null,
-    focalX: 50,
-    focalY: 40,
-    mimeType,
-    category,
-    title,
-    description,
-    mediaDate: null,
-    posterUrl: null,
-    customPosterPath: null,
-    durationSeconds: null,
-    aspectRatio: null,
-    captionsUrl: null,
-    transcript: "",
-    chaptersJson: [],
-    isPublished: false,
-    isPrivate: false,
-    sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
-    storyMomentId: placement?.storyMomentId ?? null,
-    placementKey,
-    errorMessage: null,
-    createdBy: "admin",
-    status: "ready",
-  });
+  let assetId: string | null = null;
 
-  const extension = extensionForMime(mimeType);
-  const { storagePath, publicUrl } = await writeUploadFileWithUrl(
-    asset.id,
-    extension,
-    bytes,
-    mimeType,
-  );
+  try {
+    const bytes = Buffer.from(await file.arrayBuffer());
 
-  const updated = await updateMediaAsset(asset.id, {
-    storagePath,
-    publicUrl,
-    status: "ready",
-    isPublished: publish,
-  });
+    const asset = await createMediaAsset({
+      kind: "image",
+      muxUploadId: null,
+      storagePath: null,
+      publicUrl: null,
+      alt,
+      width: null,
+      height: null,
+      focalX: 50,
+      focalY: 40,
+      mimeType,
+      category,
+      title,
+      description,
+      mediaDate: null,
+      posterUrl: null,
+      customPosterPath: null,
+      durationSeconds: null,
+      aspectRatio: null,
+      captionsUrl: null,
+      transcript: "",
+      chaptersJson: [],
+      isPublished: false,
+      isPrivate: false,
+      sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
+      storyMomentId: placement?.storyMomentId ?? null,
+      placementKey,
+      errorMessage: null,
+      createdBy: "admin",
+      status: "ready",
+    });
 
-  return NextResponse.json({ asset: updated ?? asset });
+    assetId = asset.id;
+
+    const extension = extensionForMime(mimeType);
+    const { storagePath, publicUrl } = await writeUploadFileWithUrl(
+      asset.id,
+      extension,
+      bytes,
+      mimeType,
+    );
+
+    const updated = await updateMediaAsset(asset.id, {
+      storagePath,
+      publicUrl,
+      status: "ready",
+      isPublished: publish,
+    });
+
+    return NextResponse.json({ asset: updated ?? asset });
+  } catch (error) {
+    if (assetId) {
+      await archiveMediaAsset(assetId).catch(() => undefined);
+    }
+
+    const message =
+      error instanceof Error ? error.message : "Photo upload failed.";
+    console.error("[media/photo]", error);
+
+    return NextResponse.json(
+      {
+        error:
+          message.includes("BLOB") || message.includes("token")
+            ? "Blob storage error. Confirm Vercel Blob is connected and redeploy."
+            : `Photo upload failed: ${message}`,
+      },
+      { status: 500 },
+    );
+  }
 }

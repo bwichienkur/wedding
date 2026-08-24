@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   },
 };
 
+/** Uploaded media must be resolved at request time, not at build time. */
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [
     heroSlides,

@@ -3,6 +3,10 @@ import "server-only";
 import { get, put } from "@vercel/blob";
 import { promises as fs } from "fs";
 import path from "path";
+import {
+  isBlobStorageEnabled,
+  requireBlobToken,
+} from "@/lib/media/blob-env";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "media-assets.json");
@@ -10,20 +14,14 @@ const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
 
 const BLOB_MANIFEST_PATH = "wedding/media-assets.json";
 
+export { isBlobStorageEnabled };
+
 export function getUploadsDir(): string {
   return UPLOADS_DIR;
 }
 
-export function isBlobStorageEnabled(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-}
-
 function blobToken(): string {
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
-  if (!token) {
-    throw new Error("BLOB_READ_WRITE_TOKEN is not configured.");
-  }
-  return token;
+  return requireBlobToken();
 }
 
 async function ensureLocalStore(): Promise<void> {
