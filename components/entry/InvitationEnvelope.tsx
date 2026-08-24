@@ -3,8 +3,6 @@
 import { WaxSeal } from "@/components/entry/WaxSeal";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
-import { editorialEase } from "@/lib/motion";
-import { motion } from "motion/react";
 
 interface InvitationEnvelopeProps {
   open: boolean;
@@ -13,14 +11,9 @@ interface InvitationEnvelopeProps {
   onOpen: () => void;
 }
 
-const flapTransition = (delay: number, reduceMotion: boolean) =>
-  reduceMotion
-    ? { duration: 0 }
-    : { duration: 0.95, delay, ease: editorialEase };
-
 /**
  * Portrait invitation envelope with four meeting flaps and a central wax seal.
- * Inspired by sealed digital invites — paper + wax, not golden-thread illustration.
+ * Closed until `open` is set by an explicit seal click — no mount animation.
  */
 export function InvitationEnvelope({
   open,
@@ -29,30 +22,31 @@ export function InvitationEnvelope({
   onOpen,
 }: InvitationEnvelopeProps) {
   return (
-    <div
-      className="relative mx-auto w-[min(72vw,17.5rem)] sm:w-[18.5rem]"
-      style={{ perspective: reduceMotion ? undefined : 1400 }}
-    >
+    <div className="relative mx-auto w-[min(72vw,17.5rem)] sm:w-[18.5rem]">
       <div
         className={cn(
           "envelope-shell relative aspect-[9/16] w-full overflow-visible rounded-sm",
           "shadow-[0_28px_60px_-18px_rgba(48,20,24,0.55),0_8px_20px_rgba(48,20,24,0.25)]",
+          open && !reduceMotion && "envelope-shell-open",
         )}
-        style={{ transformStyle: "preserve-3d" }}
+        style={
+          reduceMotion
+            ? undefined
+            : { perspective: 1400, transformStyle: "preserve-3d" }
+        }
       >
-        {/* Cardstock base under the flaps */}
         <div
           className="envelope-liner absolute inset-0 rounded-sm"
           aria-hidden
         />
 
-        {/* Subtle invitation peek when opening */}
-        <motion.div
-          className="absolute inset-[12%] flex flex-col items-center justify-center bg-[#f4ebe0] text-center"
+        <div
+          className={cn(
+            "absolute inset-[12%] z-0 flex flex-col items-center justify-center bg-[#f4ebe0] text-center",
+            "opacity-0 transition-opacity duration-300",
+            open && "opacity-100 delay-200",
+          )}
           aria-hidden
-          initial={false}
-          animate={{ opacity: open ? 1 : 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.25 }}
         >
           <p className="font-display text-lg text-[#3a2426]">
             {wedding.couple.partnerOne}
@@ -64,44 +58,24 @@ export function InvitationEnvelope({
           <p className="mt-3 font-sans text-[0.65rem] uppercase tracking-[0.22em] text-[#6b605a]">
             {wedding.wedding.dateDisplay}
           </p>
-        </motion.div>
+        </div>
 
-        <EnvelopeFlap
-          side="top"
-          open={open}
-          reduceMotion={reduceMotion}
-          delay={0.08}
-        />
-        <EnvelopeFlap
-          side="bottom"
-          open={open}
-          reduceMotion={reduceMotion}
-          delay={0.14}
-        />
-        <EnvelopeFlap
-          side="left"
-          open={open}
-          reduceMotion={reduceMotion}
-          delay={0.05}
-        />
-        <EnvelopeFlap
-          side="right"
-          open={open}
-          reduceMotion={reduceMotion}
-          delay={0.11}
-        />
+        <EnvelopeFlap side="top" open={open} reduceMotion={reduceMotion} />
+        <EnvelopeFlap side="bottom" open={open} reduceMotion={reduceMotion} />
+        <EnvelopeFlap side="left" open={open} reduceMotion={reduceMotion} />
+        <EnvelopeFlap side="right" open={open} reduceMotion={reduceMotion} />
 
         <WaxSeal
           open={open}
           glowing={glowing}
-          reduceMotion={Boolean(reduceMotion)}
+          reduceMotion={reduceMotion}
           onOpen={onOpen}
         />
       </div>
 
       <p
         className={cn(
-          "pointer-events-none mt-6 text-center font-display text-xl text-[#3a2426] sm:text-2xl",
+          "pointer-events-none mt-6 text-center font-display text-xl text-[#3a2426] transition-opacity duration-300 sm:text-2xl",
           open && "opacity-0",
         )}
       >
@@ -109,7 +83,7 @@ export function InvitationEnvelope({
       </p>
       <p
         className={cn(
-          "pointer-events-none mt-2 text-center font-sans text-xs uppercase tracking-[0.28em] text-[#6b605a]",
+          "pointer-events-none mt-2 text-center font-sans text-xs uppercase tracking-[0.28em] text-[#6b605a] transition-opacity duration-300",
           open && "opacity-0",
         )}
       >
@@ -117,7 +91,7 @@ export function InvitationEnvelope({
       </p>
       <p
         className={cn(
-          "pointer-events-none mt-5 text-center font-sans text-sm tracking-wide text-[#8f655c]",
+          "pointer-events-none mt-5 text-center font-sans text-sm tracking-wide text-[#8f655c] transition-opacity duration-300",
           open && "opacity-0",
         )}
       >
@@ -131,56 +105,29 @@ function EnvelopeFlap({
   side,
   open,
   reduceMotion,
-  delay,
 }: {
   side: "top" | "bottom" | "left" | "right";
   open: boolean;
-  reduceMotion: boolean | null;
-  delay: number;
+  reduceMotion: boolean;
 }) {
-  const closed = { rotateX: 0, rotateY: 0 };
-  const opened =
-    side === "top"
-      ? { rotateX: -155, rotateY: 0 }
-      : side === "bottom"
-        ? { rotateX: 155, rotateY: 0 }
-        : side === "left"
-          ? { rotateX: 0, rotateY: -155 }
-          : { rotateX: 0, rotateY: 155 };
-
   return (
-    <motion.div
-      className={cn("envelope-flap absolute", `envelope-flap-${side}`)}
+    <div
+      className={cn(
+        "envelope-flap absolute pointer-events-none",
+        `envelope-flap-${side}`,
+        open && !reduceMotion && "is-open",
+        open && reduceMotion && "is-open-instant",
+      )}
       aria-hidden
-      initial={false}
-      animate={
-        open && !reduceMotion
-          ? { ...opened, opacity: 0.85 }
-          : { ...closed, opacity: 1 }
-      }
-      transition={flapTransition(delay, Boolean(reduceMotion))}
-      style={{
-        transformStyle: "preserve-3d",
-        backfaceVisibility: "hidden",
-        transformOrigin:
-          side === "top"
-            ? "50% 0%"
-            : side === "bottom"
-              ? "50% 100%"
-              : side === "left"
-                ? "0% 50%"
-                : "100% 50%",
-      }}
     >
       <div className="envelope-flap-face absolute inset-0">
         <EmbossMotif side={side} />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 function EmbossMotif({ side }: { side: "top" | "bottom" | "left" | "right" }) {
-  // Soft pressed botanical relief on the side flaps only — no hairline “thread” look.
   if (side !== "left" && side !== "right") return null;
 
   return (
