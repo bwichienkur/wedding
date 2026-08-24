@@ -2,7 +2,6 @@
 
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
-import { GoldParticles } from "./GoldParticles";
 import type { IntroPhase } from "./types";
 
 interface WaxSealButtonProps {
@@ -25,6 +24,7 @@ export function WaxSealButton({
   const glowing = phase === "glowing";
   const opening = phase === "opening";
   const interactive = phase === "closed";
+  const monogramLit = activating || glowing;
 
   const hint =
     glowing || activating
@@ -35,23 +35,21 @@ export function WaxSealButton({
     <>
       <div
         className={cn(
-          "intro-seal-glow pointer-events-none absolute left-1/2 top-1/2 z-[25] -translate-x-1/2 -translate-y-1/2",
-          (glowing || opening) && "is-active",
-          activating && "is-activating",
-        )}
-        aria-hidden
-      />
-
-      <div
-        className={cn(
           "intro-seal-wrap absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2",
           "transition-opacity duration-500",
           !visible && "opacity-0",
         )}
       >
-        <GoldParticles
-          active={glowing || opening}
-          reduceMotion={reduceMotion}
+        {/* Monogram-only light — wax body stays calm */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/seal-monogram-glow.webp"
+          alt=""
+          className={cn(
+            "intro-monogram-glow pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+            monogramLit && "is-lit",
+          )}
+          draggable={false}
         />
 
         <button
@@ -72,7 +70,6 @@ export function WaxSealButton({
               !reduceMotion &&
               "hover:scale-[1.03] active:scale-[0.97]",
             activating && !reduceMotion && "is-pressing",
-            glowing && !reduceMotion && "is-glowing",
             opening && !reduceMotion && "is-lifting",
             opening && reduceMotion && "opacity-0",
             hotspotOnly && "intro-seal-hotspot",
@@ -97,7 +94,6 @@ export function WaxSealButton({
         </button>
       </div>
 
-      {/* Hint is baked into closed master; show live hint only while activating/glowing */}
       <p
         className={cn(
           "intro-seal-hint pointer-events-none absolute left-1/2 z-20 -translate-x-1/2",
