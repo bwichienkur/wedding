@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# local media metadata store (Phase 4 file-backed)
+.data/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

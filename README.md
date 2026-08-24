@@ -4,19 +4,24 @@ Editorial wedding experience for **Bright & Lexi** · May 15, 2027 · Bella Cosa
 
 ## Status
 
-**Phase 2 — Foundation** in progress on this branch.
+Phases 1–4 are in progress across PRs:
 
-- Phase 1 design proposal: [`docs/PHASE-1-DESIGN-PROPOSAL.md`](./docs/PHASE-1-DESIGN-PROPOSAL.md)
-- Stack: Next.js App Router, TypeScript strict, Tailwind CSS, Motion, Vitest
+1. Design proposal — `docs/PHASE-1-DESIGN-PROPOSAL.md`
+2. Foundation — tokens, nav, entry, hero, story
+3. Golden Thread + signature 3D experiences
+4. Mux video, custom player, admin media
 
 ## Local development
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+Admin (local): [/admin](http://localhost:3000/admin) — set `ADMIN_PASSWORD` before production.
 
 ## Scripts
 
@@ -35,9 +40,14 @@ Public wedding facts live in typed files under `data/`:
 - `data/wedding.ts` — couple, date, venue, flags, copy
 - `data/story.ts` — relationship milestones
 - `data/navigation.ts` — nav items
+- `data/video.ts` — public video placements
 
 Never invent logistics. Use clearly labeled placeholders until real content is supplied.
 
+## Video / Mux
+
+See [`docs/MUX-SETUP.md`](./docs/MUX-SETUP.md). Large films are never stored in Git.
+
 ## Environment
 
-Copy `.env.example` when configuring later phases (Supabase, Mux, Resend). Phase 2 runs without secrets.
+Copy `.env.example`. Phase 4 needs Mux + admin password for uploads; the public site still runs without them (proposal player shows unavailable/poster states).
