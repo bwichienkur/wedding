@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  --ivory: #f3eee4;
+  --parchment: #e8e1d4;
+  --sage: #a8b5a0;
+  --sage-deep: #6e7f6a;
+  --forest: #1c2a22;
+  --charcoal: #2a2e2b;
+  --stone: #c4bbae;
+  --gold: #a6873b;
+  --gold-soft: #c4a85a;
+  --ink-muted: #5a615c;
+
+  --text-xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.75rem + 2vw, 3.25rem);
+  --text-5xl: clamp(2.75rem, 2rem + 2.8vw, 4rem);
+  --text-6xl: clamp(3.25rem, 2.25rem + 3.5vw, 4.75rem);
+  --text-7xl: clamp(3.75rem, 2.5rem + 4.5vw, 5.5rem);
+}
+
+@theme inline {
+  --color-ivory: var(--ivory);
+  --color-parchment: var(--parchment);
+  --color-sage: var(--sage);
+  --color-sage-deep: var(--sage-deep);
+  --color-forest: var(--forest);
+  --color-charcoal: var(--charcoal);
+  --color-stone: var(--stone);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-ink-muted: var(--ink-muted);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display-family);
+  --font-annotation: var(--font-annotation-family);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    background: var(--ivory);
+    color: var(--forest);
+    font-family: var(--font-body), "Segoe UI", sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--gold) 35%, transparent);
+    color: var(--forest);
+  }
+}
+
+@layer components {
+  .skip-links {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: 0;
+    transform: translateY(-120%);
+    border-radius: 0.125rem;
+    background: var(--forest);
+    color: var(--ivory);
+    font-family: var(--font-body), sans-serif;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
+    text-transform: uppercase;
+    transition: transform 0.2s ease;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0.75rem);
+  }
+
+  .placeholder-copy {
+    border-left: 2px solid color-mix(in srgb, var(--gold) 55%, transparent);
+    padding-left: 0.85rem;
+    font-style: italic;
+  }
+
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .font-display {
+    font-family: var(--font-display-family), "Times New Roman", serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .font-annotation {
+    font-family: var(--font-annotation-family), cursive;
+  }
+}
