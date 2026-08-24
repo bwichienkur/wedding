@@ -12,17 +12,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-forest text-ivory hover:bg-charcoal focus-visible:outline-gold",
+    "bg-forest text-ivory hover:bg-charcoal focus-visible:outline-rose",
   secondary:
-    "bg-transparent text-forest border border-stone hover:border-forest focus-visible:outline-gold",
+    "bg-transparent text-forest border border-stone hover:border-rose focus-visible:outline-rose",
   ghost:
-    "bg-transparent text-forest hover:text-sage-deep focus-visible:outline-gold",
-  gold: "bg-gold text-ivory hover:bg-gold-soft focus-visible:outline-forest",
+    "bg-transparent text-forest hover:text-rose-deep focus-visible:outline-rose",
+  gold:
+    "bg-rose text-ivory shadow-sm hover:bg-rose-deep hover:shadow-md focus-visible:outline-forest",
 };
 
 const sizes: Record<Size, string> = {
-  md: "min-h-11 px-5 text-sm tracking-[0.08em] uppercase",
-  lg: "min-h-12 px-6 text-sm tracking-[0.1em] uppercase",
+  md: "min-h-11 px-5 text-sm tracking-[0.12em] uppercase",
+  lg: "min-h-12 px-7 text-sm tracking-[0.14em] uppercase",
 };
 
 export function Button({
@@ -37,7 +38,7 @@ export function Button({
     <button
       type={type}
       className={cn(
-        "inline-flex items-center justify-center rounded-sm font-sans font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-sm font-sans font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-300 ease-out hover:scale-[1.01] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transform-none",
         variants[variant],
         sizes[size],
         className,

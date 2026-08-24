@@ -54,7 +54,7 @@ function MilestoneCard({
       )}
     >
       <div className="md:col-span-5">
-        <div className="relative aspect-[3/2] overflow-hidden bg-parchment md:aspect-[3/4]">
+        <div className="relative aspect-[3/2] overflow-hidden bg-parchment editorial-frame md:aspect-[3/4]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={milestone.image?.src}
@@ -79,7 +79,7 @@ function MilestoneCard({
       </div>
 
       <div className="md:col-span-7 md:px-4">
-        <p className="font-sans text-xs uppercase tracking-[0.22em] text-gold">
+        <p className="font-sans text-xs uppercase tracking-[0.22em] text-rose">
           {milestone.dateLabel}
         </p>
         {milestone.locationLabel ? (

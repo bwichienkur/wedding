@@ -13,8 +13,9 @@ test.describe("public invitation", () => {
     ).toBeAttached();
 
     await expect(
-      page.getByRole("heading", { name: "Bright & Lexi" }).first(),
+      page.getByRole("heading", { level: 1 }).filter({ hasText: "Bright" }).first(),
     ).toBeVisible();
+    await expect(page.getByText("Lexi").first()).toBeVisible();
 
     await expect(page.locator("#wedding-day")).toBeVisible();
     await expect(page.locator("#venue")).toBeVisible();

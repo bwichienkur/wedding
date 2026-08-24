@@ -13,6 +13,7 @@ import { RsvpSection } from "@/components/sections/RsvpTeaser";
 import { TravelSection } from "@/components/sections/Travel";
 import { VenueSection } from "@/components/sections/Venue";
 import { WeddingDaySection } from "@/components/sections/WeddingDay";
+import { WeddingMarquee } from "@/components/sections/WeddingMarquee";
 import { MemoryGallerySection } from "@/components/three/MemoryGallery";
 import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { mainContentId } from "@/data/navigation";
@@ -28,6 +29,7 @@ export function HomeExperience() {
       <SiteHeader />
       <main id={mainContentId} tabIndex={-1} className="outline-none">
         <Hero />
+        <WeddingMarquee />
         <OurStory />
         <SectionErrorBoundary title="Memories couldn’t load">
           <MemoryGallerySection />

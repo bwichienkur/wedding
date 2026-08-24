@@ -1,16 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --ivory: #f3eee4;
-  --parchment: #e8e1d4;
-  --sage: #a8b5a0;
-  --sage-deep: #6e7f6a;
-  --forest: #1c2a22;
-  --charcoal: #2a2e2b;
-  --stone: #c4bbae;
-  --gold: #a6873b;
-  --gold-soft: #c4a85a;
-  --ink-muted: #5a615c;
+  /* Editorial cream / blush / charcoal — soft, magazine-like */
+  --ivory: #f7f1ea;
+  --parchment: #eee4d8;
+  --blush: #edd8d0;
+  --sage: #c4b7ab;
+  --sage-deep: #8f7f72;
+  --forest: #2c2420;
+  --charcoal: #3a322e;
+  --stone: #d5c8bc;
+  --gold: #b8956c;
+  --gold-soft: #c9ad8a;
+  --rose: #b8897e;
+  --rose-deep: #8f655c;
+  --ink-muted: #6b605a;
 
   --text-xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
   --text-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
@@ -28,6 +32,7 @@
 @theme inline {
   --color-ivory: var(--ivory);
   --color-parchment: var(--parchment);
+  --color-blush: var(--blush);
   --color-sage: var(--sage);
   --color-sage-deep: var(--sage-deep);
   --color-forest: var(--forest);
@@ -35,6 +40,8 @@
   --color-stone: var(--stone);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
+  --color-rose: var(--rose);
+  --color-rose-deep: var(--rose-deep);
   --color-ink-muted: var(--ink-muted);
   --font-sans: var(--font-body);
   --font-display: var(--font-display-family);
@@ -69,7 +76,7 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--gold) 35%, transparent);
+    background: color-mix(in srgb, var(--rose) 32%, transparent);
     color: var(--forest);
   }
 }
@@ -104,7 +111,7 @@
   }
 
   .placeholder-copy {
-    border-left: 2px solid color-mix(in srgb, var(--gold) 55%, transparent);
+    border-left: 2px solid color-mix(in srgb, var(--rose) 55%, transparent);
     padding-left: 0.85rem;
     font-style: italic;
   }
@@ -132,5 +139,92 @@
 
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+
+  .editorial-frame {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--rose) 28%, transparent),
+      0 18px 40px -28px rgb(44 36 32 / 0.35);
+  }
+
+  .field-editorial {
+    min-height: 2.75rem;
+    width: 100%;
+    border: 1px solid var(--stone);
+    background: color-mix(in srgb, var(--ivory) 88%, white);
+    padding: 0.65rem 0.85rem;
+    color: var(--forest);
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      background-color 0.25s ease;
+  }
+
+  .field-editorial:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--rose) 70%, var(--stone));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rose) 22%, transparent);
+    background: white;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .marquee-track {
+    animation: marquee-scroll 42s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+
+  @keyframes scroll-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+
+  .scroll-bob {
+    animation: scroll-bob 2.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-bob {
+      animation: none;
+    }
+  }
+
+  @keyframes heart-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+  }
+
+  .heart-pulse {
+    animation: heart-pulse 2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heart-pulse {
+      animation: none;
+    }
   }
 }
