@@ -133,7 +133,6 @@ function useShellMetrics(shell: HTMLElement | null) {
   }, [shell]);
 
   useEffect(() => {
-    measure();
     if (!shell) return;
     const observer = new ResizeObserver(measure);
     observer.observe(shell);
