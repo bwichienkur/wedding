@@ -32,6 +32,7 @@ export function MediaAdminPanel() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const placement = useMemo(
     () =>
@@ -91,6 +92,7 @@ export function MediaAdminPanel() {
     setUploading(true);
     setProgress(null);
     setError(null);
+    setSuccess(null);
     try {
       const form = new FormData();
       form.set("file", file);
@@ -110,13 +112,19 @@ export function MediaAdminPanel() {
       });
       if (!response.ok) {
         const payload = (await response.json()) as { error?: string };
-        setError(payload.error ?? "Photo upload failed.");
+        setError(payload.error ?? `Photo upload failed (${response.status}).`);
         return;
       }
 
+      const payload = (await response.json()) as { asset?: MediaAsset };
       setTitle("");
       setDescription("");
       setAlt("");
+      setSuccess(
+        publishOnUpload
+          ? `Uploaded and published “${payload.asset?.title ?? file.name}” to ${placement.label}.`
+          : `Uploaded “${payload.asset?.title ?? file.name}”. Publish it below to show on the site.`,
+      );
       await refresh();
     } catch (uploadError) {
       setError(
@@ -371,6 +379,12 @@ export function MediaAdminPanel() {
       {error ? (
         <p className="text-sm text-forest" role="alert">
           {error}
+        </p>
+      ) : null}
+
+      {success ? (
+        <p className="text-sm text-forest/80" role="status">
+          {success}
         </p>
       ) : null}
 

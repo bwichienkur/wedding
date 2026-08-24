@@ -4,6 +4,7 @@ import {
   updateMediaSchema,
 } from "@/lib/media/types";
 import { muxPosterUrl } from "@/lib/media/mux-public";
+import { resolveImageMime, isHeicFile } from "@/lib/media/image-upload";
 import { sectionMediaPlacements } from "@/data/section-media";
 import { describe, expect, it } from "vitest";
 
@@ -82,6 +83,19 @@ describe("media validation", () => {
       createdBy: "admin",
     });
     expect(parsed.success).toBe(true);
+  });
+});
+
+describe("image upload helpers", () => {
+  it("resolves jpeg from extension when mime is empty", () => {
+    const file = { type: "", name: "photo.jpg" } as File;
+    expect(resolveImageMime(file)).toBe("image/jpeg");
+  });
+
+  it("rejects heic with helper", () => {
+    const file = { type: "image/heic", name: "IMG_1234.HEIC" } as File;
+    expect(resolveImageMime(file)).toBeNull();
+    expect(isHeicFile(file)).toBe(true);
   });
 });
 

@@ -1,23 +1,17 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
-import { promises as fs } from "fs";
-import path from "path";
 import type { MediaAsset, UpdateMediaInput } from "@/lib/media/types";
+import {
+  getUploadsDir,
+  isBlobStorageEnabled,
+  readImageFile,
+  readManifestRaw,
+  writeImageFile,
+  writeManifestRaw,
+} from "@/lib/media/persistence";
 
-const DATA_DIR = path.join(process.cwd(), ".data");
-const DATA_FILE = path.join(DATA_DIR, "media-assets.json");
-const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
-
-async function ensureStore(): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.mkdir(UPLOADS_DIR, { recursive: true });
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, "[]", "utf8");
-  }
-}
+export { getUploadsDir, isBlobStorageEnabled };
 
 function normalizeAsset(raw: MediaAsset): MediaAsset {
   return {
@@ -35,19 +29,13 @@ function normalizeAsset(raw: MediaAsset): MediaAsset {
 }
 
 async function readAll(): Promise<MediaAsset[]> {
-  await ensureStore();
-  const raw = await fs.readFile(DATA_FILE, "utf8");
+  const raw = await readManifestRaw();
   const parsed = JSON.parse(raw) as MediaAsset[];
   return parsed.map(normalizeAsset);
 }
 
 async function writeAll(assets: MediaAsset[]): Promise<void> {
-  await ensureStore();
-  await fs.writeFile(DATA_FILE, JSON.stringify(assets, null, 2), "utf8");
-}
-
-export function getUploadsDir(): string {
-  return UPLOADS_DIR;
+  await writeManifestRaw(JSON.stringify(assets, null, 2));
 }
 
 export async function listMediaAssets(): Promise<MediaAsset[]> {
@@ -203,20 +191,23 @@ export async function writeUploadFile(
   assetId: string,
   extension: string,
   bytes: Buffer,
+  contentType = "image/jpeg",
 ): Promise<string> {
-  await ensureStore();
-  const filename = `${assetId}.${extension.replace(/^\./, "")}`;
-  const fullPath = path.join(UPLOADS_DIR, filename);
-  await fs.writeFile(fullPath, bytes);
-  return filename;
+  const stored = await writeImageFile(assetId, extension, bytes, contentType);
+  return stored.storagePath;
+}
+
+export async function writeUploadFileWithUrl(
+  assetId: string,
+  extension: string,
+  bytes: Buffer,
+  contentType: string,
+): Promise<{ storagePath: string; publicUrl: string }> {
+  return writeImageFile(assetId, extension, bytes, contentType);
 }
 
 export async function readUploadFile(
   storagePath: string,
 ): Promise<Buffer | null> {
-  try {
-    return await fs.readFile(path.join(UPLOADS_DIR, storagePath));
-  } catch {
-    return null;
-  }
+  return readImageFile(storagePath);
 }

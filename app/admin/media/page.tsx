@@ -25,6 +25,9 @@ export default async function AdminMediaPage() {
           <h1 className="mt-2 font-display text-4xl text-forest">Media</h1>
           <p className="mt-2 max-w-prose text-sm text-ink-muted">
             Upload photos and videos to each section of the wedding page.
+            Production photo uploads require{" "}
+            <code className="text-forest">BLOB_READ_WRITE_TOKEN</code> (Vercel
+            Storage → Blob).
           </p>
         </div>
         <div className="flex items-center gap-4">
