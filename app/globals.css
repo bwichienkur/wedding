@@ -228,15 +228,9 @@
     }
   }
 
-  /* Full-bleed sealed invitation — edge-to-edge cardstock flaps */
+  /* Full-bleed navy envelope + gold foil illumination */
   .envelope-liner {
-    background:
-      radial-gradient(
-        ellipse at 50% 42%,
-        #5c3236 0%,
-        #3f2126 55%,
-        #2f181c 100%
-      );
+    background: transparent;
   }
 
   .envelope-flap {
@@ -249,26 +243,56 @@
     background:
       linear-gradient(
         145deg,
-        #6f4146 0%,
-        #523033 38%,
-        #3f2428 72%,
-        #351d21 100%
+        #1a2d4d 0%,
+        #12233d 42%,
+        #0c1830 100%
       );
     box-shadow:
-      inset 0 1px 0 rgb(255 230 220 / 0.14),
-      inset 0 -14px 28px rgb(20 8 10 / 0.35),
-      inset 0 0 48px rgb(0 0 0 / 0.14);
+      inset 0 1px 0 rgb(210 230 255 / 0.08),
+      inset 0 -16px 32px rgb(4 10 24 / 0.45),
+      inset 0 0 48px rgb(0 0 0 / 0.2);
   }
 
-  .envelope-flap-face::after {
-    content: "";
+  .envelope-texture {
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
-    background-size: 160px 160px;
-    mix-blend-mode: multiply;
-    opacity: 0.22;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     pointer-events: none;
+  }
+
+  .envelope-texture-rest {
+    background-image: url("/images/envelope-navy-emboss.webp");
+    opacity: 0.92;
+    mix-blend-mode: soft-light;
+    transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .envelope-texture-foil {
+    background-image: url("/images/envelope-navy-gold-foil.webp");
+    opacity: 0;
+    mix-blend-mode: screen;
+    transition: opacity 1.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .envelope-shell.is-illuminated .envelope-texture-rest {
+    opacity: 0.35;
+  }
+
+  .envelope-shell.is-illuminated .envelope-texture-foil {
+    opacity: 0.95;
+  }
+
+  .envelope-shell.is-illuminated .envelope-flap-face {
+    background:
+      linear-gradient(
+        145deg,
+        #243961 0%,
+        #172a45 42%,
+        #101f3a 100%
+      );
+    transition: background 1.5s ease;
   }
 
   .envelope-flap-top {
@@ -315,9 +339,9 @@
     background:
       linear-gradient(
         180deg,
-        #734246 0%,
-        #4d2a2f 55%,
-        #3c2125 100%
+        #1e3558 0%,
+        #142745 55%,
+        #0e1d38 100%
       );
   }
 
@@ -325,70 +349,66 @@
     background:
       linear-gradient(
         0deg,
-        #6a393e 0%,
-        #45262b 60%,
-        #362023 100%
+        #1a2f4f 0%,
+        #12233d 60%,
+        #0c1830 100%
       );
   }
 
-  /* Quiet emboss at rest → gold illumination after seal click */
-  .envelope-emboss {
-    color: rgb(232 213 196 / 0.16);
-    opacity: 0.85;
-    transition:
-      color 1.05s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 1.05s ease,
-      filter 1.05s ease;
+  .envelope-flap-top .envelope-texture,
+  .envelope-flap-bottom .envelope-texture {
+    background-position: center 20%;
   }
 
-  .envelope-shell.is-illuminated .envelope-emboss {
-    color: #e2c07a;
-    opacity: 1;
-    filter:
-      drop-shadow(0 0 4px rgb(226 192 122 / 0.45))
-      drop-shadow(0 0 14px rgb(212 175 106 / 0.35));
+  .envelope-flap-top .envelope-texture-rest,
+  .envelope-flap-bottom .envelope-texture-rest {
+    opacity: 0.78;
   }
 
-  .envelope-shell.is-illuminated .envelope-flap-face {
-    background:
-      linear-gradient(
-        145deg,
-        #7a4a4f 0%,
-        #5a3438 40%,
-        #422428 100%
-      );
-    transition: background 1s ease;
+  .envelope-flap-top .envelope-texture-foil,
+  .envelope-flap-bottom .envelope-texture-foil {
+    opacity: 0;
   }
 
-  /* Open only after glow — never on mount */
+  .envelope-shell.is-illuminated .envelope-flap-top .envelope-texture-rest,
+  .envelope-shell.is-illuminated .envelope-flap-bottom .envelope-texture-rest {
+    opacity: 0.3;
+  }
+
+  .envelope-shell.is-illuminated .envelope-flap-top .envelope-texture-foil,
+  .envelope-shell.is-illuminated .envelope-flap-bottom .envelope-texture-foil {
+    opacity: 0.75;
+  }
+
+  /* Dramatic slow open onto the site */
   .envelope-shell-open .envelope-flap {
     transition:
-      transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.75s ease;
+      transform 1.75s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 1.2s ease;
   }
 
   .envelope-flap-top.is-open {
-    transform: rotateX(-155deg);
-    opacity: 0.8;
-    transition-delay: 0.08s;
+    transform: rotateX(-162deg);
+    opacity: 0.55;
+    transition-delay: 0.12s;
   }
 
   .envelope-flap-bottom.is-open {
-    transform: rotateX(155deg);
-    opacity: 0.8;
-    transition-delay: 0.14s;
+    transform: rotateX(162deg);
+    opacity: 0.55;
+    transition-delay: 0.22s;
   }
 
   .envelope-flap-left.is-open {
-    transform: rotateY(-155deg);
-    opacity: 0.8;
-    transition-delay: 0.05s;
+    transform: rotateY(-162deg);
+    opacity: 0.55;
+    transition-delay: 0.06s;
   }
 
   .envelope-flap-right.is-open {
-    transform: rotateY(155deg);
-    opacity: 0.8;
-    transition-delay: 0.11s;
+    transform: rotateY(162deg);
+    opacity: 0.55;
+    transition-delay: 0.18s;
   }
 
   .envelope-flap.is-open-instant {
@@ -397,7 +417,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .envelope-emboss {
+    .envelope-texture-rest,
+    .envelope-texture-foil {
       transition: none;
     }
   }
