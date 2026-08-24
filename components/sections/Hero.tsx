@@ -1,12 +1,25 @@
 "use client";
 
-import { MonogramSvg } from "@/components/monogram/MonogramSvg";
+import { GoldenThread } from "@/components/story/GoldenThread";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { MonogramSvg } from "@/components/monogram/MonogramSvg";
 import { rsvpNav } from "@/data/navigation";
 import { wedding, weddingLocationLine } from "@/data/wedding";
 import { getCountdownParts } from "@/lib/dates";
 import { cn } from "@/lib/cn";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+
+const MonogramExperience = dynamic(
+  () =>
+    import("@/components/three/MonogramExperience").then(
+      (mod) => mod.MonogramExperience,
+    ),
+  {
+    ssr: false,
+    loading: () => <MonogramSvg className="h-28 w-28 sm:h-32 sm:w-32" />,
+  },
+);
 
 export function Hero() {
   const [countdown, setCountdown] = useState(() => getCountdownParts());
@@ -26,7 +39,6 @@ export function Hero() {
       aria-labelledby="hero-title"
     >
       <div className="absolute inset-0">
-        {/* Intentional editorial placeholder until hero photography is supplied */}
         <div
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,#c9d0c2_0%,transparent_55%),linear-gradient(160deg,#e8e1d4_0%,#d7cfc0_45%,#b7c0ae_100%)]"
           aria-hidden
@@ -35,6 +47,10 @@ export function Hero() {
         <div
           className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/55 to-transparent"
           aria-hidden
+        />
+        <GoldenThread
+          chapter="hero"
+          className="absolute inset-x-0 top-[18%] h-40 w-full opacity-60"
         />
       </div>
 
@@ -88,7 +104,7 @@ export function Hero() {
         </div>
 
         <div className="flex flex-col items-start gap-6 lg:items-end">
-          <MonogramSvg className="h-28 w-28 sm:h-32 sm:w-32" />
+          <MonogramExperience showDate={false} />
           <a
             href="#story"
             className="group inline-flex min-h-11 items-center gap-3 font-sans text-xs uppercase tracking-[0.2em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"

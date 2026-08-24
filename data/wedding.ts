@@ -79,8 +79,8 @@ export const wedding: WeddingConfig = {
   featureFlags: {
     cinematicEntry: true,
     countdown: true,
-    threeMonogram: false,
-    floatingGallery: false,
+    threeMonogram: true,
+    floatingGallery: true,
     perspectives: true,
   },
   colors: {

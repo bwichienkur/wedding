@@ -1,5 +1,7 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
+import { MonogramSvg } from "@/components/monogram/MonogramSvg";
+import { GoldenThread } from "@/components/story/GoldenThread";
 import { rsvpNav } from "@/data/navigation";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
@@ -14,6 +16,9 @@ export function WeddingDaySection() {
       description="The golden thread becomes a route toward Bella Cosa. Full schedule details arrive next."
       className="bg-parchment/60"
     >
+      <div className="relative mb-10">
+        <GoldenThread chapter="wedding" className="h-24 w-full opacity-80" />
+      </div>
       <ol className="space-y-6 border-l border-gold/50 pl-6">
         <li>
           <p className="font-sans text-xs uppercase tracking-[0.18em] text-gold">
@@ -164,7 +169,12 @@ export function ClosingSection() {
       aria-labelledby="closing-title"
     >
       <div className="grain absolute inset-0 opacity-20" aria-hidden />
+      <GoldenThread
+        chapter="closing"
+        className="pointer-events-none absolute inset-x-0 top-10 h-32 w-full text-gold-soft opacity-50"
+      />
       <div className="relative mx-auto max-w-3xl text-center">
+        <MonogramSvg className="mx-auto mb-8 h-20 w-20 text-gold-soft" />
         <p
           id="closing-title"
           className={cn(

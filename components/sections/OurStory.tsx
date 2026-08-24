@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollScrubbedThread } from "@/components/story/GoldenThread";
 import { Section } from "@/components/ui/Section";
 import { storyMilestones } from "@/data/story";
 import { wedding } from "@/data/wedding";
@@ -160,19 +161,10 @@ export function OurStory() {
       className="bg-ivory"
     >
       <div className="relative">
-        <svg
-          className="pointer-events-none absolute left-4 top-0 hidden h-full w-8 text-gold/70 md:left-1/2 md:block md:-translate-x-1/2"
-          aria-hidden
-          preserveAspectRatio="none"
-          viewBox="0 0 32 1200"
-        >
-          <path
-            d="M16 0 C8 80, 24 160, 16 240 S8 400, 16 480 S24 640, 16 720 S8 880, 16 960 S24 1120, 16 1200"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.25"
-          />
-        </svg>
+        <ScrollScrubbedThread
+          split
+          className="pointer-events-none absolute left-3 top-0 hidden w-10 md:left-1/2 md:block md:-translate-x-1/2"
+        />
 
         <div className="relative">
           {storyMilestones.map((milestone, index) => (

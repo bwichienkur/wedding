@@ -14,6 +14,8 @@ import {
   WeddingDaySection,
 } from "@/components/sections/LogisticsPlaceholders";
 import { OurStory } from "@/components/sections/OurStory";
+import { ProposalConvergenceSection } from "@/components/sections/ProposalConvergence";
+import { MemoryGallerySection } from "@/components/three/MemoryGallery";
 import { mainContentId } from "@/data/navigation";
 import { useCallback, useState } from "react";
 
@@ -28,6 +30,8 @@ export function HomeExperience() {
       <main id={mainContentId} tabIndex={-1} className="outline-none">
         <Hero />
         <OurStory />
+        <MemoryGallerySection />
+        <ProposalConvergenceSection />
         <WeddingDaySection />
         <VenueSection />
         <TravelSection />
