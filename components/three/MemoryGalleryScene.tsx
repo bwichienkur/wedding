@@ -1,7 +1,7 @@
 "use client";
 
 import type { MemoryCard } from "@/data/memories";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   CanvasTexture,
@@ -127,18 +127,18 @@ export function MemoryGalleryScene({
   onSelect: (id: string) => void;
 }) {
   const group = useRef<Group>(null);
-  const { camera } = useThree();
   const gold = useMemo(() => new Color("#A6873B"), []);
 
   useFrame(() => {
+    if (!group.current) return;
     if (reducedMotion) {
-      camera.position.z = 3.2;
+      group.current.position.z = 0;
+      group.current.position.x = 0;
       return;
     }
-    const z = 3.4 + scrollProgress * Math.abs(cards.at(-1)?.depth ?? -6);
-    camera.position.z = z;
-    camera.position.x = Math.sin(scrollProgress * Math.PI) * 0.15;
-    camera.lookAt(0, 0, cards[Math.floor(scrollProgress * (cards.length - 1))]?.depth ?? -2);
+    const travel = scrollProgress * Math.abs(cards.at(-1)?.depth ?? -6);
+    group.current.position.z = travel;
+    group.current.position.x = Math.sin(scrollProgress * Math.PI) * -0.15;
   });
 
   return (
