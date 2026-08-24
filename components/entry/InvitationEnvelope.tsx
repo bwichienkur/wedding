@@ -18,12 +18,11 @@ interface InvitationEnvelopeProps {
 }
 
 type FlapSide = "top" | "bottom" | "left" | "right";
-type EdgeKind = "outer" | "fold-a" | "fold-b";
 
 /**
  * Full-viewport navy envelope with gold wax seal.
- * Vine embossing runs along each flap edge (outer + both folds).
- * On seal open, only the embossed relief illuminates gold.
+ * Delicate silvery vine embossing follows the diagonal fold lines
+ * (WooowInvites-style). On seal open, vines illuminate gold.
  */
 export function InvitationEnvelope({
   open,
@@ -50,7 +49,6 @@ export function InvitationEnvelope({
     >
       <div className="envelope-liner absolute inset-0" aria-hidden />
 
-      {/* Stack like a real envelope: bottom → sides → top */}
       <EnvelopeFlap
         side="bottom"
         open={open}
@@ -125,10 +123,9 @@ function useShellMetrics(shell: HTMLElement | null) {
     const { width, height } = shell.getBoundingClientRect();
     if (width <= 0 || height <= 0) return;
     setMetrics({
-      // Fold lines run from outer corners to center → atan(H/W) from horizontal
       foldAngle: (Math.atan(height / width) * 180) / Math.PI,
-      // Stop short of the wax seal at center
-      foldLengthPx: 0.5 * Math.hypot(width, height) * 0.88,
+      // Leave room for the seal at center
+      foldLengthPx: 0.5 * Math.hypot(width, height) * 0.78,
     });
   }, [shell]);
 
@@ -166,42 +163,43 @@ function EnvelopeFlap({
       aria-hidden
     >
       <div className="envelope-flap-face absolute inset-0">
-        <EdgeVine
-          side={side}
-          edge="outer"
-          foldAngle={foldAngle}
-          foldLengthPx={foldLengthPx}
-        />
-        <EdgeVine
-          side={side}
-          edge="fold-a"
-          foldAngle={foldAngle}
-          foldLengthPx={foldLengthPx}
-        />
-        <EdgeVine
-          side={side}
-          edge="fold-b"
-          foldAngle={foldAngle}
-          foldLengthPx={foldLengthPx}
-        />
+        {/*
+          Only top + bottom flaps carry fold vines so each diagonal is drawn
+          once (avoids the doubled/stacked look on shared seams).
+        */}
+        {(side === "top" || side === "bottom") && (
+          <>
+            <FoldVine
+              side={side}
+              which="a"
+              foldAngle={foldAngle}
+              foldLengthPx={foldLengthPx}
+            />
+            <FoldVine
+              side={side}
+              which="b"
+              foldAngle={foldAngle}
+              foldLengthPx={foldLengthPx}
+            />
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-function EdgeVine({
+function FoldVine({
   side,
-  edge,
+  which,
   foldAngle,
   foldLengthPx,
 }: {
   side: FlapSide;
-  edge: EdgeKind;
+  which: "a" | "b";
   foldAngle: number;
   foldLengthPx: number;
 }) {
-  const style = edgeStyle(side, edge, foldAngle, foldLengthPx);
-  const assetSide = edgeAssetSide(side, edge);
+  const style = foldStyle(side, which, foldAngle, foldLengthPx);
 
   return (
     <>
@@ -209,148 +207,104 @@ function EdgeVine({
         className="envelope-design envelope-design-emboss"
         style={{
           ...style,
-          backgroundImage: `url(/images/envelope-flap-${assetSide}.webp)`,
+          backgroundImage: "url(/images/envelope-vine-edge.webp)",
         }}
       />
       <div
         className="envelope-design envelope-design-glow"
         style={{
           ...style,
-          backgroundImage: `url(/images/envelope-flap-${assetSide}-glow.webp)`,
+          backgroundImage: "url(/images/envelope-vine-edge-glow.webp)",
         }}
       />
     </>
   );
 }
 
-/** Which strip orientation asset to use for this edge */
-function edgeAssetSide(side: FlapSide, edge: EdgeKind): FlapSide {
-  if (edge === "outer") return side;
-  // Diagonal folds use the horizontal vine strip, rotated in CSS
-  return "top";
-}
-
-function edgeStyle(
+function foldStyle(
   side: FlapSide,
-  edge: EdgeKind,
+  which: "a" | "b",
   foldAngle: number,
   foldLengthPx: number,
 ): CSSProperties {
-  const band = "min(11vmax, 5.5rem)";
-  const inset = "1.25%";
-  // Keep diagonal vines slightly inside the flap so shared folds don’t double-stack
-  const foldInset = "2%";
+  // Thin delicate band — reference uses fine filigree, not chunky borders
+  const band = "min(5.5vmax, 2.85rem)";
+  const inset = "2.25%";
+  const width = `${Math.round(foldLengthPx)}px`;
 
-  if (edge === "outer") {
-    switch (side) {
-      case "top":
-        return {
-          left: "3%",
-          right: "3%",
-          top: inset,
-          height: band,
-        };
-      case "bottom":
-        return {
-          left: "3%",
-          right: "3%",
-          bottom: inset,
-          height: band,
-        };
-      case "left":
-        return {
-          top: "3%",
-          bottom: "3%",
-          left: inset,
-          width: band,
-        };
-      case "right":
-        return {
-          top: "3%",
-          bottom: "3%",
-          right: inset,
-          width: band,
-        };
-    }
-  }
+  const base = {
+    width,
+    height: band,
+  } as CSSProperties;
 
-  const foldWidth = `${Math.round(foldLengthPx)}px`;
-
-  if (side === "top" && edge === "fold-a") {
+  // Each flap owns vines along its two hypotenuses, inset so folds don’t double-stack
+  if (side === "top" && which === "a") {
     return {
-      left: foldInset,
-      top: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      left: inset,
+      top: inset,
       transformOrigin: "left center",
       transform: `rotate(${foldAngle}deg)`,
     };
   }
-  if (side === "top" && edge === "fold-b") {
+  if (side === "top" && which === "b") {
     return {
-      right: foldInset,
-      top: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      right: inset,
+      top: inset,
       transformOrigin: "right center",
       transform: `rotate(${-foldAngle}deg)`,
     };
   }
-  if (side === "bottom" && edge === "fold-a") {
+  if (side === "bottom" && which === "a") {
     return {
-      left: foldInset,
-      bottom: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      left: inset,
+      bottom: inset,
       transformOrigin: "left center",
       transform: `rotate(${-foldAngle}deg)`,
     };
   }
-  if (side === "bottom" && edge === "fold-b") {
+  if (side === "bottom" && which === "b") {
     return {
-      right: foldInset,
-      bottom: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      right: inset,
+      bottom: inset,
       transformOrigin: "right center",
       transform: `rotate(${foldAngle}deg)`,
     };
   }
-  if (side === "left" && edge === "fold-a") {
+  if (side === "left" && which === "a") {
     return {
-      left: foldInset,
-      top: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      left: inset,
+      top: inset,
       transformOrigin: "left center",
       transform: `rotate(${foldAngle}deg)`,
     };
   }
-  if (side === "left" && edge === "fold-b") {
+  if (side === "left" && which === "b") {
     return {
-      left: foldInset,
-      bottom: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      left: inset,
+      bottom: inset,
       transformOrigin: "left center",
       transform: `rotate(${-foldAngle}deg)`,
     };
   }
-  if (side === "right" && edge === "fold-a") {
+  if (side === "right" && which === "a") {
     return {
-      right: foldInset,
-      top: foldInset,
-      width: foldWidth,
-      height: band,
+      ...base,
+      right: inset,
+      top: inset,
       transformOrigin: "right center",
       transform: `rotate(${-foldAngle}deg)`,
     };
   }
   return {
-    right: foldInset,
-    bottom: foldInset,
-    width: foldWidth,
-    height: band,
+    ...base,
+    right: inset,
+    bottom: inset,
     transformOrigin: "right center",
     transform: `rotate(${foldAngle}deg)`,
   };

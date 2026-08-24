@@ -267,12 +267,12 @@
 
   .envelope-design-emboss {
     opacity: 1;
-    filter: brightness(1.28) contrast(1.18) saturate(1.05);
+    filter: brightness(1.35) contrast(1.22) saturate(0.95);
     transition: opacity 1.55s ease, filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .envelope-design-glow {
-    opacity: 0.12;
+    opacity: 0.08;
     mix-blend-mode: plus-lighter;
     transition:
       opacity 1.55s cubic-bezier(0.22, 1, 0.36, 1),
