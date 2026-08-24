@@ -228,7 +228,7 @@
     }
   }
 
-  /* Sealed invitation envelope — realistic cardstock flaps */
+  /* Full-bleed sealed invitation — edge-to-edge cardstock flaps */
   .envelope-liner {
     background:
       radial-gradient(
@@ -256,8 +256,19 @@
       );
     box-shadow:
       inset 0 1px 0 rgb(255 230 220 / 0.14),
-      inset 0 -10px 22px rgb(20 8 10 / 0.32),
-      inset 0 0 40px rgb(0 0 0 / 0.12);
+      inset 0 -14px 28px rgb(20 8 10 / 0.35),
+      inset 0 0 48px rgb(0 0 0 / 0.14);
+  }
+
+  .envelope-flap-face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    mix-blend-mode: multiply;
+    opacity: 0.22;
+    pointer-events: none;
   }
 
   .envelope-flap-top {
@@ -320,39 +331,74 @@
       );
   }
 
-  /* Open only after explicit seal click — never on mount */
+  /* Quiet emboss at rest → gold illumination after seal click */
+  .envelope-emboss {
+    color: rgb(232 213 196 / 0.16);
+    opacity: 0.85;
+    transition:
+      color 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 1.05s ease,
+      filter 1.05s ease;
+  }
+
+  .envelope-shell.is-illuminated .envelope-emboss {
+    color: #e2c07a;
+    opacity: 1;
+    filter:
+      drop-shadow(0 0 4px rgb(226 192 122 / 0.45))
+      drop-shadow(0 0 14px rgb(212 175 106 / 0.35));
+  }
+
+  .envelope-shell.is-illuminated .envelope-flap-face {
+    background:
+      linear-gradient(
+        145deg,
+        #7a4a4f 0%,
+        #5a3438 40%,
+        #422428 100%
+      );
+    transition: background 1s ease;
+  }
+
+  /* Open only after glow — never on mount */
   .envelope-shell-open .envelope-flap {
     transition:
-      transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.7s ease;
+      transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.75s ease;
   }
 
   .envelope-flap-top.is-open {
     transform: rotateX(-155deg);
-    opacity: 0.85;
+    opacity: 0.8;
     transition-delay: 0.08s;
   }
 
   .envelope-flap-bottom.is-open {
     transform: rotateX(155deg);
-    opacity: 0.85;
+    opacity: 0.8;
     transition-delay: 0.14s;
   }
 
   .envelope-flap-left.is-open {
     transform: rotateY(-155deg);
-    opacity: 0.85;
+    opacity: 0.8;
     transition-delay: 0.05s;
   }
 
   .envelope-flap-right.is-open {
     transform: rotateY(155deg);
-    opacity: 0.85;
+    opacity: 0.8;
     transition-delay: 0.11s;
   }
 
   .envelope-flap.is-open-instant {
     opacity: 0;
     transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .envelope-emboss {
+      transition: none;
+    }
   }
 }

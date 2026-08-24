@@ -12,8 +12,8 @@ interface InvitationEnvelopeProps {
 }
 
 /**
- * Portrait invitation envelope with four meeting flaps and a central wax seal.
- * Closed until `open` is set by an explicit seal click — no mount animation.
+ * Full-viewport sealed invitation — four flaps edge-to-edge, embossed florals
+ * that illuminate on seal click, then open into the site.
  */
 export function InvitationEnvelope({
   open,
@@ -22,77 +22,70 @@ export function InvitationEnvelope({
   onOpen,
 }: InvitationEnvelopeProps) {
   return (
-    <div className="relative mx-auto w-[min(72vw,17.5rem)] sm:w-[18.5rem]">
+    <div
+      className={cn(
+        "envelope-shell absolute inset-0 h-full w-full overflow-hidden",
+        glowing && "is-illuminated",
+        open && !reduceMotion && "envelope-shell-open",
+      )}
+      style={
+        reduceMotion
+          ? undefined
+          : { perspective: 1600, transformStyle: "preserve-3d" }
+      }
+    >
+      <div className="envelope-liner absolute inset-0" aria-hidden />
+
       <div
         className={cn(
-          "envelope-shell relative aspect-[9/16] w-full overflow-visible rounded-sm",
-          "shadow-[0_28px_60px_-18px_rgba(48,20,24,0.55),0_8px_20px_rgba(48,20,24,0.25)]",
-          open && !reduceMotion && "envelope-shell-open",
+          "absolute inset-[8%] z-0 flex flex-col items-center justify-center bg-[#f4ebe0] text-center",
+          "opacity-0 transition-opacity duration-500",
+          open && "opacity-100 delay-150",
         )}
-        style={
-          reduceMotion
-            ? undefined
-            : { perspective: 1400, transformStyle: "preserve-3d" }
-        }
+        aria-hidden
       >
-        <div
-          className="envelope-liner absolute inset-0 rounded-sm"
-          aria-hidden
-        />
-
-        <div
-          className={cn(
-            "absolute inset-[12%] z-0 flex flex-col items-center justify-center bg-[#f4ebe0] text-center",
-            "opacity-0 transition-opacity duration-300",
-            open && "opacity-100 delay-200",
-          )}
-          aria-hidden
-        >
-          <p className="font-display text-lg text-[#3a2426]">
-            {wedding.couple.partnerOne}
-          </p>
-          <p className="font-display text-base text-[#8f655c]">&</p>
-          <p className="font-display text-lg text-[#3a2426]">
-            {wedding.couple.partnerTwo}
-          </p>
-          <p className="mt-3 font-sans text-[0.65rem] uppercase tracking-[0.22em] text-[#6b605a]">
-            {wedding.wedding.dateDisplay}
-          </p>
-        </div>
-
-        <EnvelopeFlap side="top" open={open} reduceMotion={reduceMotion} />
-        <EnvelopeFlap side="bottom" open={open} reduceMotion={reduceMotion} />
-        <EnvelopeFlap side="left" open={open} reduceMotion={reduceMotion} />
-        <EnvelopeFlap side="right" open={open} reduceMotion={reduceMotion} />
-
-        <WaxSeal
-          open={open}
-          glowing={glowing}
-          reduceMotion={reduceMotion}
-          onOpen={onOpen}
-        />
+        <p className="font-display text-3xl text-[#3a2426] sm:text-4xl">
+          {wedding.couple.partnerOne}
+        </p>
+        <p className="font-display text-2xl text-[#8f655c]">&</p>
+        <p className="font-display text-3xl text-[#3a2426] sm:text-4xl">
+          {wedding.couple.partnerTwo}
+        </p>
+        <p className="mt-4 font-sans text-xs uppercase tracking-[0.28em] text-[#6b605a]">
+          {wedding.wedding.dateDisplay}
+        </p>
       </div>
 
+      <EnvelopeFlap side="top" open={open} reduceMotion={reduceMotion} />
+      <EnvelopeFlap side="bottom" open={open} reduceMotion={reduceMotion} />
+      <EnvelopeFlap side="left" open={open} reduceMotion={reduceMotion} />
+      <EnvelopeFlap side="right" open={open} reduceMotion={reduceMotion} />
+
       <p
         className={cn(
-          "pointer-events-none mt-6 text-center font-display text-xl text-[#3a2426] transition-opacity duration-300 sm:text-2xl",
-          open && "opacity-0",
+          "pointer-events-none absolute left-1/2 top-[14%] z-20 w-[min(90%,22rem)] -translate-x-1/2 text-center",
+          "font-annotation text-xl text-[#f3e6dc]/85] sm:text-2xl",
+          "transition-opacity duration-300",
+          (glowing || open) && "opacity-0",
         )}
       >
-        {wedding.couple.displayName}
+        For {wedding.couple.partnerOne} and {wedding.couple.partnerTwo}
       </p>
+
+      <WaxSeal
+        open={open}
+        glowing={glowing}
+        reduceMotion={reduceMotion}
+        onOpen={onOpen}
+        className="scale-110 sm:scale-125"
+      />
+
       <p
         className={cn(
-          "pointer-events-none mt-2 text-center font-sans text-xs uppercase tracking-[0.28em] text-[#6b605a] transition-opacity duration-300",
-          open && "opacity-0",
-        )}
-      >
-        {wedding.wedding.dateDisplay}
-      </p>
-      <p
-        className={cn(
-          "pointer-events-none mt-5 text-center font-sans text-sm tracking-wide text-[#8f655c] transition-opacity duration-300",
-          open && "opacity-0",
+          "pointer-events-none absolute bottom-[12%] left-1/2 z-20 -translate-x-1/2",
+          "font-sans text-sm tracking-wide text-[#e8d5c4]/70",
+          "transition-opacity duration-300",
+          (glowing || open) && "opacity-0",
         )}
       >
         Tap the seal to open
@@ -128,23 +121,114 @@ function EnvelopeFlap({
 }
 
 function EmbossMotif({ side }: { side: "top" | "bottom" | "left" | "right" }) {
-  if (side !== "left" && side !== "right") return null;
+  if (side === "left" || side === "right") {
+    return (
+      <svg
+        viewBox="0 0 200 480"
+        className="envelope-emboss absolute inset-0 h-full w-full"
+        aria-hidden
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <g
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.35"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          transform={
+            side === "right" ? "translate(200,0) scale(-1,1)" : undefined
+          }
+        >
+          {/* Chrysanthemum-like bloom */}
+          <g transform="translate(48,170)">
+            {Array.from({ length: 12 }).map((_, i) => {
+              const a = (i * Math.PI * 2) / 12;
+              const x2 = Math.cos(a) * 36;
+              const y2 = Math.sin(a) * 36;
+              return (
+                <path
+                  key={i}
+                  d={`M0 0 C ${x2 * 0.35} ${y2 * 0.15}, ${x2 * 0.7} ${y2 * 0.55}, ${x2} ${y2}`}
+                />
+              );
+            })}
+            <circle cx="0" cy="0" r="7" fill="currentColor" stroke="none" opacity="0.55" />
+          </g>
+          {/* Secondary bloom */}
+          <g transform="translate(70,300)">
+            {Array.from({ length: 10 }).map((_, i) => {
+              const a = (i * Math.PI * 2) / 10;
+              const x2 = Math.cos(a) * 26;
+              const y2 = Math.sin(a) * 26;
+              return (
+                <path
+                  key={i}
+                  d={`M0 0 C ${x2 * 0.4} ${y2 * 0.2}, ${x2 * 0.75} ${y2 * 0.6}, ${x2} ${y2}`}
+                />
+              );
+            })}
+            <circle cx="0" cy="0" r="5" fill="currentColor" stroke="none" opacity="0.5" />
+          </g>
+          {/* Vine */}
+          <path d="M48 210 C58 240, 52 270, 70 300 C86 328, 78 360, 92 400" />
+          <path d="M58 250 C40 248, 34 268, 46 274" />
+          <path d="M62 270 C80 262, 88 280, 74 288" />
+          <path d="M78 330 C62 336, 58 354, 72 358" />
+          <path d="M82 350 C98 342, 108 360, 94 368" />
+          <ellipse cx="46" cy="274" rx="7" ry="11" transform="rotate(-20 46 274)" fill="currentColor" stroke="none" opacity="0.35" />
+          <ellipse cx="74" cy="288" rx="6" ry="10" transform="rotate(24 74 288)" fill="currentColor" stroke="none" opacity="0.35" />
+          <ellipse cx="72" cy="358" rx="6" ry="10" transform="rotate(-16 72 358)" fill="currentColor" stroke="none" opacity="0.35" />
+          <ellipse cx="94" cy="368" rx="7" ry="11" transform="rotate(18 94 368)" fill="currentColor" stroke="none" opacity="0.35" />
+        </g>
+      </svg>
+    );
+  }
+
+  if (side === "top") {
+    return (
+      <svg
+        viewBox="0 0 400 220"
+        className="envelope-emboss absolute inset-0 h-full w-full"
+        aria-hidden
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <g
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.25"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M200 48 C188 62, 192 78, 200 92 C208 78, 212 62, 200 48" />
+          <path d="M200 92 C170 88, 150 108, 168 122" />
+          <path d="M200 92 C230 88, 250 108, 232 122" />
+          <path d="M200 70 C176 66, 166 84, 180 90" />
+          <path d="M200 70 C224 66, 234 84, 220 90" />
+          <circle cx="200" cy="92" r="3.5" fill="currentColor" stroke="none" opacity="0.45" />
+        </g>
+      </svg>
+    );
+  }
 
   return (
     <svg
-      viewBox="0 0 120 240"
-      className="absolute inset-0 h-full w-full opacity-[0.14]"
+      viewBox="0 0 400 220"
+      className="envelope-emboss absolute inset-0 h-full w-full"
       aria-hidden
+      preserveAspectRatio="xMidYMid slice"
     >
       <g
-        fill="#e8d5c4"
-        opacity="0.9"
-        transform={side === "right" ? "translate(120,0) scale(-1,1)" : undefined}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        <ellipse cx="46" cy="96" rx="10" ry="16" transform="rotate(-28 46 96)" />
-        <ellipse cx="58" cy="128" rx="12" ry="18" transform="rotate(18 58 128)" />
-        <ellipse cx="44" cy="158" rx="9" ry="14" transform="rotate(-12 44 158)" />
-        <ellipse cx="62" cy="186" rx="11" ry="15" transform="rotate(22 62 186)" />
+        <path d="M120 150 C160 130, 200 170, 240 145 C270 128, 290 150, 310 140" />
+        <path d="M200 155 C188 140, 210 128, 218 146" />
+        <path d="M240 145 C248 128, 272 132, 266 150" />
+        <ellipse cx="218" cy="146" rx="6" ry="10" transform="rotate(-18 218 146)" fill="currentColor" stroke="none" opacity="0.35" />
+        <ellipse cx="266" cy="150" rx="6" ry="10" transform="rotate(20 266 150)" fill="currentColor" stroke="none" opacity="0.35" />
       </g>
     </svg>
   );
