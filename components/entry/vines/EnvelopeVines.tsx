@@ -11,7 +11,7 @@ export interface EnvelopeVinesProps {
   glowing?: boolean;
 }
 
-/** Renders flap-specific engraved botanical SVG inside its parent flap. */
+/** Renders flap-specific engraved botanical art inside its parent flap. */
 export function EnvelopeVines({ side, glowing }: EnvelopeVinesProps) {
   switch (side) {
     case "top":
@@ -25,4 +25,9 @@ export function EnvelopeVines({ side, glowing }: EnvelopeVinesProps) {
   }
 }
 
-export { TopFlapVines, LeftFlapVines, RightFlapVines, BottomFlapVines };
+export {
+  TopFlapVines,
+  LeftFlapVines,
+  RightFlapVines,
+  BottomFlapVines,
+};

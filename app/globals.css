@@ -247,7 +247,99 @@
       inset 0 -14px 28px rgb(4 10 24 / 0.35);
   }
 
-  /* Engraved SVG vines — per flap, clipped to triangle */
+  /* Illustrated embossed artwork — per flap, clipped by parent triangle */
+  .envelope-flap-art {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    background-repeat: no-repeat;
+    transition:
+      opacity 1.55s ease,
+      filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .envelope-flap-art-emboss {
+    opacity: 0.9;
+    mix-blend-mode: screen;
+    filter: brightness(1.08) contrast(1.05);
+  }
+
+  .envelope-flap-art-glow {
+    opacity: 0;
+    mix-blend-mode: plus-lighter;
+    filter: brightness(0.95);
+  }
+
+  .envelope-flap-art-glow.is-lit,
+  .envelope-shell.is-illuminated .envelope-flap-art-glow {
+    opacity: 1;
+    filter:
+      brightness(1.12)
+      drop-shadow(0 0 10px rgb(205 168 79 / 0.42))
+      drop-shadow(0 0 22px rgb(212 182 92 / 0.28));
+  }
+
+  .envelope-shell.is-illuminated .envelope-flap-art-emboss {
+    opacity: 0.38;
+  }
+
+  /* Top corners — mirrored filigree framing headline */
+  .envelope-flap-art-top-left {
+    top: 0;
+    left: 0;
+    width: 62%;
+    height: 44%;
+    background-position: left top;
+    background-size: 195% auto;
+  }
+
+  .envelope-flap-art-top-right {
+    top: 0;
+    right: 0;
+    width: 62%;
+    height: 44%;
+    background-position: right top;
+    background-size: 195% auto;
+  }
+
+  .envelope-flap-art--mirrored {
+    transform: scaleX(-1);
+  }
+
+  /* Bottom — central V flourish beneath seal */
+  .envelope-flap-art-bottom {
+    left: 8%;
+    right: 8%;
+    bottom: 0;
+    height: 46%;
+    background-position: center bottom;
+    background-size: contain;
+  }
+
+  /* Sides — rotated filigree climbing along outer edges */
+  .envelope-flap-art-side-left {
+    top: 10%;
+    left: -28%;
+    width: 78%;
+    height: 80%;
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    background-position: center;
+    background-size: contain;
+  }
+
+  .envelope-flap-art-side-right {
+    top: 10%;
+    right: -28%;
+    width: 78%;
+    height: 80%;
+    transform: rotate(90deg) scaleX(-1);
+    transform-origin: center center;
+    background-position: center;
+    background-size: contain;
+  }
+
+  /* Side SVG vines */
   .envelope-vines-svg {
     z-index: 1;
     transition: opacity 1.55s ease;
@@ -270,15 +362,31 @@
     opacity: 0.88;
   }
 
-  .envelope-shell-open .envelope-vines-svg {
+  .envelope-shell-open .envelope-vines-svg,
+  .envelope-shell-open .envelope-flap-art {
     opacity: 0.5;
     transition: opacity 1.35s ease;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .envelope-vines-svg,
-    .envelope-vine-gold-accent {
+    .envelope-vine-gold-accent,
+    .envelope-flap-art {
       transition: none;
+    }
+  }
+
+  @media (max-aspect-ratio: 3/4) {
+    .envelope-flap-art-top-left,
+    .envelope-flap-art-top-right {
+      width: 64%;
+      height: 42%;
+    }
+
+    .envelope-flap-art-bottom {
+      left: 6%;
+      right: 6%;
+      height: 44%;
     }
   }
 

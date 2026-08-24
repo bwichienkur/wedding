@@ -36,7 +36,7 @@ export function FlapVineCanvas({
         className,
       )}
       viewBox="0 0 100 100"
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
     >
       <defs>
