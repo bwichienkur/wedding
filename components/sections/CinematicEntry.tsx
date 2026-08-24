@@ -1,9 +1,10 @@
 "use client";
 
-import { InvitationEnvelope } from "@/components/entry/InvitationEnvelope";
-import { Button } from "@/components/ui/Button";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { rsvpNav, weddingDetailsHref } from "@/data/navigation";
+import { IntroNavigation, weddingDetailsHref } from "@/components/entry/intro/IntroNavigation";
+import { WeddingEnvelopeIntro } from "@/components/entry/intro/WeddingEnvelopeIntro";
+import { INTRO_CSS_VARS } from "@/components/entry/intro/constants";
+import type { IntroPhase } from "@/components/entry/intro/types";
+import { useIntroPhase } from "@/components/entry/intro/useIntroPhase";
 import { wedding } from "@/data/wedding";
 import {
   isIntroForceSkipped,
@@ -16,6 +17,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type CSSProperties,
 } from "react";
 
 interface CinematicEntryProps {
@@ -23,10 +25,6 @@ interface CinematicEntryProps {
   /** Fired when the seal is opened and the homepage should begin fading in */
   onRevealStart?: () => void;
 }
-
-const GLOW_MS = 1600;
-const OPEN_MS = 1800;
-const EXIT_MS = 900;
 
 function subscribeNoop() {
   return () => {};
@@ -54,27 +52,10 @@ export function CinematicEntry({
   const reduceMotion = useReducedMotion();
   const isClient = useIsClient();
   const forceSkip = useForceSkipIntro();
-  const [dismissed, setDismissed] = useState(false);
-  const [opening, setOpening] = useState(false);
-  const [glowing, setGlowing] = useState(false);
-  const [exiting, setExiting] = useState(false);
-  const finishTimer = useRef<number | null>(null);
-  const openedRef = useRef(false);
+  const [phase, setPhase] = useState<IntroPhase>("closed");
+  const [removed, setRemoved] = useState(false);
   const completedRef = useRef(false);
   const revealedRef = useRef(false);
-
-  const finish = useCallback(() => {
-    if (finishTimer.current != null) {
-      window.clearTimeout(finishTimer.current);
-      finishTimer.current = null;
-    }
-    markIntroSeen();
-    setDismissed(true);
-    if (!completedRef.current) {
-      completedRef.current = true;
-      onComplete();
-    }
-  }, [onComplete]);
 
   const startReveal = useCallback(() => {
     if (revealedRef.current) return;
@@ -82,13 +63,22 @@ export function CinematicEntry({
     onRevealStart?.();
   }, [onRevealStart]);
 
-  useEffect(() => {
-    return () => {
-      if (finishTimer.current != null) {
-        window.clearTimeout(finishTimer.current);
-      }
-    };
-  }, []);
+  const finish = useCallback(() => {
+    markIntroSeen();
+    if (!completedRef.current) {
+      completedRef.current = true;
+      onComplete();
+    }
+    setRemoved(true);
+  }, [onComplete]);
+
+  const { activate, skip } = useIntroPhase({
+    phase,
+    setPhase,
+    reduceMotion: Boolean(reduceMotion),
+    onRevealStart: startReveal,
+    onComplete: finish,
+  });
 
   useEffect(() => {
     if (!isClient) return;
@@ -101,33 +91,9 @@ export function CinematicEntry({
     }
   }, [isClient, forceSkip, onComplete, startReveal]);
 
-  function openInvitation() {
-    if (openedRef.current || opening || dismissed || exiting) return;
-    openedRef.current = true;
-
-    if (reduceMotion) {
-      startReveal();
-      finish();
-      return;
-    }
-
-    setGlowing(true);
-    // Begin homepage fade during the gold illumination
-    startReveal();
-    finishTimer.current = window.setTimeout(() => {
-      setOpening(true);
-      finishTimer.current = window.setTimeout(() => {
-        setExiting(true);
-        finishTimer.current = window.setTimeout(() => {
-          finish();
-        }, EXIT_MS);
-      }, OPEN_MS);
-    }, GLOW_MS);
-  }
-
   function skipToDetails() {
-    startReveal();
-    finish();
+    skip();
+    setRemoved(true);
     window.requestAnimationFrame(() => {
       document.querySelector(weddingDetailsHref)?.scrollIntoView({
         behavior: reduceMotion ? "auto" : "smooth",
@@ -136,67 +102,57 @@ export function CinematicEntry({
     });
   }
 
-  if (!wedding.featureFlags.cinematicEntry || forceSkip || dismissed) {
+  function handleRsvp() {
+    skip();
+    setRemoved(true);
+  }
+
+  if (!wedding.featureFlags.cinematicEntry || forceSkip || removed) {
     return null;
   }
 
   if (!isClient) {
-    return <div className="fixed inset-0 z-50 bg-[#0f1c33]" aria-hidden />;
+    return <div className="fixed inset-0 z-50 bg-[#0a1220]" aria-hidden />;
   }
+
+  const exiting = phase === "opened" || phase === "skipped";
 
   return (
     <div
       className={[
-        "fixed inset-0 z-50 overflow-hidden",
+        "intro-overlay fixed inset-0 z-50 overflow-hidden",
         "transition-[opacity,background-color] duration-[900ms] ease-out",
-        opening || exiting ? "bg-transparent" : "bg-[#0f1c33]",
+        phase === "opening" || exiting ? "bg-transparent" : "bg-[#0a1220]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
       ].join(" ")}
       role="dialog"
       aria-modal="true"
       aria-labelledby="entry-title"
       data-intro="sealed"
+      style={
+        {
+          "--intro-activating": INTRO_CSS_VARS.activating,
+          "--intro-glow": INTRO_CSS_VARS.glow,
+          "--intro-open": INTRO_CSS_VARS.open,
+          "--intro-exit": INTRO_CSS_VARS.exit,
+        } as CSSProperties
+      }
     >
       <h1 id="entry-title" className="sr-only">
         {wedding.couple.displayName} wedding invitation
       </h1>
 
-      <InvitationEnvelope
-        open={opening}
-        glowing={glowing}
+      <WeddingEnvelopeIntro
+        phase={phase}
         reduceMotion={Boolean(reduceMotion)}
-        onOpen={openInvitation}
+        onActivate={activate}
       />
 
-      <div
-        className={[
-          "absolute inset-x-0 bottom-4 z-40 flex flex-wrap items-center justify-center gap-2 px-5",
-          "transition-opacity duration-500",
-          glowing || opening || exiting
-            ? "pointer-events-none opacity-0"
-            : "opacity-100",
-        ].join(" ")}
-      >
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={skipToDetails}
-          className="text-[#e0c56a]/90 hover:text-[#f0d98a]"
-        >
-          {wedding.entry.skipDetailsLabel}
-        </Button>
-        <ButtonLink
-          href={rsvpNav.href}
-          variant="ghost"
-          onClick={() => {
-            startReveal();
-            finish();
-          }}
-          className="text-[#e0c56a]/90 hover:text-[#f0d98a]"
-        >
-          {wedding.entry.rsvpLabel}
-        </ButtonLink>
-      </div>
+      <IntroNavigation
+        phase={phase}
+        onSkip={skipToDetails}
+        onRsvp={handleRsvp}
+      />
     </div>
   );
 }

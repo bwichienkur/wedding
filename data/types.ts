@@ -87,8 +87,13 @@ export interface WeddingConfig {
     beginLabel: string;
     skipDetailsLabel: string;
     rsvpLabel: string;
+    /** @deprecated Use invitePreamble + inviteNames */
     inviteHeadline: string;
+    invitePreamble: string;
+    inviteNames: string;
     inviteSubline: string;
+    tapHint: string;
+    openingHint: string;
   };
   closing: {
     message: string;

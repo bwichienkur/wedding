@@ -43,12 +43,16 @@ export const wedding: WeddingConfig = {
     statementIsPlaceholder: true,
   },
   entry: {
-    beginLabel: "Open invitation",
+    beginLabel: "Open wedding invitation",
     skipDetailsLabel: "Skip to wedding details",
     rsvpLabel: "RSVP",
     inviteHeadline:
       "You’re cordially invited to the wedding of Bright & Lexi",
+    invitePreamble: "You’re cordially invited to the wedding of",
+    inviteNames: "Bright & Lexi",
     inviteSubline: "May 15, 2027 · Bella Cosa · Lake Wales, Florida",
+    tapHint: "Tap the seal to open",
+    openingHint: "Opening your invitation",
   },
   closing: {
     message:

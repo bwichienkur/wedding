@@ -228,7 +228,137 @@
     }
   }
 
-  /* Full-bleed navy envelope — clean four-flap fold, per-flap florals */
+  /* ── Luxury wedding envelope intro ── */
+  .intro-overlay {
+    --intro-navy-deep: #0a1220;
+    --intro-navy-paper: #0f213d;
+    --intro-navy-edge: #182f50;
+    --intro-gold: #d4b65c;
+    --intro-gold-soft: #e8c872;
+    --intro-gold-glow: rgb(212 168 79 / 0.55);
+  }
+
+  .intro-envelope-viewport {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:
+      max(0.75rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .intro-envelope-stage {
+    position: relative;
+    width: min(96vw, 28rem);
+    height: min(96svh, 52rem);
+    height: min(96dvh, 52rem);
+    max-height: calc(100svh - 5rem);
+    max-height: calc(100dvh - 5rem);
+  }
+
+  @media (min-width: 768px) {
+    .intro-envelope-stage {
+      width: min(94vw, 32rem);
+      height: min(94svh, 56rem);
+      height: min(94dvh, 56rem);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .intro-envelope-stage {
+      width: min(420px, 38vw);
+    }
+  }
+
+  .intro-envelope {
+    border-radius: 2px;
+    box-shadow:
+      0 24px 80px rgb(4 8 20 / 0.55),
+      0 4px 16px rgb(4 8 20 / 0.35);
+  }
+
+  .envelope-paper {
+    background-color: var(--intro-navy-paper);
+    background-image:
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"),
+      linear-gradient(
+        145deg,
+        rgb(255 255 255 / 0.04) 0%,
+        transparent 42%,
+        rgb(0 0 0 / 0.08) 100%
+      );
+    background-blend-mode: overlay, normal;
+  }
+
+  .envelope-interior {
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 50% 55%,
+        #1a3050 0%,
+        #0c1828 70%
+      );
+    opacity: 0;
+    transition: opacity var(--intro-open, 2800ms) ease;
+  }
+
+  .intro-envelope-opening .envelope-interior {
+    opacity: 1;
+  }
+
+  .envelope-flap-fold-line {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.35;
+  }
+
+  .envelope-flap-top .envelope-flap-fold-line {
+    background: linear-gradient(
+      135deg,
+      transparent 49.2%,
+      rgb(210 230 255 / 0.12) 49.8%,
+      rgb(4 10 24 / 0.45) 50.2%,
+      transparent 50.8%
+    );
+  }
+
+  .envelope-flap-bottom .envelope-flap-fold-line {
+    background: linear-gradient(
+      45deg,
+      transparent 49.2%,
+      rgb(210 230 255 / 0.1) 49.8%,
+      rgb(4 10 24 / 0.45) 50.2%,
+      transparent 50.8%
+    );
+  }
+
+  .envelope-flap-left .envelope-flap-fold-line {
+    background: linear-gradient(
+      135deg,
+      transparent 49.2%,
+      rgb(210 230 255 / 0.1) 49.8%,
+      rgb(4 10 24 / 0.4) 50.2%,
+      transparent 50.8%
+    );
+  }
+
+  .envelope-flap-right .envelope-flap-fold-line {
+    background: linear-gradient(
+      45deg,
+      transparent 49.2%,
+      rgb(210 230 255 / 0.1) 49.8%,
+      rgb(4 10 24 / 0.4) 50.2%,
+      transparent 50.8%
+    );
+  }
+
   .envelope-liner {
     background: transparent;
   }
@@ -241,9 +371,8 @@
   }
 
   .envelope-flap-face {
-    background: #0f213d;
     box-shadow:
-      inset 0 1px 0 rgb(210 230 255 / 0.06),
+      inset 0 1px 0 rgb(210 230 255 / 0.07),
       inset 0 -14px 28px rgb(4 10 24 / 0.35);
   }
 
@@ -254,14 +383,14 @@
     z-index: 1;
     background-repeat: no-repeat;
     transition:
-      opacity 1.55s ease,
-      filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity var(--intro-glow, 1400ms) ease,
+      filter var(--intro-glow, 1400ms) cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .envelope-flap-art-emboss {
-    opacity: 0.9;
+    opacity: 0.92;
     mix-blend-mode: screen;
-    filter: brightness(1.08) contrast(1.05);
+    filter: brightness(1.06) contrast(1.04);
   }
 
   .envelope-flap-art-glow {
@@ -271,126 +400,117 @@
   }
 
   .envelope-flap-art-glow.is-lit,
-  .envelope-shell.is-illuminated .envelope-flap-art-glow {
+  .intro-envelope-stage.is-illuminated .envelope-flap-art-glow {
     opacity: 1;
     filter:
-      brightness(1.12)
+      brightness(1.14)
       drop-shadow(0 0 10px rgb(205 168 79 / 0.42))
       drop-shadow(0 0 22px rgb(212 182 92 / 0.28));
   }
 
-  .envelope-shell.is-illuminated .envelope-flap-art-emboss {
-    opacity: 0.38;
+  .intro-envelope-stage.is-illuminated .envelope-flap-art-emboss {
+    opacity: 0.42;
   }
 
-  /* Top corners — mirrored filigree framing headline */
   .envelope-flap-art-top-left {
     top: 0;
     left: 0;
-    width: 62%;
-    height: 44%;
+    width: 64%;
+    height: 46%;
     background-position: left top;
-    background-size: 195% auto;
+    background-size: 200% auto;
   }
 
   .envelope-flap-art-top-right {
     top: 0;
     right: 0;
-    width: 62%;
-    height: 44%;
+    width: 64%;
+    height: 46%;
     background-position: right top;
-    background-size: 195% auto;
+    background-size: 200% auto;
   }
 
   .envelope-flap-art--mirrored {
     transform: scaleX(-1);
   }
 
-  /* Bottom — central V flourish beneath seal */
   .envelope-flap-art-bottom {
-    left: 8%;
-    right: 8%;
+    left: 4%;
+    right: 4%;
     bottom: 0;
-    height: 46%;
+    height: 48%;
     background-position: center bottom;
     background-size: contain;
   }
 
-  /* Sides — rotated filigree climbing along outer edges */
   .envelope-flap-art-side-left {
-    top: 10%;
-    left: -28%;
-    width: 78%;
-    height: 80%;
-    transform: rotate(-90deg);
-    transform-origin: center center;
-    background-position: center;
+    top: 2%;
+    left: 0;
+    width: 58%;
+    height: 96%;
+    background-position: left center;
     background-size: contain;
   }
 
   .envelope-flap-art-side-right {
-    top: 10%;
-    right: -28%;
-    width: 78%;
-    height: 80%;
-    transform: rotate(90deg) scaleX(-1);
-    transform-origin: center center;
-    background-position: center;
+    top: 2%;
+    right: 0;
+    width: 58%;
+    height: 96%;
+    background-position: right center;
     background-size: contain;
   }
 
-  /* Side SVG vines */
-  .envelope-vines-svg {
-    z-index: 1;
-    transition: opacity 1.55s ease;
+  .intro-seal-florals-top {
+    left: 50%;
+    bottom: 2%;
+    width: 72%;
+    height: 28%;
+    transform: translateX(-50%);
   }
 
-  .envelope-vine-gold-accent {
-    opacity: 0.38;
-    transition: opacity 1.55s ease;
+  .intro-seal-florals-bottom {
+    left: 50%;
+    top: 0;
+    width: 80%;
+    height: 32%;
+    transform: translateX(-50%);
   }
 
-  .envelope-shell.is-illuminated .envelope-vine-base {
+  .intro-seal-floral-stems {
+    transition: filter var(--intro-glow, 1400ms) ease;
+  }
+
+  .intro-seal-florals.is-illuminated .intro-seal-floral-stems {
+    filter: drop-shadow(0 0 6px rgb(205 168 79 / 0.35));
+  }
+
+  .intro-seal-florals.is-illuminated path,
+  .intro-seal-florals.is-illuminated ellipse,
+  .intro-seal-florals.is-illuminated circle {
     stroke: #6d879e;
   }
 
-  .envelope-shell.is-illuminated .envelope-vine-highlight {
-    opacity: 0.65;
-  }
-
-  .envelope-shell.is-illuminated .envelope-vine-gold-accent {
-    opacity: 0.88;
-  }
-
-  .envelope-shell-open .envelope-vines-svg,
   .envelope-shell-open .envelope-flap-art {
-    opacity: 0.5;
+    opacity: 0.45;
     transition: opacity 1.35s ease;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .envelope-vines-svg,
-    .envelope-vine-gold-accent,
-    .envelope-flap-art {
-      transition: none;
-    }
   }
 
   @media (max-aspect-ratio: 3/4) {
     .envelope-flap-art-top-left,
     .envelope-flap-art-top-right {
-      width: 64%;
-      height: 42%;
+      width: 66%;
+      height: 44%;
     }
 
     .envelope-flap-art-bottom {
-      left: 6%;
-      right: 6%;
-      height: 44%;
+      left: 2%;
+      right: 2%;
+      height: 46%;
     }
   }
 
-  /* Flaps fill the viewport and meet exactly at center — no extra segments */
+  /* Four-flap geometry */
   .envelope-flap-top {
     clip-path: polygon(0 0, 100% 0, 50% 50%);
     transform-origin: 50% 0%;
@@ -417,73 +537,54 @@
 
   .envelope-flap-top .envelope-flap-face {
     background:
-      linear-gradient(
-        180deg,
-        #182f50 0%,
-        #0f213d 52%,
-        #0f213d 100%
-      );
+      linear-gradient(180deg, #182f50 0%, #0f213d 52%, #0f213d 100%);
   }
 
   .envelope-flap-bottom .envelope-flap-face {
     background:
-      linear-gradient(
-        0deg,
-        #182f50 0%,
-        #0f213d 52%,
-        #0f213d 100%
-      );
+      linear-gradient(0deg, #182f50 0%, #0f213d 52%, #0f213d 100%);
   }
 
   .envelope-flap-left .envelope-flap-face {
     background:
-      linear-gradient(
-        90deg,
-        #182f50 0%,
-        #0f213d 55%,
-        #0f213d 100%
-      );
+      linear-gradient(90deg, #182f50 0%, #0f213d 55%, #0f213d 100%);
   }
 
   .envelope-flap-right .envelope-flap-face {
     background:
-      linear-gradient(
-        270deg,
-        #182f50 0%,
-        #0f213d 55%,
-        #0f213d 100%
-      );
+      linear-gradient(270deg, #182f50 0%, #0f213d 55%, #0f213d 100%);
   }
 
-  /* Dramatic slow open onto the site */
+  /* Opening sequence */
   .envelope-shell-open .envelope-flap {
     transition:
-      transform 1.75s cubic-bezier(0.16, 1, 0.3, 1),
+      transform var(--intro-open, 2800ms) cubic-bezier(0.16, 1, 0.3, 1),
       opacity 1.35s ease;
   }
 
   .envelope-flap-top.is-open {
     transform: rotateX(-162deg);
-    opacity: 0.4;
-    transition-delay: 0.14s;
+    opacity: 0.35;
+    transition-delay: 0.18s;
+    z-index: 6;
   }
 
   .envelope-flap-bottom.is-open {
     transform: rotateX(162deg);
-    opacity: 0.4;
-    transition-delay: 0.26s;
+    opacity: 0.35;
+    transition-delay: 0.32s;
   }
 
   .envelope-flap-left.is-open {
     transform: rotateY(-162deg);
-    opacity: 0.4;
-    transition-delay: 0.06s;
+    opacity: 0.35;
+    transition-delay: 0.08s;
   }
 
   .envelope-flap-right.is-open {
     transform: rotateY(162deg);
-    opacity: 0.4;
-    transition-delay: 0.2s;
+    opacity: 0.35;
+    transition-delay: 0.24s;
   }
 
   .envelope-flap.is-open-instant {
@@ -491,9 +592,256 @@
     transition: none;
   }
 
+  /* Invitation typography */
+  .intro-invite-preamble {
+    font-size: clamp(0.85rem, 0.75rem + 0.6vw, 1.05rem);
+    line-height: 1.45;
+    text-wrap: balance;
+  }
+
+  .intro-invite-names {
+    margin-top: 0.35rem;
+    font-size: clamp(1.65rem, 1.2rem + 2.8vw, 2.35rem);
+    line-height: 1.15;
+    text-wrap: balance;
+    filter: drop-shadow(0 1px 3px rgb(8 16 32 / 0.75));
+  }
+
+  .intro-invite-subline {
+    margin-top: 0.65rem;
+    font-size: clamp(0.58rem, 0.52rem + 0.35vw, 0.72rem);
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+
+  /* Wax seal */
+  .intro-seal-glow {
+    width: min(52vw, 14rem);
+    height: min(52vw, 14rem);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgb(212 168 79 / 0) 0%,
+      rgb(212 168 79 / 0) 100%
+    );
+    opacity: 0;
+    transition:
+      opacity 0.4s ease,
+      transform 0.6s ease;
+  }
+
+  .intro-seal-glow.is-activating {
+    opacity: 0.35;
+    transform: scale(1.05);
+    background: radial-gradient(
+      circle,
+      rgb(212 168 79 / 0.25) 0%,
+      rgb(212 168 79 / 0.08) 45%,
+      transparent 70%
+    );
+  }
+
+  .intro-seal-glow.is-active {
+    opacity: 1;
+    animation: intro-seal-pulse 1.4s ease-out forwards;
+  }
+
+  @keyframes intro-seal-pulse {
+    0% {
+      transform: scale(0.85);
+      background: radial-gradient(
+        circle,
+        rgb(212 168 79 / 0.55) 0%,
+        rgb(212 168 79 / 0.2) 40%,
+        transparent 68%
+      );
+    }
+    45% {
+      transform: scale(1.15);
+      background: radial-gradient(
+        circle,
+        rgb(232 190 90 / 0.65) 0%,
+        rgb(212 168 79 / 0.28) 42%,
+        transparent 72%
+      );
+    }
+    100% {
+      transform: scale(1.35);
+      background: radial-gradient(
+        circle,
+        rgb(212 168 79 / 0.35) 0%,
+        rgb(212 168 79 / 0.12) 50%,
+        transparent 75%
+      );
+    }
+  }
+
+  .intro-seal-image {
+    width: min(34vw, 8.5rem);
+    height: min(34vw, 8.5rem);
+    filter:
+      sepia(0.35)
+      saturate(1.4)
+      hue-rotate(5deg)
+      brightness(1.08)
+      contrast(1.05);
+  }
+
+  @media (min-width: 640px) {
+    .intro-seal-image {
+      width: 9rem;
+      height: 9rem;
+    }
+  }
+
+  .intro-seal-button.is-pressing {
+    transform: scale(0.96);
+  }
+
+  .intro-seal-button.is-glowing {
+    transform: scale(1.04);
+  }
+
+  .intro-seal-button.is-glowing .intro-seal-image {
+    filter:
+      sepia(0.4)
+      saturate(1.6)
+      hue-rotate(8deg)
+      brightness(1.22)
+      contrast(1.08)
+      drop-shadow(0 0 12px rgb(212 168 79 / 0.45));
+  }
+
+  .intro-seal-button.is-lifting {
+    transform: translateY(-1.75rem) scale(1.15);
+    opacity: 0;
+    transition:
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.7s ease;
+  }
+
+  .intro-seal-hint {
+    bottom: calc(14% + env(safe-area-inset-bottom, 0px));
+    font-size: clamp(0.62rem, 0.58rem + 0.25vw, 0.75rem);
+    white-space: nowrap;
+  }
+
+  .intro-seal-hint-flourish {
+    margin: 0 0.45em;
+    opacity: 0.7;
+    font-size: 0.65em;
+  }
+
+  /* Gold particles */
+  .intro-seal-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--ps, 2px);
+    height: var(--ps, 2px);
+    margin: calc(var(--ps, 2px) / -2);
+    border-radius: 50%;
+    background: rgb(232 190 90 / 0.85);
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  .intro-seal-particle.is-active {
+    animation: intro-particle-burst 1.1s ease-out var(--pd, 0s) forwards;
+  }
+
+  @keyframes intro-particle-burst {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.5);
+    }
+    20% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--px), var(--py)) scale(0.2);
+    }
+  }
+
+  /* Rising invitation card */
+  .intro-invitation-card {
+    top: 52%;
+    width: 72%;
+    height: 38%;
+    opacity: 0;
+    transform: translateX(-50%) translateY(12%) scale(0.92);
+    transition: none;
+  }
+
+  .intro-invitation-card.is-rising {
+    animation: intro-card-rise var(--intro-open, 2800ms) cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+  }
+
+  @keyframes intro-card-rise {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(18%) scale(0.9);
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.95;
+      transform: translateX(-50%) translateY(-28%) scale(1);
+    }
+  }
+
+  .intro-invitation-card-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    background:
+      linear-gradient(165deg, #f8f4ec 0%, #ebe4d4 48%, #e2d9c6 100%);
+    box-shadow:
+      0 8px 32px rgb(4 8 20 / 0.35),
+      inset 0 1px 0 rgb(255 255 255 / 0.6);
+  }
+
+  /* Bottom navigation */
+  .intro-bottom-nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding:
+      0.75rem 1rem
+      calc(0.85rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .intro-nav-link {
+    min-height: 44px;
+    padding-inline: 0.85rem !important;
+    font-size: clamp(0.62rem, 0.58rem + 0.2vw, 0.72rem) !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+    color: rgb(224 197 106 / 0.92) !important;
+  }
+
+  .intro-nav-link:hover {
+    color: #f0d98a !important;
+  }
+
+  .intro-nav-divider {
+    width: 1px;
+    height: 0.9rem;
+    background: rgb(224 197 106 / 0.35);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .envelope-vines-svg,
-    .envelope-vine-gold-accent {
+    .intro-seal-glow.is-active,
+    .intro-seal-particle.is-active,
+    .intro-invitation-card.is-rising {
+      animation: none;
+    }
+
+    .envelope-flap-art,
+    .intro-seal-floral-stems {
       transition: none;
     }
   }
