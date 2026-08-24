@@ -117,7 +117,6 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
             <Button
               type="button"
               variant="ghost"
-              size="sm"
               onClick={skipToDetails}
               className="text-[#6b605a]"
             >
@@ -126,7 +125,6 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
             <ButtonLink
               href={rsvpNav.href}
               variant="ghost"
-              size="sm"
               onClick={finish}
               className="text-[#6b605a]"
             >
