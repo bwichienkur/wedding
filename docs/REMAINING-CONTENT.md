@@ -10,6 +10,7 @@ Items still needed from Bright & Lexi (do not invent):
 - [ ] Bright’s and Lexi’s proposal writeups
 - [ ] Proposal photos, poster, teaser/highlight/full films + captions/transcripts
 - [ ] Hero statement and closing message
+- [ ] Homepage slideshow photos (3–6) in `data/hero-slides.ts`
 
 ## Wedding logistics
 
