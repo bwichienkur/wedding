@@ -24,17 +24,26 @@ test.describe("public invitation", () => {
     await expect(page.getByRole("link", { name: "RSVP" }).first()).toBeVisible();
   });
 
-  test("remembers intro dismissal for returning visitors", async ({ page }) => {
+  test("keeps the sealed envelope until the seal is opened", async ({
+    page,
+  }) => {
     await page.goto("/");
-    const skip = page.getByRole("button", { name: "Skip to wedding details" });
-    await expect(skip).toBeVisible();
-    await skip.click();
+    const seal = page.getByRole("button", { name: "Open invitation" });
+    await expect(seal).toBeVisible();
+    await page.waitForTimeout(1500);
+    await expect(seal).toBeVisible();
+    await expect(page.locator('[data-intro="sealed"]')).toBeVisible();
+  });
+
+  test("still shows the seal after a prior visit", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open invitation" }).click();
+    await expect(page.locator("#home")).toBeVisible({ timeout: 5000 });
 
     await page.goto("/");
     await expect(
       page.getByRole("button", { name: "Open invitation" }),
-    ).toHaveCount(0);
-    await expect(page.locator("#home")).toBeVisible();
+    ).toBeVisible();
   });
 
   test("opens sealed invitation via wax seal", async ({ page }) => {

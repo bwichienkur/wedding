@@ -20,7 +20,7 @@ Projects:
 - `chromium-desktop` @ 1440×900
 - `chromium-mobile` @ 390×844 (Pixel 5 profile)
 
-Covers intro skip/return visits, navigation, schedule/calendar affordances, FAQ search, reduced motion, RSVP lookup success/miss, and admin hub reachability.
+Covers intro seal wait/open, navigation, schedule/calendar affordances, FAQ search, reduced motion, RSVP lookup success/miss, and admin hub reachability.
 
 ## Continuous integration
 
