@@ -6,11 +6,13 @@ import {
   type MediaAsset,
   type MediaCategory,
 } from "@/lib/media/types";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const categories = Object.keys(MEDIA_CATEGORY_LABELS) as MediaCategory[];
 
 export function MediaAdminPanel() {
+  const router = useRouter();
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState("");
@@ -20,11 +22,12 @@ export function MediaAdminPanel() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   const refresh = useCallback(async () => {
     const response = await fetch("/api/media");
     if (response.status === 401) {
-      window.location.href = "/admin/login";
+      router.replace("/admin/login");
       return;
     }
     if (!response.ok) {
@@ -33,11 +36,32 @@ export function MediaAdminPanel() {
     }
     const data = (await response.json()) as { assets: MediaAsset[] };
     setAssets(data.assets);
-  }, []);
+    setLoaded(true);
+  }, [router]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let cancelled = false;
+    void (async () => {
+      const response = await fetch("/api/media");
+      if (cancelled) return;
+      if (response.status === 401) {
+        router.replace("/admin/login");
+        return;
+      }
+      if (!response.ok) {
+        setError("Unable to load media assets.");
+        return;
+      }
+      const data = (await response.json()) as { assets: MediaAsset[] };
+      if (!cancelled) {
+        setAssets(data.assets);
+        setLoaded(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   async function createUpload(file: File) {
     setUploading(true);
@@ -227,8 +251,13 @@ export function MediaAdminPanel() {
 
       <section>
         <h2 className="font-display text-2xl text-forest">Library</h2>
+        {!loaded ? (
+          <p className="mt-4 text-sm text-ink-muted" role="status">
+            Loading media…
+          </p>
+        ) : null}
         <ul className="mt-6 space-y-4">
-          {assets.length === 0 ? (
+          {loaded && assets.length === 0 ? (
             <li className="text-sm text-ink-muted">No media assets yet.</li>
           ) : (
             assets.map((asset) => (

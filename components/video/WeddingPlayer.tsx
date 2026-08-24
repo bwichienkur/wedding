@@ -2,13 +2,7 @@
 
 import { cn } from "@/lib/cn";
 import MuxPlayer from "@mux/mux-player-react";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 
 export type PlayerStatus =
   | "idle"
@@ -58,13 +52,19 @@ export function WeddingPlayer({
   onClose,
 }: WeddingPlayerProps) {
   const labelId = useId();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [internalStatus, setInternalStatus] = useState<PlayerStatus>(status);
+  const [playbackPhase, setPlaybackPhase] = useState<"playing" | "paused" | null>(
+    null,
+  );
   const [showTranscript, setShowTranscript] = useState(false);
+  const [localError, setLocalError] = useState(false);
 
-  useEffect(() => {
-    setInternalStatus(status);
-  }, [status]);
+  const resolvedStatus: PlayerStatus = localError
+    ? "error"
+    : playbackPhase === "playing"
+      ? "playing"
+      : playbackPhase === "paused"
+        ? "paused"
+        : status;
 
   useEffect(() => {
     if (!onClose) return;
@@ -82,7 +82,7 @@ export function WeddingPlayer({
   const ratioPadding =
     aspectRatio === "9:16" ? "177.78%" : aspectRatio === "1:1" ? "100%" : "56.25%";
 
-  if (internalStatus === "processing") {
+  if (resolvedStatus === "processing") {
     return (
       <div
         className={cn("wedding-player border border-stone bg-parchment", className)}
@@ -99,17 +99,14 @@ export function WeddingPlayer({
     );
   }
 
-  if (internalStatus === "unavailable" || !playbackId) {
+  if (resolvedStatus === "unavailable" || !playbackId) {
     return (
       <div
         className={cn("wedding-player border border-stone bg-parchment", className)}
         role="img"
         aria-label={`${title} unavailable`}
       >
-        <div
-          className="relative w-full"
-          style={{ paddingBottom: ratioPadding }}
-        >
+        <div className="relative w-full" style={{ paddingBottom: ratioPadding }}>
           {posterUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -131,10 +128,13 @@ export function WeddingPlayer({
     );
   }
 
-  if (internalStatus === "error") {
+  if (resolvedStatus === "error") {
     return (
       <div
-        className={cn("wedding-player border border-stone bg-parchment p-8 text-center", className)}
+        className={cn(
+          "wedding-player border border-stone bg-parchment p-8 text-center",
+          className,
+        )}
         role="alert"
       >
         <p className="font-display text-2xl text-forest">Unable to play video</p>
@@ -156,7 +156,6 @@ export function WeddingPlayer({
 
   return (
     <div
-      ref={containerRef}
       className={cn("wedding-player relative overflow-hidden bg-forest", className)}
       aria-labelledby={labelId}
     >
@@ -175,23 +174,32 @@ export function WeddingPlayer({
         playsInline
         autoPlay={autoPlayMuted ? "muted" : false}
         muted={autoPlayMuted}
-        style={{ width: "100%", aspectRatio: aspectRatio === "9:16" ? "9 / 16" : "16 / 9" }}
+        style={{
+          width: "100%",
+          aspectRatio: aspectRatio === "9:16" ? "9 / 16" : "16 / 9",
+        }}
         onPlay={() => {
-          setInternalStatus("playing");
+          setPlaybackPhase("playing");
           onPlay?.();
         }}
         onPause={() => {
-          setInternalStatus("paused");
+          setPlaybackPhase("paused");
           onPause?.();
         }}
         onEnded={() => {
-          setInternalStatus("paused");
+          setPlaybackPhase("paused");
           onEnded?.();
         }}
-        onError={() => setInternalStatus("error")}
+        onError={() => setLocalError(true)}
       >
         {captionsUrl ? (
-          <track kind="captions" src={captionsUrl} srcLang="en" label="English" default />
+          <track
+            kind="captions"
+            src={captionsUrl}
+            srcLang="en"
+            label="English"
+            default
+          />
         ) : null}
       </MuxPlayer>
 

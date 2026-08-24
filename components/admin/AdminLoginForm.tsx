@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function AdminLoginForm() {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -22,7 +24,8 @@ export function AdminLoginForm() {
         setError("Unable to sign in. Check the password and try again.");
         return;
       }
-      window.location.href = "/admin";
+      router.replace("/admin");
+      router.refresh();
     } catch {
       setError("Unable to sign in right now.");
     } finally {
