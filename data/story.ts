@@ -29,65 +29,6 @@ export const storyMilestones: StoryMilestone[] = [
     ],
   },
   {
-    id: "dating-anniversary",
-    dateLabel: wedding.anniversary.dating.dateDisplay,
-    dateISO: wedding.anniversary.dating.dateISO,
-    title: wedding.anniversary.dating.label,
-    featured: true,
-    image: {
-      src: "/images/placeholders/story-anniversary.svg",
-      alt: "Placeholder for a photograph marking Bright and Lexi’s dating anniversary",
-      width: 1600,
-      height: 1067,
-      focalPoint: { x: 50, y: 45 },
-      placeholder: true,
-      caption: "Add a photograph from around March 20, 2025.",
-    },
-    passages: [
-      {
-        perspective: "shared",
-        body: "Add a short reflection on beginning to date on March 20, 2025.",
-        isPlaceholder: true,
-      },
-      {
-        perspective: "bright",
-        body: "Add Bright’s memory of this day.",
-        isPlaceholder: true,
-      },
-      {
-        perspective: "lexi",
-        body: "Add Lexi’s memory of this day.",
-        isPlaceholder: true,
-      },
-      {
-        perspective: "actual",
-        body: "Add what actually happened — the shared version you both agree on.",
-        isPlaceholder: true,
-      },
-    ],
-    perspectivesEnabled: true,
-  },
-  {
-    id: "milestone-placeholder",
-    dateLabel: "Add another milestone date.",
-    title: "A chapter still being written",
-    image: {
-      src: "/images/placeholders/story-chapter.svg",
-      alt: "Placeholder for a relationship milestone photograph",
-      width: 1600,
-      height: 1067,
-      focalPoint: { x: 50, y: 50 },
-      placeholder: true,
-    },
-    passages: [
-      {
-        perspective: "shared",
-        body: "Add a memorable chapter from your relationship — a trip, a quiet evening, a turning point.",
-        isPlaceholder: true,
-      },
-    ],
-  },
-  {
     id: "proposal",
     dateLabel: wedding.proposal.dateLabel,
     title: "The proposal",

@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "ADMIN_PASSWORD is not configured. Set it before using admin sign-in in production.",
+          "WEDDING_ADMIN_PASSWORD is not configured. Set it before using admin sign-in in production.",
       },
       { status: 503 },
     );

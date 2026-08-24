@@ -27,9 +27,17 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       className="relative flex min-h-[100svh] items-end overflow-hidden bg-forest"
       aria-labelledby="hero-title"
     >
-      <HeroCarousel editorial slides={slides} />
+      <HeroCarousel
+        editorial
+        slides={slides}
+        indicatorsClassName={
+          wedding.featureFlags.countdown
+            ? "bottom-44 sm:bottom-28"
+            : undefined
+        }
+      />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-5 pb-24 pt-32 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col px-5 pb-36 pt-32 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10">
         <motion.div
           className="max-w-3xl text-center sm:text-left"
           variants={heroStaggerVariants}
@@ -135,7 +143,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
 
       <a
         href="#story"
-        className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 text-ivory/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blush"
+        className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 text-ivory/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blush"
       >
         <span className="font-sans text-[0.65rem] uppercase tracking-[0.28em]">
           Scroll

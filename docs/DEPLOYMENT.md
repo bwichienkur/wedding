@@ -7,7 +7,7 @@
 3. Framework preset: **Next.js** (auto-detected). Build command: `npm run build`. Install: `npm ci`.
 4. Add environment variables from `.env.example` (Production + Preview):
    - `NEXT_PUBLIC_SITE_URL` → your Vercel URL or custom domain
-   - `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `RSVP_SESSION_SECRET` (required before sharing publicly)
+   - `WEDDING_ADMIN_PASSWORD`, `WEDDING_ADMIN_SESSION_SECRET`, `RSVP_SESSION_SECRET` (required before sharing publicly)
    - Mux / Resend vars when video and email are ready
 5. Deploy. Every push to **`main`** triggers a production deployment; PRs get preview URLs.
 
@@ -43,8 +43,8 @@ See [`docs/TESTING.md`](./TESTING.md).
 | Variable | Required for |
 |----------|--------------|
 | `NEXT_PUBLIC_SITE_URL` | Absolute links, CORS for Mux uploads |
-| `ADMIN_PASSWORD` | Production admin lock |
-| `ADMIN_SESSION_SECRET` | Signed admin sessions |
+| `WEDDING_ADMIN_PASSWORD` | Production admin lock |
+| `WEDDING_ADMIN_SESSION_SECRET` | Signed admin sessions |
 | `RSVP_SESSION_SECRET` | Household RSVP sessions |
 | `MUX_TOKEN_ID` / `MUX_TOKEN_SECRET` | Video uploads |
 | `MUX_WEBHOOK_SECRET` | Webhook verification |
@@ -60,7 +60,7 @@ File-backed `.data/*.json` stores are for local development only. For production
 
 1. `/` loads; intro skip works; reduced-motion path works
 2. `/rsvp` lookup (seed names in staging only, or real invite codes in production)
-3. `/admin/login` rejects bad passwords when `ADMIN_PASSWORD` is set
+3. `/admin/login` rejects bad passwords when `WEDDING_ADMIN_PASSWORD` is set
 4. Schedule ICS download works
 5. FAQ search and deep links work
 6. `robots.txt` / `sitemap.xml` reflect site mode

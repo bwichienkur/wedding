@@ -8,8 +8,8 @@ const MAX_AGE_SECONDS = 60 * 60 * 6;
 function sessionSecret(): string {
   return (
     process.env.RSVP_SESSION_SECRET ||
-    process.env.ADMIN_SESSION_SECRET ||
-    process.env.ADMIN_PASSWORD ||
+    process.env.WEDDING_ADMIN_SESSION_SECRET ||
+    process.env.WEDDING_ADMIN_PASSWORD ||
     "dev-rsvp-secret"
   );
 }

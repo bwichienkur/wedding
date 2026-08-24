@@ -20,8 +20,10 @@ export default async function AdminLoginPage() {
       </p>
       <h1 className="mt-3 font-display text-4xl text-forest">Sign in</h1>
       <p className="mt-4 mb-10 text-sm text-ink-muted">
-        Protected area for media management. Set `ADMIN_PASSWORD` in the
-        environment before production use.
+        Protected area for media and RSVP management. Set{" "}
+        <code className="text-forest">WEDDING_ADMIN_PASSWORD</code> in your
+        environment (Vercel → Settings → Environment Variables) before production
+        use, then sign in at <code className="text-forest">/admin/login</code>.
       </p>
       <AdminLoginForm />
     </main>

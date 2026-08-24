@@ -13,8 +13,8 @@
 
 ## Admin
 
-- Set `ADMIN_PASSWORD` + `ADMIN_SESSION_SECRET` before staging/production.
-- Without `ADMIN_PASSWORD`, non-production allows local admin access for development convenience.
+- Set `WEDDING_ADMIN_PASSWORD` + `WEDDING_ADMIN_SESSION_SECRET` before staging/production.
+- Without `WEDDING_ADMIN_PASSWORD`, non-production allows local admin access for development convenience.
 - Admin cookies are httpOnly + `SameSite=Lax` (+ `Secure` in production).
 
 ## RSVP

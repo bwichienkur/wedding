@@ -22,10 +22,13 @@ export function HeroCarousel({
   className,
   editorial = false,
   slides,
+  indicatorsClassName,
 }: {
   className?: string;
   editorial?: boolean;
   slides: HeroSlide[];
+  /** Override dot position — e.g. higher when countdown sits above. */
+  indicatorsClassName?: string;
 }) {
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -167,7 +170,8 @@ export function HeroCarousel({
         <div
           className={cn(
             "absolute inset-x-0 z-10 flex items-center justify-center gap-2",
-            editorial ? "bottom-20 sm:bottom-24" : "bottom-5 sm:bottom-8",
+            indicatorsClassName ??
+              (editorial ? "bottom-20 sm:bottom-24" : "bottom-5 sm:bottom-8"),
           )}
         >
           {slides.map((slide, slideIndex) => (
