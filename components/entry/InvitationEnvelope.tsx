@@ -15,8 +15,8 @@ type FlapSide = "top" | "bottom" | "left" | "right";
 
 /**
  * Full-viewport navy envelope with gold wax seal.
- * Each flap has its own contained floral texture; illumination tints
- * that same art gold. Flaps meet cleanly at center and open onto the site.
+ * Each flap holds a symmetrical gold foil motif (fully inset). On open,
+ * only the design illuminates — the navy paper stays dark.
  */
 export function InvitationEnvelope({
   open,
@@ -103,7 +103,7 @@ function EnvelopeFlap({
     >
       <div className="envelope-flap-face absolute inset-0">
         <div
-          className={cn("envelope-texture", `envelope-texture-${side}`)}
+          className={cn("envelope-design", `envelope-design-${side}`)}
           style={{
             backgroundImage: `url(/images/envelope-flap-${side}.webp)`,
           }}
