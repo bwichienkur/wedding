@@ -55,8 +55,8 @@ export function WaxSeal({
           height={160}
           draggable={false}
           className={cn(
-            "pointer-events-none h-[min(22vw,5.75rem)] w-[min(22vw,5.75rem)] sm:h-24 sm:w-24",
-            "select-none drop-shadow-[0_10px_18px_rgba(40,16,18,0.45)]",
+            "pointer-events-none h-[min(28vw,7rem)] w-[min(28vw,7rem)] sm:h-28 sm:w-28",
+            "select-none drop-shadow-[0_12px_22px_rgba(40,16,18,0.5)]",
             glowing && !open && !reduceMotion && "brightness-110",
           )}
         />

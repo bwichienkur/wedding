@@ -22,7 +22,10 @@ interface CinematicEntryProps {
   onComplete: () => void;
 }
 
+/** Embossed florals slowly light to gold before flaps open. */
+const GLOW_MS = 950;
 const OPEN_MS = 1100;
+const EXIT_MS = 500;
 
 function subscribeNoop() {
   return () => {};
@@ -41,9 +44,8 @@ function useForceSkipIntro() {
 }
 
 /**
- * Sealed invitation cover. Stays closed until the guest explicitly opens the
- * wax seal (or uses Skip / RSVP). Does not auto-dismiss from prior visits —
- * each full page load shows the sealed envelope again.
+ * Full-bleed sealed invitation. Stays closed until the wax seal is clicked.
+ * Sequence: illuminate patterns → open flaps → fade into the site.
  */
 export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
@@ -97,14 +99,19 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       return;
     }
 
+    // 1) Patterns illuminate
     setGlowing(true);
-    setOpening(true);
     finishTimer.current = window.setTimeout(() => {
-      setExiting(true);
+      // 2) Flaps open
+      setOpening(true);
       finishTimer.current = window.setTimeout(() => {
-        finish();
-      }, 450);
-    }, OPEN_MS);
+        // 3) Cover fades away
+        setExiting(true);
+        finishTimer.current = window.setTimeout(() => {
+          finish();
+        }, EXIT_MS);
+      }, OPEN_MS);
+    }, GLOW_MS);
   }
 
   function skipToDetails() {
@@ -121,15 +128,14 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     return null;
   }
 
-  // Opaque cover before client hydration so the hero never flashes underneath.
   if (!isClient) {
-    return <div className="fixed inset-0 z-50 bg-[#f3ebe2]" aria-hidden />;
+    return <div className="fixed inset-0 z-50 bg-[#3a1e22]" aria-hidden />;
   }
 
   return (
     <div
       className={[
-        "fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#f3ebe2]",
+        "fixed inset-0 z-50 overflow-hidden bg-[#3a1e22]",
         "transition-opacity duration-500 ease-out",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
       ].join(" ")}
@@ -138,13 +144,6 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       aria-labelledby="entry-title"
       data-intro="sealed"
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-40"
-        aria-hidden
-      >
-        <div className="grain absolute inset-0" />
-      </div>
-
       <h1 id="entry-title" className="sr-only">
         {wedding.couple.displayName} wedding invitation
       </h1>
@@ -156,12 +155,18 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
         onOpen={openInvitation}
       />
 
-      <div className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-2 px-5">
+      <div
+        className={[
+          "absolute inset-x-0 bottom-4 z-40 flex flex-wrap items-center justify-center gap-2 px-5",
+          "transition-opacity duration-300",
+          glowing || opening || exiting ? "pointer-events-none opacity-0" : "opacity-100",
+        ].join(" ")}
+      >
         <Button
           type="button"
           variant="ghost"
           onClick={skipToDetails}
-          className="text-[#6b605a]"
+          className="text-[#e8d5c4]/80 hover:text-[#f3ebe2]"
         >
           {wedding.entry.skipDetailsLabel}
         </Button>
@@ -169,7 +174,7 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
           href={rsvpNav.href}
           variant="ghost"
           onClick={finish}
-          className="text-[#6b605a]"
+          className="text-[#e8d5c4]/80 hover:text-[#f3ebe2]"
         >
           {wedding.entry.rsvpLabel}
         </ButtonLink>
