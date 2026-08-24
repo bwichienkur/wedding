@@ -336,32 +336,32 @@
       );
   }
 
-  /* Safe zones: full motif stays inside each triangular flap */
+  /* Safe zones: larger coverage while keeping motifs inside each triangle */
   .envelope-design-top {
-    left: 28%;
-    right: 28%;
-    top: 4%;
-    height: 20%;
+    left: 26%;
+    right: 26%;
+    top: 1%;
+    height: 25%;
   }
 
   .envelope-design-bottom {
-    left: 28%;
-    right: 28%;
-    bottom: 4%;
-    height: 20%;
+    left: 26%;
+    right: 26%;
+    bottom: 1%;
+    height: 25%;
   }
 
   .envelope-design-left {
-    top: 28%;
-    bottom: 28%;
-    left: 3%;
+    top: 23%;
+    bottom: 23%;
+    left: 1%;
     width: 22%;
   }
 
   .envelope-design-right {
-    top: 28%;
-    bottom: 28%;
-    right: 3%;
+    top: 23%;
+    bottom: 23%;
+    right: 1%;
     width: 22%;
   }
 
@@ -370,30 +370,30 @@
     .envelope-design-bottom {
       left: 24%;
       right: 24%;
-      height: 17%;
+      height: 23%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 26%;
-      bottom: 26%;
-      width: 24%;
+      top: 22%;
+      bottom: 22%;
+      width: 20%;
     }
   }
 
   @media (min-aspect-ratio: 16/10) {
     .envelope-design-top,
     .envelope-design-bottom {
-      left: 32%;
-      right: 32%;
-      height: 24%;
+      left: 28%;
+      right: 28%;
+      height: 27%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 30%;
-      bottom: 30%;
-      width: 16%;
+      top: 24%;
+      bottom: 24%;
+      width: 18%;
     }
   }
 
