@@ -1,9 +1,17 @@
 name: Deploy to Vercel
 
+# Optional Actions-based deploy. Recommended path: import the repo at vercel.com/new
+# (GitHub integration auto-deploys on push to main).
+#
+# To use this workflow:
+# 1. Add GitHub secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# 2. Set repository variable VERCEL_DEPLOY_ENABLED=true
+# 3. Run manually or push to main
+
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-  workflow_dispatch:
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -14,8 +22,7 @@ jobs:
     name: Production deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Skip until Vercel secrets are configured (see docs/DEPLOYMENT.md).
-    if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
+    if: github.event_name == 'workflow_dispatch' || vars.VERCEL_DEPLOY_ENABLED == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -23,6 +30,12 @@ jobs:
         with:
           node-version: "22"
           cache: npm
+
+      - name: Require Vercel secrets
+        run: |
+          test -n "${{ secrets.VERCEL_TOKEN }}" || (echo "Missing VERCEL_TOKEN secret" && exit 1)
+          test -n "${{ secrets.VERCEL_ORG_ID }}" || (echo "Missing VERCEL_ORG_ID secret" && exit 1)
+          test -n "${{ secrets.VERCEL_PROJECT_ID }}" || (echo "Missing VERCEL_PROJECT_ID secret" && exit 1)
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest

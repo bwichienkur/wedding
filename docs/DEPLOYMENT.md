@@ -28,7 +28,7 @@ If you prefer deploys via Actions instead of (or in addition to) the Vercel GitH
 | `VERCEL_ORG_ID` | Project **Settings → General** (team/personal id) |
 | `VERCEL_PROJECT_ID` | Same page, **Project ID** |
 
-The workflow `.github/workflows/deploy-vercel.yml` runs on push to `main` when all three secrets exist. Until then it is skipped — use Option A.
+The workflow `.github/workflows/deploy-vercel.yml` runs when repository variable `VERCEL_DEPLOY_ENABLED=true` and the three secrets above are set. Until then it is skipped — use Option A.
 
 ## CI
 
