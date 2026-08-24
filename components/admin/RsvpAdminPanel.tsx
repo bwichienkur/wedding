@@ -143,7 +143,20 @@ export function RsvpAdminPanel() {
           type="button"
           variant="secondary"
           onClick={() => {
-            window.location.href = "/api/admin/rsvp?format=csv";
+            void (async () => {
+              const response = await fetch("/api/admin/rsvp?format=csv");
+              if (!response.ok) {
+                setError("Unable to export CSV.");
+                return;
+              }
+              const blob = await response.blob();
+              const url = URL.createObjectURL(blob);
+              const anchor = document.createElement("a");
+              anchor.href = url;
+              anchor.download = "rsvp-export.csv";
+              anchor.click();
+              URL.revokeObjectURL(url);
+            })();
           }}
         >
           Export CSV
