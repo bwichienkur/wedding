@@ -18,9 +18,18 @@ npm run test:e2e
 Projects:
 
 - `chromium-desktop` @ 1440×900
-- `chromium-mobile` @ 390×844 (iPhone 12 profile)
+- `chromium-mobile` @ 390×844 (Pixel 5 profile)
 
 Covers intro skip/return visits, navigation, schedule/calendar affordances, FAQ search, reduced motion, RSVP lookup success/miss, and admin hub reachability.
+
+## Continuous integration
+
+On every push or pull request to **`main`**, GitHub Actions runs:
+
+1. **`qa`** — typecheck, ESLint, Vitest unit tests, production build
+2. **`e2e`** — Playwright (Chromium desktop + mobile)
+
+Workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)
 
 ## Manual QA checklist
 
