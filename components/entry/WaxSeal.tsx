@@ -39,7 +39,7 @@ export function WaxSeal({
         aria-label="Open invitation"
         className={cn(
           "block rounded-full transition-transform duration-300 ease-out",
-          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f3ebe2]",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e0c56a]",
           "disabled:cursor-default",
           !reduceMotion && !open && "hover:scale-105 active:scale-95",
           open && !reduceMotion && "-translate-y-7 scale-125 opacity-0",
@@ -56,7 +56,7 @@ export function WaxSeal({
           draggable={false}
           className={cn(
             "pointer-events-none h-[min(28vw,7rem)] w-[min(28vw,7rem)] sm:h-28 sm:w-28",
-            "select-none drop-shadow-[0_12px_22px_rgba(40,16,18,0.5)]",
+            "select-none drop-shadow-[0_12px_24px_rgba(8,16,40,0.55)]",
             glowing && !open && !reduceMotion && "brightness-110",
           )}
         />

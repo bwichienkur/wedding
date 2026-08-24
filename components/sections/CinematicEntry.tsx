@@ -22,10 +22,10 @@ interface CinematicEntryProps {
   onComplete: () => void;
 }
 
-/** Embossed florals slowly light to gold before flaps open. */
-const GLOW_MS = 950;
-const OPEN_MS = 1100;
-const EXIT_MS = 500;
+/** Slower, more dramatic: gold foil glow → flap open → reveal site */
+const GLOW_MS = 1600;
+const OPEN_MS = 1800;
+const EXIT_MS = 700;
 
 function subscribeNoop() {
   return () => {};
@@ -44,8 +44,7 @@ function useForceSkipIntro() {
 }
 
 /**
- * Full-bleed sealed invitation. Stays closed until the wax seal is clicked.
- * Sequence: illuminate patterns → open flaps → fade into the site.
+ * Full-bleed navy envelope + gold seal. Opens onto the live homepage.
  */
 export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
@@ -99,13 +98,10 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       return;
     }
 
-    // 1) Patterns illuminate
     setGlowing(true);
     finishTimer.current = window.setTimeout(() => {
-      // 2) Flaps open
       setOpening(true);
       finishTimer.current = window.setTimeout(() => {
-        // 3) Cover fades away
         setExiting(true);
         finishTimer.current = window.setTimeout(() => {
           finish();
@@ -129,14 +125,15 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   }
 
   if (!isClient) {
-    return <div className="fixed inset-0 z-50 bg-[#3a1e22]" aria-hidden />;
+    return <div className="fixed inset-0 z-50 bg-[#0f1c33]" aria-hidden />;
   }
 
   return (
     <div
       className={[
-        "fixed inset-0 z-50 overflow-hidden bg-[#3a1e22]",
-        "transition-opacity duration-500 ease-out",
+        "fixed inset-0 z-50 overflow-hidden",
+        "transition-[opacity,background-color] duration-700 ease-out",
+        opening || exiting ? "bg-transparent" : "bg-[#0f1c33]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
       ].join(" ")}
       role="dialog"
@@ -158,15 +155,17 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       <div
         className={[
           "absolute inset-x-0 bottom-4 z-40 flex flex-wrap items-center justify-center gap-2 px-5",
-          "transition-opacity duration-300",
-          glowing || opening || exiting ? "pointer-events-none opacity-0" : "opacity-100",
+          "transition-opacity duration-500",
+          glowing || opening || exiting
+            ? "pointer-events-none opacity-0"
+            : "opacity-100",
         ].join(" ")}
       >
         <Button
           type="button"
           variant="ghost"
           onClick={skipToDetails}
-          className="text-[#e8d5c4]/80 hover:text-[#f3ebe2]"
+          className="text-[#e0c56a]/90 hover:text-[#f0d98a]"
         >
           {wedding.entry.skipDetailsLabel}
         </Button>
@@ -174,7 +173,7 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
           href={rsvpNav.href}
           variant="ghost"
           onClick={finish}
-          className="text-[#e8d5c4]/80 hover:text-[#f3ebe2]"
+          className="text-[#e0c56a]/90 hover:text-[#f0d98a]"
         >
           {wedding.entry.rsvpLabel}
         </ButtonLink>

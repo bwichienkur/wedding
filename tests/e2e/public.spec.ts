@@ -38,7 +38,7 @@ test.describe("public invitation", () => {
   test("still shows the seal after a prior visit", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Open invitation" }).click();
-    await expect(page.locator("#home")).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("#home")).toBeVisible({ timeout: 12000 });
 
     await page.goto("/");
     await expect(
@@ -51,7 +51,7 @@ test.describe("public invitation", () => {
     const seal = page.getByRole("button", { name: "Open invitation" });
     await expect(seal).toBeVisible();
     await seal.click();
-    await expect(page.locator("#home")).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("#home")).toBeVisible({ timeout: 12000 });
     await expect(seal).toHaveCount(0);
   });
 
