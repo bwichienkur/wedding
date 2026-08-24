@@ -254,8 +254,8 @@
   }
 
   /*
-   * Gold foil design only — navy flap paper stays dark.
-   * Motifs are inset + contain so the full ornament stays inside each triangle.
+   * Blind-emboss florals (transparent relief). Rest = navy emboss only.
+   * Illumination fades in a gold twin of the same shape — paper stays dark.
    */
   .envelope-design {
     position: absolute;
@@ -263,20 +263,32 @@
     background-size: contain;
     background-repeat: no-repeat;
     pointer-events: none;
-    opacity: 0.42;
-    transition:
-      filter 1.55s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 1.55s ease;
-    filter: brightness(0.95) saturate(0.9);
   }
 
-  .envelope-shell.is-illuminated .envelope-design {
+  .envelope-design-emboss {
+    opacity: 0.92;
+    transition: opacity 1.55s ease, filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .envelope-design-glow {
+    opacity: 0;
+    mix-blend-mode: plus-lighter;
+    transition:
+      opacity 1.55s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 1.55s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: brightness(0.9);
+  }
+
+  .envelope-shell.is-illuminated .envelope-design-emboss {
+    opacity: 0.35;
+  }
+
+  .envelope-shell.is-illuminated .envelope-design-glow {
     opacity: 1;
     filter:
-      brightness(1.2)
-      saturate(1.15)
-      drop-shadow(0 0 14px rgb(232 200 120 / 0.55))
-      drop-shadow(0 0 28px rgb(212 182 92 / 0.35));
+      brightness(1.15)
+      drop-shadow(0 0 12px rgb(232 200 120 / 0.45))
+      drop-shadow(0 0 26px rgb(212 182 92 / 0.3));
   }
 
   /* Flaps fill the viewport and meet exactly at center — no extra segments */
@@ -324,64 +336,64 @@
       );
   }
 
-  /* Safe zones: keep the full motif inside each triangular flap */
+  /* Safe zones: full motif stays inside each triangular flap */
   .envelope-design-top {
-    left: 30%;
-    right: 30%;
-    top: 5%;
-    height: 18%;
+    left: 28%;
+    right: 28%;
+    top: 4%;
+    height: 20%;
   }
 
   .envelope-design-bottom {
-    left: 30%;
-    right: 30%;
-    bottom: 5%;
-    height: 18%;
+    left: 28%;
+    right: 28%;
+    bottom: 4%;
+    height: 20%;
   }
 
   .envelope-design-left {
-    top: 30%;
-    bottom: 30%;
-    left: 4%;
-    width: 18%;
+    top: 28%;
+    bottom: 28%;
+    left: 3%;
+    width: 22%;
   }
 
   .envelope-design-right {
-    top: 30%;
-    bottom: 30%;
-    right: 4%;
-    width: 18%;
+    top: 28%;
+    bottom: 28%;
+    right: 3%;
+    width: 22%;
   }
 
   @media (max-aspect-ratio: 3/4) {
     .envelope-design-top,
     .envelope-design-bottom {
-      left: 26%;
-      right: 26%;
-      height: 16%;
+      left: 24%;
+      right: 24%;
+      height: 17%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 28%;
-      bottom: 28%;
-      width: 20%;
+      top: 26%;
+      bottom: 26%;
+      width: 24%;
     }
   }
 
   @media (min-aspect-ratio: 16/10) {
     .envelope-design-top,
     .envelope-design-bottom {
-      left: 34%;
-      right: 34%;
-      height: 22%;
+      left: 32%;
+      right: 32%;
+      height: 24%;
     }
 
     .envelope-design-left,
     .envelope-design-right {
-      top: 32%;
-      bottom: 32%;
-      width: 14%;
+      top: 30%;
+      bottom: 30%;
+      width: 16%;
     }
   }
 
@@ -422,7 +434,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .envelope-design {
+    .envelope-design-emboss,
+    .envelope-design-glow {
       transition: none;
     }
   }
