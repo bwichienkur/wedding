@@ -1,9 +1,9 @@
 import { expect, type Page } from "@playwright/test";
 
-/** Skip cinematic entry so section assertions hit the invitation content. */
+/** Bypass sealed intro in content tests (not used by product UI). */
 export async function dismissIntro(page: Page) {
   await page.addInitScript(() => {
-    window.localStorage.setItem("bl-wedding-intro-seen", "1");
+    window.localStorage.setItem("bl-wedding-intro-force-skip", "1");
   });
 }
 

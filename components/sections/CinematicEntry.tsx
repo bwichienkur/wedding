@@ -5,50 +5,57 @@ import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { rsvpNav, weddingDetailsHref } from "@/data/navigation";
 import { wedding } from "@/data/wedding";
-import { hasSeenIntro, markIntroSeen } from "@/lib/intro-storage";
+import {
+  isIntroForceSkipped,
+  markIntroSeen,
+} from "@/lib/intro-storage";
 import { useReducedMotion } from "motion/react";
 import {
   useCallback,
   useEffect,
   useRef,
-  useSyncExternalStore,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 interface CinematicEntryProps {
   onComplete: () => void;
 }
 
-function subscribeIdentity() {
+const OPEN_MS = 1100;
+
+function subscribeNoop() {
   return () => {};
 }
 
-/** True only after client hydration — used to read localStorage safely. */
 function useIsClient() {
+  return useSyncExternalStore(subscribeNoop, () => true, () => false);
+}
+
+function useForceSkipIntro() {
   return useSyncExternalStore(
-    subscribeIdentity,
-    () => true,
+    subscribeNoop,
+    () => isIntroForceSkipped(),
     () => false,
   );
 }
 
-const OPEN_MS = 1100;
-
+/**
+ * Sealed invitation cover. Stays closed until the guest explicitly opens the
+ * wax seal (or uses Skip / RSVP). Does not auto-dismiss from prior visits —
+ * each full page load shows the sealed envelope again.
+ */
 export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
   const isClient = useIsClient();
+  const forceSkip = useForceSkipIntro();
   const [dismissed, setDismissed] = useState(false);
   const [opening, setOpening] = useState(false);
   const [glowing, setGlowing] = useState(false);
   const [exiting, setExiting] = useState(false);
   const finishTimer = useRef<number | null>(null);
   const openedRef = useRef(false);
-
-  const introAlreadySeen = isClient && hasSeenIntro();
-  const shouldShow =
-    wedding.featureFlags.cinematicEntry &&
-    !dismissed &&
-    (!isClient || !introAlreadySeen);
+  const completedRef = useRef(false);
 
   const finish = useCallback(() => {
     if (finishTimer.current != null) {
@@ -57,14 +64,11 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     }
     markIntroSeen();
     setDismissed(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-    if (!wedding.featureFlags.cinematicEntry || introAlreadySeen || dismissed) {
+    if (!completedRef.current) {
+      completedRef.current = true;
       onComplete();
     }
-  }, [isClient, introAlreadySeen, dismissed, onComplete]);
+  }, [onComplete]);
 
   useEffect(() => {
     return () => {
@@ -73,6 +77,16 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    if (!wedding.featureFlags.cinematicEntry || forceSkip) {
+      if (!completedRef.current) {
+        completedRef.current = true;
+        onComplete();
+      }
+    }
+  }, [isClient, forceSkip, onComplete]);
 
   function openInvitation() {
     if (openedRef.current || opening || dismissed || exiting) return;
@@ -89,7 +103,7 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       setExiting(true);
       finishTimer.current = window.setTimeout(() => {
         finish();
-      }, 400);
+      }, 450);
     }, OPEN_MS);
   }
 
@@ -103,16 +117,26 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     });
   }
 
-  if (!shouldShow) {
+  if (!wedding.featureFlags.cinematicEntry || forceSkip || dismissed) {
     return null;
+  }
+
+  // Opaque cover before client hydration so the hero never flashes underneath.
+  if (!isClient) {
+    return <div className="fixed inset-0 z-50 bg-[#f3ebe2]" aria-hidden />;
   }
 
   return (
     <div
-      className={cnEntry(exiting, Boolean(reduceMotion))}
+      className={[
+        "fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#f3ebe2]",
+        "transition-opacity duration-500 ease-out",
+        exiting ? "pointer-events-none opacity-0" : "opacity-100",
+      ].join(" ")}
       role="dialog"
       aria-modal="true"
       aria-labelledby="entry-title"
+      data-intro="sealed"
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
@@ -152,15 +176,4 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
       </div>
     </div>
   );
-}
-
-function cnEntry(exiting: boolean, reduceMotion: boolean) {
-  return [
-    "fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#f3ebe2]",
-    "transition-opacity duration-500 ease-out",
-    exiting && !reduceMotion ? "pointer-events-none opacity-0" : "opacity-100",
-    exiting && reduceMotion ? "opacity-0" : null,
-  ]
-    .filter(Boolean)
-    .join(" ");
 }
