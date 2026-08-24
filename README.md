@@ -39,6 +39,12 @@ Public wedding facts live in typed files under `data/`:
 
 - `data/wedding.ts` — couple, date, venue, flags, copy
 - `data/story.ts` — relationship milestones
+- `data/schedule.ts` — wedding-day journey
+- `data/venue.ts` — Bella Cosa details
+- `data/travel.ts` — airports, hotels, local notes
+- `data/party.ts` — wedding party
+- `data/faq.ts` — FAQ
+- `data/registry.ts` — registry links
 - `data/navigation.ts` — nav items
 - `data/video.ts` — public video placements
 
