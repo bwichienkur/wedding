@@ -33,6 +33,8 @@ export function MediaAdminPanel() {
   const [progress, setProgress] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [storageReady, setStorageReady] = useState<boolean | null>(null);
+  const [storageHints, setStorageHints] = useState<string[]>([]);
 
   const placement = useMemo(
     () =>
@@ -62,20 +64,33 @@ export function MediaAdminPanel() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const response = await fetch("/api/media");
+      const [mediaResponse, statusResponse] = await Promise.all([
+        fetch("/api/media"),
+        fetch("/api/admin/storage-status"),
+      ]);
       if (cancelled) return;
-      if (response.status === 401) {
+      if (mediaResponse.status === 401) {
         router.replace("/admin/login");
         return;
       }
-      if (!response.ok) {
+      if (!mediaResponse.ok) {
         setError("Unable to load media assets.");
         return;
       }
-      const data = (await response.json()) as { assets: MediaAsset[] };
+      const data = (await mediaResponse.json()) as { assets: MediaAsset[] };
       if (!cancelled) {
         setAssets(data.assets.filter((asset) => asset.status !== "archived"));
         setLoaded(true);
+      }
+      if (statusResponse.ok) {
+        const status = (await statusResponse.json()) as {
+          photoUploadReady?: boolean;
+          hints?: string[];
+        };
+        if (!cancelled) {
+          setStorageReady(status.photoUploadReady ?? null);
+          setStorageHints(status.hints ?? []);
+        }
       }
     })();
     return () => {
@@ -240,6 +255,27 @@ export function MediaAdminPanel() {
           assets replace the placeholders on the public site for that section.
         </p>
 
+        {storageReady === false ? (
+          <div
+            className="mt-4 border border-gold/40 bg-gold/10 p-4 text-sm text-forest"
+            role="alert"
+          >
+            <p className="font-medium">Photo storage is not ready on production.</p>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-ink-muted">
+              {storageHints.map((hint) => (
+                <li key={hint}>{hint}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {storageReady === true ? (
+          <p className="mt-4 text-sm text-ink-muted" role="status">
+            Photo storage is connected. Uploads appear on the site immediately
+            when published.
+          </p>
+        ) : null}
+
         <label className="mt-6 block text-sm">
           <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
             Section
@@ -333,7 +369,7 @@ export function MediaAdminPanel() {
               </span>
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif,.jpg,.jpeg,.png"
                 disabled={uploading}
                 className="mt-2 max-w-full"
                 onChange={(event) => {

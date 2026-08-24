@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "crypto";
+import { unstable_noStore as noStore } from "next/cache";
 import type { MediaAsset, UpdateMediaInput } from "@/lib/media/types";
 import {
   getUploadsDir,
@@ -71,6 +72,7 @@ export async function getMediaByPlacement(
 export async function listPublishedByPlacement(
   placementKey: string,
 ): Promise<MediaAsset[]> {
+  noStore();
   const assets = await listMediaAssets();
   return assets
     .filter(
