@@ -43,7 +43,7 @@ export const wedding: WeddingConfig = {
     statementIsPlaceholder: true,
   },
   entry: {
-    beginLabel: "Begin our story",
+    beginLabel: "Open invitation",
     skipDetailsLabel: "Skip to wedding details",
     rsvpLabel: "RSVP",
   },

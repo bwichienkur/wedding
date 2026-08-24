@@ -1,11 +1,12 @@
 "use client";
 
-import { MonogramSvg } from "@/components/monogram/MonogramSvg";
+import { InvitationEnvelope } from "@/components/entry/InvitationEnvelope";
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { rsvpNav, weddingDetailsHref } from "@/data/navigation";
-import { wedding, weddingLocationLine } from "@/data/wedding";
+import { wedding } from "@/data/wedding";
 import { hasSeenIntro, markIntroSeen } from "@/lib/intro-storage";
+import { editorialEase } from "@/lib/motion";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useSyncExternalStore, useState } from "react";
 
@@ -30,6 +31,8 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
   const isClient = useIsClient();
   const [dismissed, setDismissed] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const [glowing, setGlowing] = useState(false);
 
   const introAlreadySeen = isClient && hasSeenIntro();
   const shouldShow =
@@ -44,23 +47,28 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     }
   }, [isClient, introAlreadySeen, dismissed, onComplete]);
 
-  function dismiss() {
+  function finish() {
     markIntroSeen();
     setDismissed(true);
   }
 
-  function beginStory() {
-    dismiss();
-    window.requestAnimationFrame(() => {
-      document.querySelector("#story")?.scrollIntoView({
-        behavior: reduceMotion ? "auto" : "smooth",
-        block: "start",
-      });
-    });
+  function openInvitation() {
+    if (opening || dismissed) return;
+
+    if (reduceMotion) {
+      finish();
+      return;
+    }
+
+    setGlowing(true);
+    setOpening(true);
+    window.setTimeout(() => {
+      finish();
+    }, 1250);
   }
 
   function skipToDetails() {
-    dismiss();
+    finish();
     window.requestAnimationFrame(() => {
       document.querySelector(weddingDetailsHref)?.scrollIntoView({
         behavior: reduceMotion ? "auto" : "smooth",
@@ -73,74 +81,55 @@ export function CinematicEntry({ onComplete }: CinematicEntryProps) {
     <AnimatePresence>
       {shouldShow ? (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ivory"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#f3ebe2]"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.35 }}
+          exit={{
+            opacity: 0,
+            scale: reduceMotion ? 1 : 1.04,
+          }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.55,
+            ease: editorialEase,
+          }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="entry-title"
         >
-          <div className="pointer-events-none absolute inset-0 opacity-[0.35]">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-40"
+            aria-hidden
+          >
             <div className="grain absolute inset-0" />
           </div>
 
-          <svg
-            className="pointer-events-none absolute inset-x-0 top-1/3 h-40 w-full text-gold"
-            viewBox="0 0 800 160"
-            aria-hidden
-          >
-            <motion.path
-              d="M40 90 C160 40, 280 130, 400 80 S640 30, 760 90"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.1"
-              strokeLinecap="round"
-              vectorEffect="nonScalingStroke"
-              initial={
-                reduceMotion
-                  ? { pathLength: 1, opacity: 0.7 }
-                  : { pathLength: 0, opacity: 0.4 }
-              }
-              animate={{ pathLength: 1, opacity: 0.85 }}
-              transition={{
-                duration: reduceMotion ? 0 : 2.2,
-                ease: "easeInOut",
-              }}
-            />
-          </svg>
+          <h1 id="entry-title" className="sr-only">
+            {wedding.couple.displayName} wedding invitation
+          </h1>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col items-center px-6 text-center">
-            <MonogramSvg className="mb-8 h-24 w-24" />
-            <p className="mb-3 font-sans text-xs uppercase tracking-[0.28em] text-gold">
-              {wedding.wedding.dateDisplay}
-            </p>
-            <h1
-              id="entry-title"
-              className="font-display text-4xl text-forest sm:text-5xl"
+          <InvitationEnvelope
+            open={opening}
+            glowing={glowing}
+            reduceMotion={Boolean(reduceMotion)}
+            onOpen={openInvitation}
+          />
+
+          <div className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-2 px-5">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={skipToDetails}
+              className="text-[#6b605a]"
             >
-              {wedding.couple.displayName}
-            </h1>
-            <p className="mt-4 font-sans text-sm tracking-wide text-ink-muted">
-              {weddingLocationLine()}
-            </p>
-
-            <div className="mt-10 flex w-full flex-col gap-3 sm:max-w-xs">
-              <Button variant="gold" size="lg" onClick={beginStory}>
-                {wedding.entry.beginLabel}
-              </Button>
-              <Button variant="secondary" size="lg" onClick={skipToDetails}>
-                {wedding.entry.skipDetailsLabel}
-              </Button>
-              <ButtonLink
-                href={rsvpNav.href}
-                variant="ghost"
-                size="lg"
-                onClick={dismiss}
-              >
-                {wedding.entry.rsvpLabel}
-              </ButtonLink>
-            </div>
+              {wedding.entry.skipDetailsLabel}
+            </Button>
+            <ButtonLink
+              href={rsvpNav.href}
+              variant="ghost"
+              onClick={finish}
+              className="text-[#6b605a]"
+            >
+              {wedding.entry.rsvpLabel}
+            </ButtonLink>
           </div>
         </motion.div>
       ) : null}

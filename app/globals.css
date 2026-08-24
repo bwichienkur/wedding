@@ -227,4 +227,99 @@
       animation: none;
     }
   }
+
+  /* Sealed invitation envelope — realistic cardstock flaps */
+  .envelope-liner {
+    background:
+      radial-gradient(
+        ellipse at 50% 42%,
+        #5c3236 0%,
+        #3f2126 55%,
+        #2f181c 100%
+      );
+  }
+
+  .envelope-flap {
+    overflow: hidden;
+    will-change: transform;
+  }
+
+  .envelope-flap-face {
+    background:
+      linear-gradient(
+        145deg,
+        #6f4146 0%,
+        #523033 38%,
+        #3f2428 72%,
+        #351d21 100%
+      );
+    box-shadow:
+      inset 0 1px 0 rgb(255 230 220 / 0.14),
+      inset 0 -10px 22px rgb(20 8 10 / 0.32),
+      inset 0 0 40px rgb(0 0 0 / 0.12);
+  }
+
+  .envelope-flap-top {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 54%;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    z-index: 4;
+    filter: drop-shadow(0 6px 10px rgb(20 8 10 / 0.28));
+  }
+
+  .envelope-flap-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 54%;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    transform-origin: bottom center;
+    z-index: 3;
+    filter: drop-shadow(0 -4px 8px rgb(20 8 10 / 0.2));
+  }
+
+  .envelope-flap-left {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 54%;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+    transform-origin: left center;
+    z-index: 2;
+    filter: drop-shadow(4px 0 8px rgb(20 8 10 / 0.22));
+  }
+
+  .envelope-flap-right {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 54%;
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+    transform-origin: right center;
+    z-index: 2;
+    filter: drop-shadow(-4px 0 8px rgb(20 8 10 / 0.22));
+  }
+
+  .envelope-flap-top .envelope-flap-face {
+    background:
+      linear-gradient(
+        180deg,
+        #734246 0%,
+        #4d2a2f 55%,
+        #3c2125 100%
+      );
+  }
+
+  .envelope-flap-bottom .envelope-flap-face {
+    background:
+      linear-gradient(
+        0deg,
+        #6a393e 0%,
+        #45262b 60%,
+        #362023 100%
+      );
+  }
 }
