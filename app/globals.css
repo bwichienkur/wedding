@@ -388,64 +388,72 @@
   }
 
   .envelope-flap-art-emboss {
-    opacity: 0.95;
+    opacity: 0.88;
     mix-blend-mode: normal;
-    filter: brightness(1.55) contrast(1.18) saturate(0.9);
+    filter:
+      brightness(1.28)
+      contrast(1.14)
+      saturate(0.86)
+      drop-shadow(0 1px 1px rgb(4 10 24 / 0.45));
   }
 
   .envelope-flap-art-glow {
     opacity: 0;
     mix-blend-mode: screen;
-    filter: brightness(1.08);
+    filter: brightness(1.05);
   }
 
   .envelope-flap-art-glow.is-lit,
   .intro-envelope-stage.is-illuminated .envelope-flap-art-glow {
-    opacity: 0.9;
+    opacity: 0.78;
     filter:
-      brightness(1.12)
-      drop-shadow(0 0 8px rgb(205 168 79 / 0.4))
-      drop-shadow(0 0 18px rgb(212 182 92 / 0.25));
+      brightness(1.08)
+      drop-shadow(0 0 6px rgb(205 168 79 / 0.32))
+      drop-shadow(0 0 14px rgb(212 182 92 / 0.18));
   }
 
   .intro-envelope-stage.is-illuminated .envelope-flap-art-emboss {
-    opacity: 0.62;
-    filter: brightness(1.35) contrast(1.1) saturate(0.85);
+    opacity: 0.55;
+    filter:
+      brightness(1.35)
+      contrast(1.1)
+      saturate(0.8)
+      drop-shadow(0 0 4px rgb(205 168 79 / 0.18));
   }
 
-  /* Full symmetrical top V — fills upper triangle, clears seal tip */
+  /* Top corner vines — wide, airy, clears text + seal */
   .envelope-flap-art-top {
-    top: 0;
-    left: 1%;
-    right: 1%;
-    height: 58%;
+    top: 1%;
+    left: 0;
+    right: 0;
+    height: 48%;
     background-position: center top;
-    background-size: 108% auto;
+    background-size: 118% auto;
   }
 
   .envelope-flap-art-bottom {
-    left: 1%;
-    right: 1%;
+    left: 2%;
+    right: 2%;
     bottom: 0;
-    height: 56%;
+    height: 54%;
     background-position: center bottom;
-    background-size: 110% auto;
+    background-size: 108% auto;
   }
 
   .envelope-flap-art-side-left {
-    top: 2%;
-    left: -2%;
-    width: 82%;
-    height: 96%;
+    top: 6%;
+    left: 0;
+    width: 58%;
+    height: 88%;
     background-position: left center;
     background-size: contain;
   }
 
   .envelope-flap-art-side-right {
-    top: 2%;
-    right: -2%;
-    width: 82%;
-    height: 96%;
+    top: 6%;
+    right: 0;
+    width: 58%;
+    height: 88%;
     background-position: right center;
     background-size: contain;
   }
