@@ -180,50 +180,24 @@ function EnvelopeFlap({
 }
 
 function EmbossMotif({ side }: { side: "top" | "bottom" | "left" | "right" }) {
-  // Quiet botanical relief — pressed into the paper, not a thread graphic.
-  if (side === "left" || side === "right") {
-    return (
-      <svg
-        viewBox="0 0 120 240"
-        className="absolute inset-0 h-full w-full opacity-[0.22]"
-        aria-hidden
-      >
-        <g
-          fill="none"
-          stroke="#e8d5c4"
-          strokeWidth="1.1"
-          strokeLinecap="round"
-          transform={side === "right" ? "translate(120,0) scale(-1,1)" : undefined}
-        >
-          <path d="M34 40 C48 70, 42 110, 58 140 C70 162, 66 190, 78 214" />
-          <path d="M58 140 C40 128, 28 148, 36 162" />
-          <path d="M58 140 C78 132, 88 152, 76 166" />
-          <path d="M48 88 C34 92, 30 108, 40 116" />
-          <path d="M48 88 C62 80, 72 94, 64 106" />
-          <circle cx="58" cy="140" r="2.2" fill="#e8d5c4" stroke="none" />
-        </g>
-      </svg>
-    );
-  }
+  // Soft pressed botanical relief on the side flaps only — no hairline “thread” look.
+  if (side !== "left" && side !== "right") return null;
 
   return (
     <svg
-      viewBox="0 0 240 120"
-      className="absolute inset-0 h-full w-full opacity-[0.2]"
+      viewBox="0 0 120 240"
+      className="absolute inset-0 h-full w-full opacity-[0.14]"
       aria-hidden
     >
       <g
-        fill="none"
-        stroke="#e8d5c4"
-        strokeWidth="1.1"
-        strokeLinecap="round"
-        transform={
-          side === "bottom" ? "translate(0,120) scale(1,-1)" : undefined
-        }
+        fill="#e8d5c4"
+        opacity="0.9"
+        transform={side === "right" ? "translate(120,0) scale(-1,1)" : undefined}
       >
-        <path d="M70 34 C100 48, 120 28, 150 42 C170 52, 180 44, 196 52" />
-        <path d="M120 36 C112 22, 128 14, 136 28" />
-        <path d="M150 42 C158 28, 176 30, 172 46" />
+        <ellipse cx="46" cy="96" rx="10" ry="16" transform="rotate(-28 46 96)" />
+        <ellipse cx="58" cy="128" rx="12" ry="18" transform="rotate(18 58 128)" />
+        <ellipse cx="44" cy="158" rx="9" ry="14" transform="rotate(-12 44 158)" />
+        <ellipse cx="62" cy="186" rx="11" ry="15" transform="rotate(22 62 186)" />
       </g>
     </svg>
   );
