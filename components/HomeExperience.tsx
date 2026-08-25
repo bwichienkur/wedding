@@ -21,8 +21,9 @@ import type { VenueInfo, WeddingPartyMember } from "@/data/logistics-types";
 import type { MemoryCard } from "@/data/memories";
 import type { StoryImage, StoryMilestone } from "@/data/types";
 import { mainContentId } from "@/data/navigation";
+import type { ResolvedSiteSections } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export interface HomeMediaBundle {
   heroSlides: HeroSlide[];
@@ -34,7 +35,13 @@ export interface HomeMediaBundle {
   proposalStill: StoryImage | null;
 }
 
-export function HomeExperience({ media }: { media: HomeMediaBundle }) {
+export function HomeExperience({
+  media,
+  sections,
+}: {
+  media: HomeMediaBundle;
+  sections: ResolvedSiteSections;
+}) {
   const [introDone, setIntroDone] = useState(false);
   const [siteRevealed, setSiteRevealed] = useState(false);
 
@@ -46,6 +53,16 @@ export function HomeExperience({ media }: { media: HomeMediaBundle }) {
   const beginReveal = useCallback(() => {
     setSiteRevealed(true);
   }, []);
+
+  const visibleIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const section of Object.values(sections)) {
+      if (section.visible) ids.add(section.id);
+    }
+    return ids;
+  }, [sections]);
+
+  const show = (id: keyof ResolvedSiteSections) => sections[id]?.visible;
 
   return (
     <>
@@ -59,25 +76,92 @@ export function HomeExperience({ media }: { media: HomeMediaBundle }) {
           siteRevealed ? "opacity-100" : "opacity-0",
         )}
       >
-        <SiteHeader />
+        <SiteHeader visibleSectionIds={visibleIds} />
         <main id={mainContentId} tabIndex={-1} className="outline-none">
           <Hero slides={media.heroSlides} />
-          <WeddingMarquee />
-          <OurStory milestones={media.storyMilestones} />
-          <SectionErrorBoundary title="Memories couldn’t load">
-            <MemoryGallerySection cards={media.memoryCards} />
-          </SectionErrorBoundary>
-          <SectionErrorBoundary title="Proposal chapter couldn’t load">
-            <ProposalConvergenceSection still={media.proposalStill} />
-          </SectionErrorBoundary>
-          <WeddingDaySection />
-          <VenueSection venue={media.venue} />
-          <TravelSection />
-          <PartySection members={media.partyMembers} />
-          <RsvpSection />
-          <FaqSection />
-          <RegistrySection />
-          <ClosingSection image={media.closingImage} />
+          {show("marquee") ? <WeddingMarquee /> : null}
+          {show("story") ? (
+            <OurStory
+              milestones={media.storyMilestones}
+              eyebrow={sections.story.eyebrow}
+              title={sections.story.title}
+              description={sections.story.description}
+            />
+          ) : null}
+          {show("gallery") ? (
+            <SectionErrorBoundary title="Memories couldn’t load">
+              <MemoryGallerySection
+                cards={media.memoryCards}
+                eyebrow={sections.gallery.eyebrow}
+                title={sections.gallery.title}
+                description={sections.gallery.description}
+              />
+            </SectionErrorBoundary>
+          ) : null}
+          {show("proposal") ? (
+            <SectionErrorBoundary title="Proposal chapter couldn’t load">
+              <ProposalConvergenceSection
+                still={media.proposalStill}
+                eyebrow={sections.proposal.eyebrow}
+                title={sections.proposal.title}
+                description={sections.proposal.description}
+              />
+            </SectionErrorBoundary>
+          ) : null}
+          {show("wedding-day") ? (
+            <WeddingDaySection
+              eyebrow={sections["wedding-day"].eyebrow}
+              title={sections["wedding-day"].title}
+              description={sections["wedding-day"].description}
+            />
+          ) : null}
+          {show("venue") ? (
+            <VenueSection
+              venue={media.venue}
+              eyebrow={sections.venue.eyebrow}
+              title={sections.venue.title}
+              description={sections.venue.description}
+            />
+          ) : null}
+          {show("travel") ? (
+            <TravelSection
+              eyebrow={sections.travel.eyebrow}
+              title={sections.travel.title}
+              description={sections.travel.description}
+            />
+          ) : null}
+          {show("party") ? (
+            <PartySection
+              members={media.partyMembers}
+              eyebrow={sections.party.eyebrow}
+              title={sections.party.title}
+              description={sections.party.description}
+            />
+          ) : null}
+          {show("rsvp") ? (
+            <RsvpSection
+              eyebrow={sections.rsvp.eyebrow}
+              title={sections.rsvp.title}
+              description={sections.rsvp.description}
+            />
+          ) : null}
+          {show("faq") ? (
+            <FaqSection
+              eyebrow={sections.faq.eyebrow}
+              title={sections.faq.title}
+              description={sections.faq.description}
+            />
+          ) : null}
+          {show("registry") ? (
+            <RegistrySection
+              eyebrow={sections.registry.eyebrow}
+              title={sections.registry.title}
+              description={sections.registry.description}
+            />
+          ) : null}
+          {show("closing") ? (
+            <ClosingSection image={media.closingImage} />
+          ) : null}
         </main>
       </div>
       {introDone ? null : (

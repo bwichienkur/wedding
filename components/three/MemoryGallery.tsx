@@ -155,7 +155,17 @@ function MemoryDialog({
   );
 }
 
-export function MemoryGallerySection({ cards }: { cards: MemoryCard[] }) {
+export function MemoryGallerySection({
+  cards,
+  eyebrow = "Memories",
+  title = "Moments along the thread",
+  description = "Selected photographs from Bright and Lexi’s story — a calm timeline you can browse at your own pace.",
+}: {
+  cards: MemoryCard[];
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+}) {
   const capabilities = useExperienceCapabilities();
   const [selected, setSelected] = useState<MemoryCard | null>(null);
   const [forceSimple, setForceSimple] = useState(false);
@@ -173,9 +183,9 @@ export function MemoryGallerySection({ cards }: { cards: MemoryCard[] }) {
   return (
     <Section
       id="gallery"
-      eyebrow="Memories"
-      title="Moments along the thread"
-      description="Selected photographs from Bright and Lexi’s story — a calm timeline you can browse at your own pace."
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
       className="bg-parchment/40"
     >
       {wedding.featureFlags.floatingGallery ? (

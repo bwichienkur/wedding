@@ -67,3 +67,22 @@ export const rsvpNav: NavItem = {
 export const weddingDetailsHref = "#wedding-day";
 export const storyHref = "#story";
 export const mainContentId = "main-content";
+
+export function filterNavItems(
+  items: NavItem[],
+  visible: ReadonlySet<string>,
+): NavItem[] {
+  return items.filter((item) => visible.has(item.id));
+}
+
+export function filterNavGroups(
+  groups: NavGroup[],
+  visible: ReadonlySet<string>,
+): NavGroup[] {
+  return groups
+    .map((group) => ({
+      ...group,
+      items: filterNavItems(group.items, visible),
+    }))
+    .filter((group) => group.items.length > 0);
+}

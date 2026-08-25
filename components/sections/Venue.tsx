@@ -7,7 +7,17 @@ import { cn } from "@/lib/cn";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-export function VenueSection({ venue }: { venue: VenueInfo }) {
+export function VenueSection({
+  venue,
+  eyebrow = "Venue",
+  title = venue.name,
+  description = `${venue.city}, ${venue.region}`,
+}: {
+  venue: VenueInfo;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+}) {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
@@ -35,9 +45,9 @@ export function VenueSection({ venue }: { venue: VenueInfo }) {
   return (
     <Section
       id="venue"
-      eyebrow="Venue"
-      title={venue.name}
-      description={`${venue.city}, ${venue.region}`}
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
       className="bg-ivory"
     >
       <div

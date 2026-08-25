@@ -150,13 +150,23 @@ function MilestoneCard({
   );
 }
 
-export function OurStory({ milestones }: { milestones: StoryMilestone[] }) {
+export function OurStory({
+  milestones,
+  eyebrow = "Our story",
+  title = "Two paths, drawn together",
+  description = "A living timeline of Bright and Lexi. Confirmed moments are marked; everything else waits for your words and photographs.",
+}: {
+  milestones: StoryMilestone[];
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+}) {
   return (
     <Section
       id="story"
-      eyebrow="Our story"
-      title="Two paths, drawn together"
-      description="A living timeline of Bright and Lexi. Confirmed moments are marked; everything else waits for your words and photographs."
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
       className="bg-ivory"
     >
       <div className="relative">

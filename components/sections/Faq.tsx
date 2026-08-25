@@ -6,7 +6,15 @@ import { faqCategories, faqItems } from "@/data/faq";
 import { cn } from "@/lib/cn";
 import { useMemo, useState } from "react";
 
-export function FaqSection() {
+export function FaqSection({
+  eyebrow = "FAQ",
+  title = "A few helpful answers",
+  description = "Search or browse by topic. Placeholder answers stay clearly labeled until confirmed.",
+}: {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+} = {}) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("All");
 
@@ -27,9 +35,9 @@ export function FaqSection() {
   return (
     <Section
       id="faq"
-      eyebrow="FAQ"
-      title="A few helpful answers"
-      description="Search or browse by topic. Placeholder answers stay clearly labeled until confirmed."
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
     >
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end">
         <label className="block flex-1 text-sm">
