@@ -6,13 +6,21 @@ import { Section } from "@/components/ui/Section";
 import { travel } from "@/data/travel";
 import { cn } from "@/lib/cn";
 
-export function TravelSection() {
+export function TravelSection({
+  eyebrow = "Travel",
+  title = "Travel & accommodations",
+  description = travel.intro,
+}: {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+} = {}) {
   return (
     <Section
       id="travel"
-      eyebrow="Travel"
-      title="Travel & accommodations"
-      description={travel.intro}
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
       className="bg-parchment/50"
     >
       <div className="space-y-12">

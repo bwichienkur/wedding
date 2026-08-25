@@ -12,13 +12,21 @@ import {
 } from "@/lib/calendar/schedule";
 import { cn } from "@/lib/cn";
 
-export function WeddingDaySection() {
+export function WeddingDaySection({
+  eyebrow = weddingDayTransition.eyebrow,
+  title = weddingDayTransition.title,
+  description = weddingDayTransition.body,
+}: {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+} = {}) {
   return (
     <Section
       id="wedding-day"
-      eyebrow={weddingDayTransition.eyebrow}
-      title={weddingDayTransition.title}
-      description={weddingDayTransition.body}
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
       className="bg-parchment/60"
     >
       <div className="relative mb-12">

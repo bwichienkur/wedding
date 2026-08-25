@@ -2,13 +2,23 @@ import { Section } from "@/components/ui/Section";
 import type { WeddingPartyMember } from "@/data/logistics-types";
 import { cn } from "@/lib/cn";
 
-export function PartySection({ members }: { members: WeddingPartyMember[] }) {
+export function PartySection({
+  members,
+  eyebrow = "Wedding party",
+  title = "Standing beside us",
+  description = "An editorial introduction to the people celebrating with Bright and Lexi. Names and photographs remain placeholders until supplied.",
+}: {
+  members: WeddingPartyMember[];
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+}) {
   return (
     <Section
       id="party"
-      eyebrow="Wedding party"
-      title="Standing beside us"
-      description="An editorial introduction to the people celebrating with Bright and Lexi. Names and photographs remain placeholders until supplied."
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
     >
       <div className="space-y-16">
         {members.map((member, index) => {

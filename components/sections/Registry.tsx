@@ -3,13 +3,21 @@ import { Section } from "@/components/ui/Section";
 import { registry } from "@/data/registry";
 import { cn } from "@/lib/cn";
 
-export function RegistrySection() {
+export function RegistrySection({
+  eyebrow = "Registry",
+  title = "Gifts",
+  description = "Kept intentionally understated. Your presence matters most.",
+}: {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+} = {}) {
   return (
     <Section
       id="registry"
-      eyebrow="Registry"
-      title="Gifts"
-      description="Kept intentionally understated. Your presence matters most."
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
       className="bg-parchment/40"
     >
       <p

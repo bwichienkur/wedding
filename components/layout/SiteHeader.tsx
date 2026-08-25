@@ -2,6 +2,8 @@
 
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import {
+  filterNavGroups,
+  filterNavItems,
   mobileNavGroups,
   mobileQuickNav,
   primaryNav,
@@ -11,22 +13,56 @@ import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import { editorialEase, fadeUpSmallVariants, staggerFastContainerVariants } from "@/lib/motion";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
-const observedSectionIds = Array.from(
-  new Set([
-    ...primaryNav.map((item) => item.id),
-    ...mobileNavGroups.flatMap((group) => group.items.map((item) => item.id)),
-    rsvpNav.id,
-  ]),
-);
-
-export function SiteHeader() {
+export function SiteHeader({
+  visibleSectionIds,
+}: {
+  visibleSectionIds?: ReadonlySet<string>;
+}) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const menuId = useId();
   const reduceMotion = useReducedMotion();
+
+  const visiblePrimaryNav = useMemo(
+    () =>
+      visibleSectionIds
+        ? filterNavItems(primaryNav, visibleSectionIds)
+        : primaryNav,
+    [visibleSectionIds],
+  );
+  const visibleQuickNav = useMemo(
+    () =>
+      visibleSectionIds
+        ? filterNavItems(mobileQuickNav, visibleSectionIds)
+        : mobileQuickNav,
+    [visibleSectionIds],
+  );
+  const visibleNavGroups = useMemo(
+    () =>
+      visibleSectionIds
+        ? filterNavGroups(mobileNavGroups, visibleSectionIds)
+        : mobileNavGroups,
+    [visibleSectionIds],
+  );
+  const showRsvp =
+    !visibleSectionIds || visibleSectionIds.has(rsvpNav.id);
+
+  const observedSectionIds = useMemo(
+    () =>
+      Array.from(
+        new Set([
+          ...visiblePrimaryNav.map((item) => item.id),
+          ...visibleNavGroups.flatMap((group) =>
+            group.items.map((item) => item.id),
+          ),
+          ...(showRsvp ? [rsvpNav.id] : []),
+        ]),
+      ),
+    [showRsvp, visibleNavGroups, visiblePrimaryNav],
+  );
 
   useEffect(() => {
     const sections = observedSectionIds
@@ -49,8 +85,7 @@ export function SiteHeader() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
-
+  }, [observedSectionIds]);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -95,7 +130,7 @@ export function SiteHeader() {
           aria-label="Primary"
           className="hidden items-center gap-1 lg:flex"
         >
-          {primaryNav.map((item) => (
+          {visiblePrimaryNav.map((item) => (
             <a
               key={item.id}
               href={item.href}
@@ -120,15 +155,19 @@ export function SiteHeader() {
               />
             </a>
           ))}
-          <ButtonLink href={rsvpNav.href} variant="gold" size="md" className="ml-3">
-            {rsvpNav.label}
-          </ButtonLink>
+          {showRsvp ? (
+            <ButtonLink href={rsvpNav.href} variant="gold" size="md" className="ml-3">
+              {rsvpNav.label}
+            </ButtonLink>
+          ) : null}
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <ButtonLink href={rsvpNav.href} variant="gold" size="md">
-            {rsvpNav.label}
-          </ButtonLink>
+          {showRsvp ? (
+            <ButtonLink href={rsvpNav.href} variant="gold" size="md">
+              {rsvpNav.label}
+            </ButtonLink>
+          ) : null}
           <button
             type="button"
             className={cn(
@@ -174,7 +213,7 @@ export function SiteHeader() {
         )}
       >
         <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 scrollbar-none sm:px-8">
-          {mobileQuickNav.map((item) => (
+          {visibleQuickNav.map((item) => (
             <a
               key={item.id}
               href={item.href}
@@ -238,7 +277,7 @@ export function SiteHeader() {
                 Home
               </motion.a>
 
-              {mobileNavGroups.map((group) => (
+              {visibleNavGroups.map((group) => (
                 <motion.div
                   key={group.id}
                   variants={fadeUpSmallVariants}

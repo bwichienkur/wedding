@@ -4,7 +4,6 @@ import { Section } from "@/components/ui/Section";
 import { ProposalFilmExperience } from "@/components/video/ProposalFilmExperience";
 import type { StoryImage } from "@/data/types";
 import { wedding } from "@/data/wedding";
-import { cn } from "@/lib/cn";
 import { useReducedMotion } from "motion/react";
 import { useId } from "react";
 
@@ -161,10 +160,21 @@ function ProposalThreadConvergence({ still }: { still?: StoryImage | null }) {
 
 export function ProposalConvergenceSection({
   still,
+  eyebrow = "Proposal",
+  title = wedding.proposal.transitionCopy,
+  description,
 }: {
   still?: StoryImage | null;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
 }) {
   const headingId = useId();
+  const intro =
+    description?.trim() ||
+    [wedding.proposal.dateLabel, wedding.proposal.locationLabel]
+      .filter(Boolean)
+      .join(" · ");
 
   return (
     <Section
@@ -175,30 +185,15 @@ export function ProposalConvergenceSection({
     >
       <header className="mb-10 max-w-2xl md:mb-14">
         <p className="mb-3 font-sans text-xs uppercase tracking-[0.22em] text-gold">
-          Proposal
+          {eyebrow}
         </p>
         <h2
           id={headingId}
           className="font-display text-balance text-3xl text-forest sm:text-4xl md:text-5xl"
         >
-          {wedding.proposal.transitionCopy}
+          {title}
         </h2>
-        <p
-          className={cn(
-            "mt-4 text-base text-ink-muted",
-            wedding.proposal.dateIsPlaceholder && "placeholder-copy",
-          )}
-        >
-          {wedding.proposal.dateLabel}
-        </p>
-        <p
-          className={cn(
-            "mt-2 text-base text-ink-muted",
-            wedding.proposal.locationIsPlaceholder && "placeholder-copy",
-          )}
-        >
-          {wedding.proposal.locationLabel}
-        </p>
+        <p className="mt-4 text-base text-ink-muted">{intro}</p>
       </header>
 
       <ProposalThreadConvergence still={still} />
