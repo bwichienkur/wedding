@@ -32,25 +32,30 @@ export function SectionsAdminPanel() {
     );
   }, []);
 
-  const refresh = useCallback(async () => {
-    const response = await fetch("/api/admin/sections");
-    if (response.status === 401) {
-      router.replace("/admin/login");
-      return;
-    }
-    if (!response.ok) {
-      setError("Unable to load sections.");
-      return;
-    }
-    const data = (await response.json()) as { sections: ResolvedSiteSection[] };
-    applySections(data.sections);
-    setLoaded(true);
-    setError(null);
-  }, [applySections, router]);
-
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let cancelled = false;
+    void (async () => {
+      const response = await fetch("/api/admin/sections");
+      if (response.status === 401) {
+        router.replace("/admin/login");
+        return;
+      }
+      if (!response.ok) {
+        if (!cancelled) setError("Unable to load sections.");
+        return;
+      }
+      const data = (await response.json()) as {
+        sections: ResolvedSiteSection[];
+      };
+      if (cancelled) return;
+      applySections(data.sections);
+      setLoaded(true);
+      setError(null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [applySections, router]);
 
   async function patchSection(
     id: string,
