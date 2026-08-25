@@ -37,11 +37,11 @@ export function WaxSealButton({
     <>
       <div
         className={cn(
-          /* Seal sits slightly above stage center in the master art */
-          "intro-seal-wrap absolute left-1/2 top-[46.5%] z-30 -translate-x-1/2 -translate-y-1/2",
+          "intro-seal-wrap absolute left-1/2 top-[var(--intro-seal-y,46.08%)] z-30 -translate-x-1/2 -translate-y-1/2",
           "transition-opacity duration-500",
           !visible && "opacity-0",
           idleTwinkle && "is-idle-twinkle",
+          (activating || glowing) && "is-seal-lit",
         )}
       >
         <button
@@ -67,7 +67,7 @@ export function WaxSealButton({
             hotspotOnly && "intro-seal-hotspot",
           )}
         >
-          {idleTwinkle ? (
+          {(idleTwinkle || activating || glowing) && !opening ? (
             <span className="intro-seal-idle-aura" aria-hidden />
           ) : null}
           {hotspotOnly ? (

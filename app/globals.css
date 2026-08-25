@@ -234,6 +234,9 @@
     --intro-navy-paper: #0c1a30;
     --intro-gold: #d4b65c;
     --intro-gold-soft: #e8c872;
+    /* Registered to seal center in envelope-master-closed.webp */
+    --intro-seal-x: 49.91%;
+    --intro-seal-y: 46.08%;
   }
 
   .intro-envelope-viewport {
@@ -288,9 +291,8 @@
   .envelope-master-face {
     background-color: #0c1a30;
     background-repeat: no-repeat;
-    background-position: center top;
-    /* Master art has a dark margin under the bottom flap — crop it */
-    background-size: 100% 110%;
+    background-position: center center;
+    background-size: 100% 100%;
   }
 
   .envelope-interior {
@@ -311,6 +313,19 @@
     transform-style: preserve-3d;
     backface-visibility: hidden;
     will-change: transform, opacity;
+    /* Soft hole at the seal so flap art doesn’t stack under the lifting wax */
+    -webkit-mask-image: radial-gradient(
+      circle at var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%),
+      transparent 0%,
+      transparent 7.2%,
+      #000 11.5%
+    );
+    mask-image: radial-gradient(
+      circle at var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%),
+      transparent 0%,
+      transparent 7.2%,
+      #000 11.5%
+    );
   }
 
   .envelope-flap-face {
@@ -376,8 +391,8 @@
     pointer-events: none;
     z-index: 2;
     filter: none;
-    /* Belt-and-suspenders: hide any residual top-edge gold bar */
-    clip-path: inset(3.2% 0 0 0);
+    /* Only shave the razor top edge — keep the top embossed crest */
+    clip-path: inset(0.35% 0 0 0);
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
@@ -387,8 +402,8 @@
     mask-image: radial-gradient(circle, #000 0%, #000 48%, transparent 70%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    -webkit-mask-position: 50% 46.5%;
-    mask-position: 50% 46.5%;
+    -webkit-mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
+    mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
     -webkit-mask-size: 0% 0%;
     mask-size: 0% 0%;
     transition:
@@ -399,16 +414,15 @@
 
   .envelope-floral-glow.is-lit {
     opacity: 1;
-    /* Brighten emboss + seams only — asset is alpha-masked to those areas */
-    filter: brightness(1.28) saturate(1.12);
+    filter: brightness(1.22) saturate(1.1);
     -webkit-mask-size: 300% 300%;
     mask-size: 300% 300%;
   }
 
   .envelope-floral-glow-face {
     background-repeat: no-repeat;
-    background-position: center top;
-    background-size: 100% 110%;
+    background-position: center center;
+    background-size: 100% 100%;
     opacity: 0;
     mix-blend-mode: screen;
     z-index: 2;
@@ -418,7 +432,7 @@
 
   .envelope-floral-glow-face.is-lit {
     opacity: 1;
-    filter: brightness(1.28) saturate(1.12);
+    filter: brightness(1.22) saturate(1.1);
   }
 
   /* Do not brighten the whole envelope paper on click */
@@ -448,9 +462,13 @@
     }
   }
 
-  /* Four-flap geometry — apex at seal (46.5%), matching the painted X seams */
+  /* Four-flap geometry — apex locked to painted seal center */
   .envelope-flap-top {
-    clip-path: polygon(0 0, 100% 0, 50% 46.5%);
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%)
+    );
     z-index: 4;
   }
 
@@ -459,7 +477,11 @@
   }
 
   .envelope-flap-bottom {
-    clip-path: polygon(50% 46.5%, 100% 100%, 0 100%);
+    clip-path: polygon(
+      var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%),
+      100% 100%,
+      0 100%
+    );
     z-index: 1;
   }
 
@@ -468,7 +490,11 @@
   }
 
   .envelope-flap-left {
-    clip-path: polygon(0 0, 50% 46.5%, 0 100%);
+    clip-path: polygon(
+      0 0,
+      var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%),
+      0 100%
+    );
     z-index: 2;
   }
 
@@ -477,7 +503,11 @@
   }
 
   .envelope-flap-right {
-    clip-path: polygon(100% 0, 100% 100%, 50% 46.5%);
+    clip-path: polygon(
+      100% 0,
+      100% 100%,
+      var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%)
+    );
     z-index: 2;
   }
 
@@ -487,8 +517,8 @@
 
   .envelope-shell-open .envelope-flap-hinge {
     transition:
-      transform var(--intro-open, 2800ms) cubic-bezier(0.22, 0.61, 0.36, 1),
-      opacity calc(var(--intro-open, 2800ms) * 0.85) ease;
+      transform var(--intro-open, 2800ms) cubic-bezier(0.33, 0.1, 0.25, 1),
+      opacity calc(var(--intro-open, 2800ms) * 0.9) ease;
   }
 
   .envelope-shell.envelope-shell-open {
@@ -499,28 +529,29 @@
     overflow: visible;
   }
 
+  /* Gentler peel — folds outward without extreme tumbling */
   .envelope-flap-top .envelope-flap-hinge.is-open {
-    transform: rotateX(-155deg) translateZ(12px);
-    opacity: 0.2;
-    transition-delay: 0.05s;
+    transform: rotateX(-108deg) translateY(-2%);
+    opacity: 0;
+    transition-delay: 0.08s;
   }
 
   .envelope-flap-bottom .envelope-flap-hinge.is-open {
-    transform: rotateX(155deg) translateZ(8px);
-    opacity: 0.2;
-    transition-delay: 0.22s;
+    transform: rotateX(108deg) translateY(2%);
+    opacity: 0;
+    transition-delay: 0.2s;
   }
 
   .envelope-flap-left .envelope-flap-hinge.is-open {
-    transform: rotateY(-155deg) translateZ(8px);
-    opacity: 0.2;
+    transform: rotateY(-108deg) translateX(-2%);
+    opacity: 0;
     transition-delay: 0s;
   }
 
   .envelope-flap-right .envelope-flap-hinge.is-open {
-    transform: rotateY(155deg) translateZ(8px);
-    opacity: 0.2;
-    transition-delay: 0.14s;
+    transform: rotateY(108deg) translateX(2%);
+    opacity: 0;
+    transition-delay: 0.12s;
   }
 
   .envelope-flap-hinge.is-open-instant {
@@ -531,6 +562,27 @@
   .intro-envelope-exiting {
     opacity: 0;
     transition: opacity 0.35s ease;
+  }
+
+  .intro-envelope-opening .envelope-shell {
+    animation: intro-envelope-settle var(--intro-open, 2800ms)
+      cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes intro-envelope-settle {
+    0% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    35% {
+      transform: scale(1.015);
+      filter: brightness(1.04);
+    }
+    100% {
+      transform: scale(1.04);
+      filter: brightness(0.85);
+      opacity: 0.15;
+    }
   }
 
   /* Invitation typography — upper third */
@@ -562,45 +614,47 @@
     text-wrap: balance;
   }
 
-  /* Monogram glow — full-frame overlay; brightens baked seal letters in place */
+  /* Full wax-seal glow — whole disc, not just the monogram letters */
   .intro-monogram-glow {
     opacity: 0;
-    mix-blend-mode: normal;
+    mix-blend-mode: screen;
     pointer-events: none;
     z-index: 3;
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 55%,
+      #000 58%,
       transparent 78%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 55%, transparent 78%);
+    mask-image: radial-gradient(circle, #000 0%, #000 58%, transparent 78%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    -webkit-mask-position: 50% 46.5%;
-    mask-position: 50% 46.5%;
+    -webkit-mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
+    mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
     -webkit-mask-size: 0% 0%;
     mask-size: 0% 0%;
     transition:
-      opacity calc(var(--intro-glow, 4500ms) * 0.5) cubic-bezier(0.22, 1, 0.36, 1)
-        var(--intro-monogram-delay, 1400ms),
-      -webkit-mask-size calc(var(--intro-glow, 4500ms) * 0.65)
-        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 1400ms),
-      mask-size calc(var(--intro-glow, 4500ms) * 0.65)
-        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 1400ms);
+      opacity calc(var(--intro-glow, 4500ms) * 0.45) cubic-bezier(0.22, 1, 0.36, 1)
+        var(--intro-monogram-delay, 900ms),
+      -webkit-mask-size calc(var(--intro-glow, 4500ms) * 0.55)
+        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 900ms),
+      mask-size calc(var(--intro-glow, 4500ms) * 0.55)
+        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 900ms);
   }
 
   .intro-monogram-glow.is-lit {
     opacity: 1;
-    -webkit-mask-size: 42% 28%;
-    mask-size: 42% 28%;
+    filter: brightness(1.15);
+    /* Wide enough to cover the full wax disc in the master art */
+    -webkit-mask-size: 34% 24%;
+    mask-size: 34% 24%;
   }
 
-  /* Idle twinkle on the baked monogram before the first tap */
+  /* Idle twinkle on the full seal before the first tap */
   .intro-monogram-glow.is-idle-twinkle {
-    opacity: 0.55;
-    -webkit-mask-size: 38% 26%;
-    mask-size: 38% 26%;
+    opacity: 0.5;
+    -webkit-mask-size: 32% 22%;
+    mask-size: 32% 22%;
     animation: intro-seal-twinkle 2.8s ease-in-out infinite;
   }
 
@@ -620,19 +674,28 @@
     box-shadow: none;
   }
 
-  .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura {
+  .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura,
+  .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
     position: absolute;
-    inset: -18%;
+    inset: -22%;
     border-radius: 50%;
     pointer-events: none;
     background:
       radial-gradient(
         circle,
-        rgb(232 200 110 / 0.42) 0%,
-        rgb(212 182 92 / 0.16) 38%,
-        transparent 68%
+        rgb(242 210 120 / 0.55) 0%,
+        rgb(224 190 100 / 0.28) 42%,
+        transparent 72%
       );
+  }
+
+  .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura {
     animation: intro-seal-aura 2.8s ease-in-out infinite;
+  }
+
+  .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
+    opacity: 1;
+    animation: intro-seal-lit-pulse 1.8s ease-in-out infinite;
   }
 
   .intro-seal-idle-aura {
@@ -675,6 +738,18 @@
     }
   }
 
+  @keyframes intro-seal-lit-pulse {
+    0%,
+    100% {
+      opacity: 0.75;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+  }
+
   .intro-seal-hotspot-area {
     display: block;
     width: min(36vw, 9rem);
@@ -691,12 +766,10 @@
 
   .envelope-closed-master img {
     display: block;
-    /* Master art has a dark margin under the bottom flap — crop it */
-    object-fit: fill;
-    object-position: center top;
-    height: 110%;
+    height: 100%;
     width: 100%;
-    max-height: none;
+    object-fit: fill;
+    object-position: center center;
   }
 
   .intro-seal-image {

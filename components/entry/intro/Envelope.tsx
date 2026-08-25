@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
+import type { CSSProperties } from "react";
 import { EnvelopeFlap } from "./EnvelopeFlap";
 import { WaxSealButton } from "./WaxSealButton";
 import type { IntroPhase } from "./types";
@@ -36,6 +37,12 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         opening && !reduceMotion && "intro-envelope-opening",
         opening && reduceMotion && "intro-envelope-exiting",
       )}
+      style={
+        {
+          ["--intro-seal-x" as string]: "49.91%",
+          ["--intro-seal-y" as string]: "46.08%",
+        } as CSSProperties
+      }
     >
       <div
         className={cn(
@@ -46,7 +53,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         style={
           reduceMotion
             ? undefined
-            : { perspective: 1800, transformStyle: "preserve-3d" }
+            : { perspective: 1400, transformStyle: "preserve-3d" }
         }
       >
         <div className="envelope-interior absolute inset-0" aria-hidden />

@@ -8,7 +8,7 @@ export const INTRO_TIMING = {
   /** Overlay unmount after peel settles */
   exit: 280,
   /** Monogram starts after florals begin filling */
-  monogramDelay: 1400,
+  monogramDelay: 900,
 } as const;
 
 export const INTRO_CSS_VARS = {
