@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { EnvelopeFlap } from "./EnvelopeFlap";
+import type { CSSProperties } from "react";
 import { WaxSealButton } from "./WaxSealButton";
 import type { IntroPhase } from "./types";
 import { isIlluminatedPhase, isOpeningPhase, isSealVisiblePhase } from "./types";
@@ -14,17 +14,17 @@ interface EnvelopeProps {
 
 /**
  * Closed master illustration with seal hotspot.
- * After glow, four flaps peel open with the seal, revealing the homepage beneath.
+ * After glow, the sealed envelope lifts/fades open onto the homepage
+ * (avoids misregistered 3D flap morphs on the baked diamond art).
  */
 export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const opening = isOpeningPhase(phase);
   const illuminated = isIlluminatedPhase(phase);
-  const closedVisual =
-    phase === "closed" || phase === "activating" || phase === "glowing";
-  const sealVisible = isSealVisiblePhase(phase) || phase === "opening";
+  const sealVisible = isSealVisiblePhase(phase);
   const floralGlow =
     phase === "activating" || phase === "glowing" || phase === "opening";
-  const monogramLit = phase === "activating" || phase === "glowing";
+  const monogramLit =
+    phase === "activating" || phase === "glowing" || phase === "opening";
   const idleTwinkle = phase === "closed" && !reduceMotion;
 
   return (
@@ -36,28 +36,24 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         opening && !reduceMotion && "intro-envelope-opening",
         opening && reduceMotion && "intro-envelope-exiting",
       )}
+      style={
+        {
+          ["--intro-seal-x" as string]: "49.91%",
+          ["--intro-seal-y" as string]: "46.08%",
+        } as CSSProperties
+      }
     >
       <div
         className={cn(
-          "envelope-shell intro-envelope relative h-full w-full",
-          opening && !reduceMotion ? "overflow-visible" : "overflow-hidden",
+          "envelope-shell intro-envelope relative h-full w-full overflow-hidden",
           opening && !reduceMotion && "envelope-shell-open",
         )}
-        style={
-          reduceMotion
-            ? undefined
-            : { perspective: 1800, transformStyle: "preserve-3d" }
-        }
       >
-        <div className="envelope-interior absolute inset-0" aria-hidden />
-
-        {/* Exact closed mockup — visible through glow, then yields to peeling flaps */}
         <div
           className={cn(
             "envelope-closed-master absolute inset-0 z-[6]",
-            closedVisual
-              ? "opacity-100"
-              : "pointer-events-none opacity-0 duration-0",
+            opening && !reduceMotion && "is-opening",
+            opening && reduceMotion && "opacity-0",
           )}
           aria-hidden
         >
@@ -74,7 +70,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             alt=""
             className={cn(
               "envelope-floral-glow absolute inset-0 h-full w-full object-fill",
-              floralGlow && closedVisual && "is-lit",
+              floralGlow && "is-lit",
             )}
             draggable={false}
           />
@@ -91,26 +87,12 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
           />
         </div>
 
-        {/* Peeling flaps — under closed image until open begins */}
-        <div
-          className={cn(
-            "absolute inset-0",
-            closedVisual && "opacity-0",
-            opening && "opacity-100",
-          )}
-        >
-          <EnvelopeFlap side="bottom" phase={phase} reduceMotion={reduceMotion} />
-          <EnvelopeFlap side="left" phase={phase} reduceMotion={reduceMotion} />
-          <EnvelopeFlap side="right" phase={phase} reduceMotion={reduceMotion} />
-          <EnvelopeFlap side="top" phase={phase} reduceMotion={reduceMotion} />
-        </div>
-
         <WaxSealButton
           phase={phase}
           reduceMotion={reduceMotion}
           onActivate={onActivate}
           visible={sealVisible}
-          hotspotOnly={closedVisual}
+          hotspotOnly
           idleTwinkle={idleTwinkle}
         />
       </div>
