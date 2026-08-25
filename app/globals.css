@@ -414,15 +414,15 @@
 
   .envelope-floral-glow.is-lit {
     opacity: 1;
-    /* Brighten emboss overlay only — paper layer stays unfiltered */
-    filter: brightness(1.45) saturate(1.18) contrast(1.06);
+    /* Bright gold on emboss overlay only — paper stays unfiltered */
+    filter: brightness(1.55) saturate(1.25) contrast(1.08);
     -webkit-mask-size: 300% 300%;
     mask-size: 300% 300%;
   }
 
   .envelope-floral-glow-face.is-lit {
     opacity: 1;
-    filter: brightness(1.45) saturate(1.18) contrast(1.06);
+    filter: brightness(1.55) saturate(1.25) contrast(1.08);
   }
 
   /* Do not brighten the whole envelope paper on click */
