@@ -47,7 +47,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
           <img
             src="/images/envelope-master-closed.webp"
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full object-fill"
             draggable={false}
           />
           {/* Florals — full-frame overlay registered to master */}
@@ -56,7 +56,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             src="/images/envelope-master-glow.webp"
             alt=""
             className={cn(
-              "envelope-floral-glow absolute inset-0 h-full w-full object-cover",
+              "envelope-floral-glow absolute inset-0 h-full w-full object-fill",
               floralGlow && "is-lit",
             )}
             draggable={false}
@@ -67,7 +67,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             src="/images/seal-monogram-glow.webp"
             alt=""
             className={cn(
-              "intro-monogram-glow absolute inset-0 h-full w-full object-cover",
+              "intro-monogram-glow absolute inset-0 h-full w-full object-fill",
               monogramLit && "is-lit",
             )}
             draggable={false}
