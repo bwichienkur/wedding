@@ -15,7 +15,7 @@ interface EnvelopeProps {
 
 /**
  * Closed master illustration with seal hotspot.
- * After glow, four flaps peel open with the seal, revealing the homepage beneath.
+ * After glow, the sealed envelope folds open gently onto the homepage.
  */
 export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const opening = isOpeningPhase(phase);
@@ -25,7 +25,8 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const sealVisible = isSealVisiblePhase(phase) || phase === "opening";
   const floralGlow =
     phase === "activating" || phase === "glowing" || phase === "opening";
-  const monogramLit = phase === "activating" || phase === "glowing";
+  const monogramLit =
+    phase === "activating" || phase === "glowing" || phase === "opening";
   const idleTwinkle = phase === "closed" && !reduceMotion;
 
   return (
@@ -53,18 +54,18 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         style={
           reduceMotion
             ? undefined
-            : { perspective: 1400, transformStyle: "preserve-3d" }
+            : { perspective: 1200, transformStyle: "preserve-3d" }
         }
       >
         <div className="envelope-interior absolute inset-0" aria-hidden />
 
-        {/* Exact closed mockup — visible through glow, then yields to peeling flaps */}
+        {/* Exact closed mockup — stays through glow, then crossfades into peeling flaps */}
         <div
           className={cn(
             "envelope-closed-master absolute inset-0 z-[6]",
             closedVisual
               ? "opacity-100"
-              : "pointer-events-none opacity-0 duration-0",
+              : "pointer-events-none opacity-0 duration-200",
           )}
           aria-hidden
         >
@@ -81,7 +82,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             alt=""
             className={cn(
               "envelope-floral-glow absolute inset-0 h-full w-full object-fill",
-              floralGlow && closedVisual && "is-lit",
+              floralGlow && "is-lit",
             )}
             draggable={false}
           />
@@ -98,10 +99,10 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
           />
         </div>
 
-        {/* Peeling flaps — under closed image until open begins */}
+        {/* Peeling flaps — matched closed art, under sealed layer until open */}
         <div
           className={cn(
-            "absolute inset-0",
+            "absolute inset-0 z-[5]",
             closedVisual && "opacity-0",
             opening && "opacity-100",
           )}
