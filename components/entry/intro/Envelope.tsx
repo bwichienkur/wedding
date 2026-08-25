@@ -39,7 +39,8 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
     >
       <div
         className={cn(
-          "envelope-shell intro-envelope relative h-full w-full overflow-hidden",
+          "envelope-shell intro-envelope relative h-full w-full",
+          opening && !reduceMotion ? "overflow-visible" : "overflow-hidden",
           opening && !reduceMotion && "envelope-shell-open",
         )}
         style={
