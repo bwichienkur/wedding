@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/cn";
 import type { CSSProperties } from "react";
-import { EnvelopeFlap } from "./EnvelopeFlap";
 import { WaxSealButton } from "./WaxSealButton";
 import type { IntroPhase } from "./types";
 import { isIlluminatedPhase, isOpeningPhase, isSealVisiblePhase } from "./types";
@@ -15,14 +14,13 @@ interface EnvelopeProps {
 
 /**
  * Closed master illustration with seal hotspot.
- * After glow, the sealed envelope folds open gently onto the homepage.
+ * After glow, the sealed envelope lifts/fades open onto the homepage
+ * (avoids misregistered 3D flap morphs on the baked diamond art).
  */
 export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const opening = isOpeningPhase(phase);
   const illuminated = isIlluminatedPhase(phase);
-  const closedVisual =
-    phase === "closed" || phase === "activating" || phase === "glowing";
-  const sealVisible = isSealVisiblePhase(phase) || phase === "opening";
+  const sealVisible = isSealVisiblePhase(phase);
   const floralGlow =
     phase === "activating" || phase === "glowing" || phase === "opening";
   const monogramLit =
@@ -47,25 +45,15 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
     >
       <div
         className={cn(
-          "envelope-shell intro-envelope relative h-full w-full",
-          opening && !reduceMotion ? "overflow-visible" : "overflow-hidden",
+          "envelope-shell intro-envelope relative h-full w-full overflow-hidden",
           opening && !reduceMotion && "envelope-shell-open",
         )}
-        style={
-          reduceMotion
-            ? undefined
-            : { perspective: 1200, transformStyle: "preserve-3d" }
-        }
       >
-        <div className="envelope-interior absolute inset-0" aria-hidden />
-
-        {/* Exact closed mockup — stays through glow, then crossfades into peeling flaps */}
         <div
           className={cn(
             "envelope-closed-master absolute inset-0 z-[6]",
-            closedVisual
-              ? "opacity-100"
-              : "pointer-events-none opacity-0 duration-200",
+            opening && !reduceMotion && "is-opening",
+            opening && reduceMotion && "opacity-0",
           )}
           aria-hidden
         >
@@ -99,26 +87,12 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
           />
         </div>
 
-        {/* Peeling flaps — matched closed art, under sealed layer until open */}
-        <div
-          className={cn(
-            "absolute inset-0 z-[5]",
-            closedVisual && "opacity-0",
-            opening && "opacity-100",
-          )}
-        >
-          <EnvelopeFlap side="bottom" phase={phase} reduceMotion={reduceMotion} />
-          <EnvelopeFlap side="left" phase={phase} reduceMotion={reduceMotion} />
-          <EnvelopeFlap side="right" phase={phase} reduceMotion={reduceMotion} />
-          <EnvelopeFlap side="top" phase={phase} reduceMotion={reduceMotion} />
-        </div>
-
         <WaxSealButton
           phase={phase}
           reduceMotion={reduceMotion}
           onActivate={onActivate}
           visible={sealVisible}
-          hotspotOnly={closedVisual}
+          hotspotOnly
           idleTwinkle={idleTwinkle}
         />
       </div>
