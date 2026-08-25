@@ -4,7 +4,7 @@ export const INTRO_TIMING = {
   /** Slow emboss + seam illumination (mask wipe + opacity) */
   glow: 4500,
   /** Flap peel + seal lift before homepage takes over */
-  open: 2400,
+  open: 2800,
   /** Overlay unmount after peel settles */
   exit: 280,
   /** Monogram starts after florals begin filling */

@@ -77,11 +77,12 @@ export function useIntroPhase({
     }
 
     setPhase("activating");
-    onRevealStart();
 
     schedule(() => setPhase("glowing"), INTRO_TIMING.activating);
 
     schedule(() => {
+      // Reveal homepage as flaps begin to peel
+      onRevealStart();
       setPhase("opening");
     }, INTRO_TIMING.activating + INTRO_TIMING.glow);
 
