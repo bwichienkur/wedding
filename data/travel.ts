@@ -2,7 +2,7 @@ import type { TravelInfo } from "./logistics-types";
 
 export const travel: TravelInfo = {
   intro:
-    "Travel notes for Lake Wales, Florida. Confirmed bookings appear clearly; everything else stays labeled as a placeholder.",
+    "Travel notes for Lake Wales, Florida. Confirmed details appear clearly; everything else stays labeled as a placeholder.",
   airports: [
     {
       id: "mco",
