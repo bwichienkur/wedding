@@ -94,7 +94,7 @@ export function ContentAdminPanel() {
       });
       if (response.status === 401) {
         router.replace("/admin/login");
-        return;
+        return false;
       }
       const data = (await response.json()) as {
         error?: string;
@@ -105,7 +105,7 @@ export function ContentAdminPanel() {
       };
       if (!response.ok || !data.venue || !data.travel || !data.faq || !data.party) {
         setError(data.error ?? "Unable to save.");
-        return;
+        return false;
       }
       apply({
         venue: data.venue,
@@ -114,8 +114,10 @@ export function ContentAdminPanel() {
         party: data.party,
       });
       setSuccess(successMessage);
+      return true;
     } catch {
       setError("Unable to save.");
+      return false;
     } finally {
       setBusy(false);
     }
@@ -209,18 +211,27 @@ export function ContentAdminPanel() {
         <FaqEditor
           items={faq}
           busy={busy}
-          onUpsert={(item) =>
-            void patch(
-              { kind: "faq", action: "upsert", ...item },
-              item.id ? "FAQ updated." : "FAQ added.",
-            )
-          }
-          onDelete={(id) =>
-            void patch(
+          onUpsert={async (item) => {
+            const ok = await patch(
+              {
+                kind: "faq",
+                action: "upsert",
+                ...(item.id.trim() ? { id: item.id.trim() } : {}),
+                category: item.category,
+                question: item.question,
+                answer: item.answer,
+                answerIsPlaceholder: item.answerIsPlaceholder,
+              },
+              item.id.trim() ? "FAQ updated." : "FAQ added.",
+            );
+            return ok;
+          }}
+          onDelete={async (id) => {
+            await patch(
               { kind: "faq", action: "delete", id },
               "FAQ removed.",
-            )
-          }
+            );
+          }}
         />
       ) : null}
 
@@ -228,18 +239,43 @@ export function ContentAdminPanel() {
         <PartyEditor
           members={party}
           busy={busy}
-          onUpsert={(member) =>
-            void patch(
-              { kind: "party", action: "upsert", ...member },
-              member.id ? "Person updated." : "Person added.",
-            )
-          }
-          onDelete={(id) =>
-            void patch(
+          onUpsert={async (member) => {
+            const ok = await patch(
+              {
+                kind: "party",
+                action: "upsert",
+                ...(member.id.trim() ? { id: member.id.trim() } : {}),
+                name: member.name,
+                role: member.role,
+                side: member.side,
+                relationship: member.relationship,
+                relationshipIsPlaceholder: member.relationshipIsPlaceholder,
+                description: member.description,
+                descriptionIsPlaceholder: member.descriptionIsPlaceholder,
+                ...(member.funFact?.trim()
+                  ? { funFact: member.funFact.trim() }
+                  : {}),
+                funFactIsPlaceholder: member.funFactIsPlaceholder,
+                ...(member.sharedMemory?.trim()
+                  ? { sharedMemory: member.sharedMemory.trim() }
+                  : {}),
+                ...(member.photoSrc?.trim()
+                  ? { photoSrc: member.photoSrc.trim() }
+                  : {}),
+                ...(member.photoAlt?.trim()
+                  ? { photoAlt: member.photoAlt.trim() }
+                  : {}),
+              },
+              member.id.trim() ? "Person updated." : "Person added.",
+            );
+            return ok;
+          }}
+          onDelete={async (id) => {
+            await patch(
               { kind: "party", action: "delete", id },
               "Person removed.",
-            )
-          }
+            );
+          }}
         />
       ) : null}
     </div>
@@ -576,8 +612,8 @@ function FaqEditor({
 }: {
   items: FaqItem[];
   busy: boolean;
-  onUpsert: (item: FaqItem) => void;
-  onDelete: (id: string) => void;
+  onUpsert: (item: FaqItem) => Promise<boolean>;
+  onDelete: (id: string) => Promise<void>;
 }) {
   const [drafts, setDrafts] = useState<Record<string, FaqItem>>({});
   const [creating, setCreating] = useState<FaqItem>({
@@ -632,18 +668,23 @@ function FaqEditor({
           variant="gold"
           disabled={busy || !creating.question.trim()}
           onClick={() => {
-            onUpsert({
-              ...creating,
-              id: "",
-              answerIsPlaceholder: !creating.answer.trim(),
-            });
-            setCreating({
-              id: "",
-              category: "General",
-              question: "",
-              answer: "",
-              answerIsPlaceholder: false,
-            });
+            void (async () => {
+              const payload = {
+                ...creating,
+                id: "",
+                answerIsPlaceholder: !creating.answer.trim(),
+              };
+              const ok = await onUpsert(payload);
+              if (ok) {
+                setCreating({
+                  id: "",
+                  category: "General",
+                  question: "",
+                  answer: "",
+                  answerIsPlaceholder: false,
+                });
+              }
+            })();
           }}
         >
           Add question
@@ -707,7 +748,18 @@ function FaqEditor({
                   type="button"
                   variant="gold"
                   disabled={busy}
-                  onClick={() => onUpsert(draft)}
+                  onClick={() => {
+                    void (async () => {
+                      const ok = await onUpsert(draft);
+                      if (ok) {
+                        setDrafts((prev) => {
+                          const next = { ...prev };
+                          delete next[item.id];
+                          return next;
+                        });
+                      }
+                    })();
+                  }}
                 >
                   Save
                 </Button>
@@ -715,7 +767,9 @@ function FaqEditor({
                   type="button"
                   variant="secondary"
                   disabled={busy}
-                  onClick={() => onDelete(item.id)}
+                  onClick={() => {
+                    void onDelete(item.id);
+                  }}
                 >
                   Remove
                 </Button>
@@ -736,8 +790,8 @@ function PartyEditor({
 }: {
   members: WeddingPartyMember[];
   busy: boolean;
-  onUpsert: (member: WeddingPartyMember) => void;
-  onDelete: (id: string) => void;
+  onUpsert: (member: WeddingPartyMember) => Promise<boolean>;
+  onDelete: (id: string) => Promise<void>;
 }) {
   const [drafts, setDrafts] = useState<Record<string, WeddingPartyMember>>({});
   const [creating, setCreating] = useState<WeddingPartyMember>({
@@ -773,17 +827,21 @@ function PartyEditor({
           variant="gold"
           disabled={busy || !creating.name.trim()}
           onClick={() => {
-            onUpsert({ ...creating, id: "" });
-            setCreating({
-              id: "",
-              name: "",
-              role: "Bridesmaid",
-              side: "lexi",
-              relationship: "",
-              description: "",
-              relationshipIsPlaceholder: false,
-              descriptionIsPlaceholder: false,
-            });
+            void (async () => {
+              const ok = await onUpsert({ ...creating, id: "" });
+              if (ok) {
+                setCreating({
+                  id: "",
+                  name: "",
+                  role: "Bridesmaid",
+                  side: "lexi",
+                  relationship: "",
+                  description: "",
+                  relationshipIsPlaceholder: false,
+                  descriptionIsPlaceholder: false,
+                });
+              }
+            })();
           }}
         >
           Add person
@@ -809,7 +867,18 @@ function PartyEditor({
                   type="button"
                   variant="gold"
                   disabled={busy}
-                  onClick={() => onUpsert(draft)}
+                  onClick={() => {
+                    void (async () => {
+                      const ok = await onUpsert(draft);
+                      if (ok) {
+                        setDrafts((prev) => {
+                          const next = { ...prev };
+                          delete next[member.id];
+                          return next;
+                        });
+                      }
+                    })();
+                  }}
                 >
                   Save
                 </Button>
@@ -817,7 +886,9 @@ function PartyEditor({
                   type="button"
                   variant="secondary"
                   disabled={busy}
-                  onClick={() => onDelete(member.id)}
+                  onClick={() => {
+                    void onDelete(member.id);
+                  }}
                 >
                   Remove
                 </Button>
