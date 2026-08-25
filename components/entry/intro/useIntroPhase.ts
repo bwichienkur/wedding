@@ -37,12 +37,23 @@ export function useIntroPhase({
 
   useEffect(() => () => clearTimers(), [clearTimers]);
 
+  const scrollToSiteTop = useCallback(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.querySelector("#home")?.scrollIntoView({
+      behavior: "auto",
+      block: "start",
+    });
+  }, []);
+
   const finish = useCallback(() => {
     clearTimers();
     setPhase("opened");
-    // Unmount immediately so the homepage is fully visible without a lingering overlay
-    onComplete();
-  }, [clearTimers, onComplete, setPhase]);
+    scrollToSiteTop();
+    // Brief beat so the peel can settle, then unmount the overlay
+    schedule(() => {
+      onComplete();
+    }, INTRO_TIMING.exit);
+  }, [clearTimers, onComplete, schedule, scrollToSiteTop, setPhase]);
 
   const skip = useCallback(() => {
     if (phase === "opened" || phase === "skipped") return;
@@ -60,16 +71,18 @@ export function useIntroPhase({
     if (reduceMotion) {
       onRevealStart();
       setPhase("skipped");
+      scrollToSiteTop();
       onComplete();
       return;
     }
 
     setPhase("activating");
-    onRevealStart();
 
     schedule(() => setPhase("glowing"), INTRO_TIMING.activating);
 
     schedule(() => {
+      // Reveal homepage as flaps begin to peel
+      onRevealStart();
       setPhase("opening");
     }, INTRO_TIMING.activating + INTRO_TIMING.glow);
 
@@ -83,6 +96,7 @@ export function useIntroPhase({
     phase,
     reduceMotion,
     schedule,
+    scrollToSiteTop,
     setPhase,
   ]);
 
