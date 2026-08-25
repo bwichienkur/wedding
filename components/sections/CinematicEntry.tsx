@@ -116,15 +116,18 @@ export function CinematicEntry({
   }
 
   const exiting = phase === "opened" || phase === "skipped";
-  const openingOrExit = phase === "opening" || exiting;
+  const opening = phase === "opening";
+  /* Keep overlay visible while flaps peel; only unmount fade after open completes */
+  const showThrough = opening || exiting;
 
   return (
     <div
       className={[
         "intro-overlay fixed inset-0 z-50 overflow-hidden",
-        "transition-[opacity,background-color] duration-[450ms] ease-out",
-        openingOrExit ? "bg-transparent" : "bg-[#070e1a]",
-        openingOrExit ? "pointer-events-none opacity-0" : "opacity-100",
+        "transition-[opacity,background-color] duration-[480ms] ease-out",
+        showThrough ? "bg-transparent" : "bg-[#070e1a]",
+        exiting ? "pointer-events-none opacity-0" : "opacity-100",
+        opening ? "pointer-events-none" : "",
       ].join(" ")}
       role="dialog"
       aria-modal="true"

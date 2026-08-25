@@ -11,6 +11,8 @@ interface WaxSealButtonProps {
   visible: boolean;
   /** Invisible hit-target over baked-in seal in the closed master image */
   hotspotOnly?: boolean;
+  /** Soft idle twinkle while waiting for the first tap */
+  idleTwinkle?: boolean;
 }
 
 export function WaxSealButton({
@@ -19,6 +21,7 @@ export function WaxSealButton({
   onActivate,
   visible,
   hotspotOnly = false,
+  idleTwinkle = false,
 }: WaxSealButtonProps) {
   const activating = phase === "activating";
   const glowing = phase === "glowing";
@@ -38,6 +41,7 @@ export function WaxSealButton({
           "intro-seal-wrap absolute left-1/2 top-[46.5%] z-30 -translate-x-1/2 -translate-y-1/2",
           "transition-opacity duration-500",
           !visible && "opacity-0",
+          idleTwinkle && "is-idle-twinkle",
         )}
       >
         <button
@@ -63,6 +67,9 @@ export function WaxSealButton({
             hotspotOnly && "intro-seal-hotspot",
           )}
         >
+          {idleTwinkle ? (
+            <span className="intro-seal-idle-aura" aria-hidden />
+          ) : null}
           {hotspotOnly ? (
             <span className="intro-seal-hotspot-area" aria-hidden />
           ) : (

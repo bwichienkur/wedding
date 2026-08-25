@@ -10,7 +10,7 @@ interface EnvelopeFlapProps {
   reduceMotion: boolean;
 }
 
-/** One triangular flap showing a clipped slice of the shared master illustration */
+/** One triangular flap showing a clipped slice of the closed master illustration */
 export function EnvelopeFlap({ side, phase, reduceMotion }: EnvelopeFlapProps) {
   const opening = isOpeningPhase(phase);
   const illuminated = isIlluminatedPhase(phase);
