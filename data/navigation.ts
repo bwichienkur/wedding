@@ -1,24 +1,22 @@
 import type { NavItem } from "./types";
 
-/** Desktop primary navigation — RSVP is rendered separately as a prominent action. */
+/**
+ * Compact primary destinations — labels stay short so the centered bar
+ * does not need horizontal scrolling on phone or desktop.
+ */
 export const primaryNav: NavItem[] = [
-  { id: "story", label: "Our Story", href: "#story" },
-  { id: "wedding-day", label: "Wedding Day", href: "#wedding-day" },
-  { id: "venue", label: "Venue", href: "#venue" },
-  { id: "travel", label: "Travel", href: "#travel" },
-  { id: "faq", label: "FAQ", href: "#faq" },
-  { id: "registry", label: "Registry", href: "#registry" },
-];
-
-/** Quick-jump chips under the header on small screens (Zola-like clarity). */
-export const mobileQuickNav: NavItem[] = [
   { id: "story", label: "Story", href: "#story" },
   { id: "wedding-day", label: "Schedule", href: "#wedding-day" },
   { id: "venue", label: "Venue", href: "#venue" },
   { id: "travel", label: "Travel", href: "#travel" },
+  { id: "party", label: "Party", href: "#party" },
+  { id: "gallery", label: "Gallery", href: "#gallery" },
   { id: "faq", label: "FAQ", href: "#faq" },
   { id: "registry", label: "Registry", href: "#registry" },
 ];
+
+/** Same compact set for the mobile strip under the header. */
+export const mobileQuickNav: NavItem[] = primaryNav;
 
 export interface NavGroup {
   id: string;
@@ -26,14 +24,14 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-/** Grouped mobile drawer — clearer than a flat list of anchors. */
+/** Grouped mobile drawer — every guest section, including RSVP. */
 export const mobileNavGroups: NavGroup[] = [
   {
     id: "story-group",
     label: "Our story",
     items: [
       { id: "story", label: "Our Story", href: "#story" },
-      { id: "gallery", label: "Memories", href: "#gallery" },
+      { id: "gallery", label: "Gallery", href: "#gallery" },
       { id: "proposal", label: "The Proposal", href: "#proposal" },
     ],
   },
@@ -41,7 +39,7 @@ export const mobileNavGroups: NavGroup[] = [
     id: "wedding-group",
     label: "The wedding",
     items: [
-      { id: "wedding-day", label: "Wedding Day", href: "#wedding-day" },
+      { id: "wedding-day", label: "Schedule", href: "#wedding-day" },
       { id: "venue", label: "Venue", href: "#venue" },
       { id: "travel", label: "Travel", href: "#travel" },
       { id: "party", label: "Wedding Party", href: "#party" },

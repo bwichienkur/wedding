@@ -18,10 +18,6 @@ const venueSchema = z.object({
   region: z.string().min(1).max(80).optional(),
   addressLine1: z.string().min(1).max(200).optional(),
   addressIsPlaceholder: z.boolean().optional(),
-  directions: z.string().max(800).optional(),
-  directionsIsPlaceholder: z.boolean().optional(),
-  weather: z.string().max(800).optional(),
-  weatherIsPlaceholder: z.boolean().optional(),
 });
 
 const airportSchema = z.object({
@@ -53,6 +49,8 @@ const recommendationSchema = z.object({
   description: z.string().max(600),
   isPlaceholder: z.boolean().default(false),
   url: z.string().max(400).optional(),
+  imageSrc: z.string().max(400).optional(),
+  imageAlt: z.string().max(200).optional(),
 });
 
 const travelSchema = z.object({
@@ -159,10 +157,6 @@ export async function PATCH(request: Request) {
         region: data.region,
         addressLine1: data.addressLine1,
         addressIsPlaceholder: data.addressIsPlaceholder,
-        directions: data.directions,
-        directionsIsPlaceholder: data.directionsIsPlaceholder,
-        weather: data.weather,
-        weatherIsPlaceholder: data.weatherIsPlaceholder,
       });
     } else if (data.kind === "travel") {
       logistics = await updateTravel({

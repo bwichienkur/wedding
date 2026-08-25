@@ -103,7 +103,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     defaultEyebrow: "Wedding party",
     defaultTitle: "Standing beside us",
     defaultDescription:
-      "Five bridesmaids, five groomsmen, our ceremony pianist, and the people celebrating with us.",
+      "Bright’s groomsmen, Lexi’s bridesmaids, and the people celebrating with us.",
     hasDescription: true,
   },
   {

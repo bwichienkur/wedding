@@ -86,6 +86,7 @@ export function SiteHeader({
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, [observedSectionIds]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -106,6 +107,15 @@ export function SiteHeader({
     };
   }, [open]);
 
+  const linkTone = (active: boolean) =>
+    scrolled || open
+      ? active
+        ? "text-forest"
+        : "text-ink-muted hover:text-forest"
+      : active
+        ? "text-ivory"
+        : "text-ivory/75 hover:text-ivory";
+
   return (
     <header
       className={cn(
@@ -115,11 +125,11 @@ export function SiteHeader({
           : "border-b border-transparent bg-transparent",
       )}
     >
-      <div className="mx-auto flex min-h-14 max-w-6xl items-center justify-between gap-4 px-5 sm:min-h-16 sm:px-8 lg:px-10">
+      <div className="mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-3 px-4 sm:min-h-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4 lg:px-8">
         <a
           href="#home"
           className={cn(
-            "font-display text-xl tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
+            "justify-self-start font-display text-lg tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose sm:text-xl",
             scrolled || open ? "text-forest" : "text-ivory",
           )}
         >
@@ -128,7 +138,7 @@ export function SiteHeader({
 
         <nav
           aria-label="Primary"
-          className="hidden items-center gap-1 lg:flex"
+          className="hidden items-center justify-center gap-x-0.5 lg:flex"
         >
           {visiblePrimaryNav.map((item) => (
             <a
@@ -136,33 +146,22 @@ export function SiteHeader({
               href={item.href}
               aria-current={activeId === item.id ? "true" : undefined}
               className={cn(
-                "group relative min-h-11 px-3 py-2 font-display text-sm tracking-[0.04em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
-                scrolled
-                  ? activeId === item.id
-                    ? "text-forest"
-                    : "text-ink-muted hover:text-forest"
-                  : activeId === item.id
-                    ? "text-ivory"
-                    : "text-ivory/75 hover:text-ivory",
+                "group relative min-h-11 px-2 py-2 text-center font-display text-[0.8rem] tracking-[0.06em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose xl:px-2.5 xl:text-sm",
+                linkTone(activeId === item.id),
               )}
             >
               {item.label}
               <span
                 className={cn(
-                  "absolute inset-x-3 bottom-1 h-px origin-left scale-x-0 bg-current transition-transform duration-500 ease-out group-hover:scale-x-100",
+                  "absolute inset-x-2 bottom-1 h-px origin-center scale-x-0 bg-current transition-transform duration-500 ease-out group-hover:scale-x-100",
                   activeId === item.id && "scale-x-100",
                 )}
               />
             </a>
           ))}
-          {showRsvp ? (
-            <ButtonLink href={rsvpNav.href} variant="gold" size="md" className="ml-3">
-              {rsvpNav.label}
-            </ButtonLink>
-          ) : null}
         </nav>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center justify-self-end gap-2">
           {showRsvp ? (
             <ButtonLink href={rsvpNav.href} variant="gold" size="md">
               {rsvpNav.label}
@@ -171,7 +170,7 @@ export function SiteHeader({
           <button
             type="button"
             className={cn(
-              "inline-flex min-h-11 min-w-11 items-center justify-center border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
+              "inline-flex min-h-11 min-w-11 items-center justify-center border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose lg:hidden",
               scrolled || open
                 ? "border-stone text-forest"
                 : "border-ivory/40 text-ivory",
@@ -212,14 +211,14 @@ export function SiteHeader({
           scrolled || open ? "border-stone/40" : "border-ivory/15",
         )}
       >
-        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 scrollbar-none sm:px-8">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-1 gap-y-0 px-3 py-1.5 sm:px-6">
           {visibleQuickNav.map((item) => (
             <a
               key={item.id}
               href={item.href}
               aria-current={activeId === item.id ? "true" : undefined}
               className={cn(
-                "shrink-0 whitespace-nowrap px-3 py-2 font-sans text-xs uppercase tracking-[0.14em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
+                "px-2 py-2 text-center font-sans text-[0.65rem] uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
                 scrolled || open
                   ? activeId === item.id
                     ? "border-b border-rose text-forest"
@@ -263,7 +262,7 @@ export function SiteHeader({
 
             <motion.nav
               aria-label="Mobile"
-              className="flex flex-1 flex-col overflow-y-auto px-5 pb-10 pt-4 sm:px-8"
+              className="flex flex-1 flex-col overflow-y-auto px-5 pb-10 pt-4 text-center sm:px-8"
               variants={staggerFastContainerVariants}
               initial={reduceMotion ? "visible" : "hidden"}
               animate="visible"
@@ -295,7 +294,7 @@ export function SiteHeader({
                             activeId === item.id ? "true" : undefined
                           }
                           className={cn(
-                            "flex min-h-14 items-center font-display text-2xl text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
+                            "flex min-h-12 items-center justify-center font-display text-2xl text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
                             activeId === item.id && "text-rose-deep",
                           )}
                           onClick={() => setOpen(false)}
