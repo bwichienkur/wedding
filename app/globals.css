@@ -240,13 +240,13 @@
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding:
-      max(0.35rem, env(safe-area-inset-top))
-      max(0.35rem, env(safe-area-inset-right))
-      max(0.35rem, env(safe-area-inset-bottom))
-      max(0.35rem, env(safe-area-inset-left));
+      max(0.2rem, env(safe-area-inset-top))
+      max(0.25rem, env(safe-area-inset-right))
+      calc(4.75rem + env(safe-area-inset-bottom, 0px))
+      max(0.25rem, env(safe-area-inset-left));
     min-height: 100svh;
     min-height: 100dvh;
     background: var(--intro-navy-deep);
@@ -254,31 +254,35 @@
 
   .intro-envelope-stage {
     position: relative;
-    width: min(98vw, 26.5rem);
-    aspect-ratio: 2 / 3;
-    height: auto;
-    max-height: calc(100svh - 1rem);
-    max-height: calc(100dvh - 1rem);
+    /* Height-first: fill most of the viewport; leave room for bottom nav */
+    height: min(
+      calc(100dvh - 5rem - env(safe-area-inset-top, 0px)),
+      calc(100svh - 5rem - env(safe-area-inset-top, 0px)),
+      58rem
+    );
+    width: min(
+      calc(100vw - 0.5rem),
+      calc((100dvh - 5rem - env(safe-area-inset-top, 0px)) / 1.5),
+      calc((100svh - 5rem - env(safe-area-inset-top, 0px)) / 1.5),
+      32rem
+    );
+    max-height: none;
+    aspect-ratio: auto;
   }
 
   @media (min-width: 768px) {
     .intro-envelope-stage {
-      width: min(92vw, 30rem);
+      width: min(
+        calc(100vw - 1rem),
+        calc((100dvh - 5rem) / 1.5),
+        34rem
+      );
     }
   }
 
   @media (min-width: 1280px) {
     .intro-envelope-stage {
-      width: min(440px, 34vw);
-    }
-  }
-
-  /* Keep portrait envelope filling stage when height is the constraint */
-  @supports (height: 1svh) {
-    .intro-envelope-stage {
-      height: min(98svh, calc(98vw * 1.5), 52rem);
-      width: min(98vw, calc(98svh / 1.5), 26.5rem);
-      aspect-ratio: auto;
+      width: min(36rem, 42vw, calc((100dvh - 5rem) / 1.5));
     }
   }
 
@@ -374,21 +378,38 @@
     filter: none;
   }
 
-  /* Gold floral rim-light — fades in when seal is activated */
+  /* Gold floral rim-light — progressive fill from the seal outward */
   .envelope-floral-glow {
     opacity: 0;
     mix-blend-mode: screen;
     pointer-events: none;
     z-index: 2;
-    transition: opacity var(--intro-glow, 1200ms) cubic-bezier(0.22, 1, 0.36, 1);
+    /* No brightness/drop-shadow — those bloom onto the paper */
+    filter: none;
+    -webkit-mask-image: radial-gradient(
+      circle,
+      #000 0%,
+      #000 52%,
+      transparent 72%
+    );
+    mask-image: radial-gradient(circle, #000 0%, #000 52%, transparent 72%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 50% 50%;
+    mask-position: 50% 50%;
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+    transition:
+      opacity calc(var(--intro-glow, 2800ms) * 0.4) cubic-bezier(0.22, 1, 0.36, 1),
+      -webkit-mask-size var(--intro-glow, 2800ms) cubic-bezier(0.22, 1, 0.36, 1),
+      mask-size var(--intro-glow, 2800ms) cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .envelope-floral-glow.is-lit {
     opacity: 1;
-    filter:
-      brightness(1.2)
-      contrast(1.05)
-      drop-shadow(0 0 6px rgb(212 168 79 / 0.28));
+    filter: none;
+    -webkit-mask-size: 290% 290%;
+    mask-size: 290% 290%;
   }
 
   .envelope-floral-glow-face {
@@ -398,12 +419,13 @@
     opacity: 0;
     mix-blend-mode: screen;
     z-index: 2;
-    transition: opacity var(--intro-glow, 1200ms) cubic-bezier(0.22, 1, 0.36, 1);
+    filter: none;
+    transition: opacity var(--intro-glow, 2800ms) cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .envelope-floral-glow-face.is-lit {
     opacity: 0.95;
-    filter: brightness(1.15);
+    filter: none;
   }
 
   /* Do not brighten the whole envelope paper on click */
@@ -416,6 +438,20 @@
     .envelope-floral-glow-face,
     .intro-monogram-glow {
       transition: opacity 0.25s ease;
+    }
+
+    .envelope-floral-glow.is-lit {
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .intro-monogram-glow.is-lit {
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-image: none;
+      mask-image: none;
     }
   }
 
@@ -515,11 +551,32 @@
     mix-blend-mode: normal;
     pointer-events: none;
     z-index: 3;
-    transition: opacity var(--intro-glow, 1200ms) cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-mask-image: radial-gradient(
+      circle,
+      #000 0%,
+      #000 55%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(circle, #000 0%, #000 55%, transparent 78%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 50% 50.5%;
+    mask-position: 50% 50.5%;
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+    transition:
+      opacity calc(var(--intro-glow, 2800ms) * 0.5) cubic-bezier(0.22, 1, 0.36, 1)
+        var(--intro-monogram-delay, 900ms),
+      -webkit-mask-size calc(var(--intro-glow, 2800ms) * 0.65)
+        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 900ms),
+      mask-size calc(var(--intro-glow, 2800ms) * 0.65)
+        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 900ms);
   }
 
   .intro-monogram-glow.is-lit {
     opacity: 1;
+    -webkit-mask-size: 42% 28%;
+    mask-size: 42% 28%;
   }
 
   @media (prefers-reduced-motion: reduce) {
