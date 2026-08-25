@@ -8,9 +8,10 @@ import { wedding } from "./wedding";
 export const storyMilestones: StoryMilestone[] = [
   {
     id: "how-we-met",
-    dateLabel: "Add the date you met.",
+    dateLabel: wedding.anniversary.dating.dateDisplay,
     title: "How we met",
     featured: true,
+    locationLabel: "Sweetwater, Boynton Beach, Florida",
     image: {
       src: "/images/placeholders/story-met.svg",
       alt: "Placeholder for a photograph of Bright and Lexi when they met",
@@ -23,8 +24,8 @@ export const storyMilestones: StoryMilestone[] = [
     passages: [
       {
         perspective: "shared",
-        body: "Add the story of how you met.",
-        isPlaceholder: true,
+        body: "Lexi and Bright met at Sweetwater in Boynton Beach, Florida on March 20, 2025.",
+        isPlaceholder: false,
       },
     ],
   },
@@ -47,8 +48,8 @@ export const storyMilestones: StoryMilestone[] = [
       {
         perspective: "shared",
         title: wedding.proposal.transitionCopy,
-        body: "Add a short introduction to the proposal chapter.",
-        isPlaceholder: true,
+        body: "Bright proposed on December 13, 2025 at Lexi’s parents’ home — Joe & Jodi’s house in Longwood, Florida.",
+        isPlaceholder: false,
       },
       {
         perspective: "bright",

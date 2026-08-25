@@ -9,13 +9,16 @@ import { faqItems } from "@/data/faq";
 import { describe, expect, it } from "vitest";
 
 describe("schedule data", () => {
-  it("includes the confirmed ceremony time and does not invent dinner time", () => {
+  it("includes confirmed ceremony and reception times", () => {
     const ceremony = scheduleItems.find((item) => item.id === "ceremony");
-    const dinner = scheduleItems.find((item) => item.id === "dinner");
+    const reception = scheduleItems.find((item) => item.id === "reception");
     expect(ceremony?.timeLocal).toBe("16:00");
     expect(ceremony?.includeInCalendar).toBe(true);
-    expect(dinner?.timeLabel).toBe("Time coming soon");
-    expect(dinner?.includeInCalendar).toBe(false);
+    expect(reception?.timeLocal).toBe("17:30");
+    expect(reception?.includeInCalendar).toBe(true);
+    expect(scheduleItems.some((item) => item.id === "dinner")).toBe(false);
+    expect(scheduleItems.some((item) => item.id === "toasts")).toBe(false);
+    expect(scheduleItems.some((item) => item.id === "dancing")).toBe(false);
   });
 });
 
@@ -29,17 +32,18 @@ describe("calendar helpers", () => {
     expect(buildLocalDateTime("2027-05-15", "16:00")).toBe("20270515T160000");
   });
 
-  it("builds ICS only when a start time is known", () => {
+  it("builds ICS for timed events and skips untimed ones", () => {
     const ceremony = scheduleItems.find((item) => item.id === "ceremony")!;
-    const dinner = scheduleItems.find((item) => item.id === "dinner")!;
+    const sendoff = scheduleItems.find((item) => item.id === "sparkler-sendoff")!;
     expect(buildIcsEvent(ceremony)).toContain("BEGIN:VEVENT");
-    expect(buildIcsEvent(dinner)).toBeNull();
+    expect(buildIcsEvent(sendoff)).toBeNull();
   });
 });
 
 describe("logistics placeholders", () => {
-  it("keeps venue address clearly incomplete", () => {
-    expect(venue.addressIsPlaceholder).toBe(true);
+  it("has the confirmed Bella Cosa street address", () => {
+    expect(venue.addressIsPlaceholder).toBe(false);
+    expect(venue.addressLine1).toContain("3111 Masterpiece");
   });
 
   it("covers required FAQ topics", () => {

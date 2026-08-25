@@ -11,9 +11,11 @@ describe("wedding config", () => {
     expect(wedding.wedding.ceremonyBegins).toBe("4:00 PM");
   });
 
-  it("marks unknown content as placeholders", () => {
+  it("marks remaining unknown content as placeholders", () => {
     expect(wedding.hero.statementIsPlaceholder).toBe(true);
-    expect(wedding.proposal.dateIsPlaceholder).toBe(true);
+    expect(wedding.proposal.dateIsPlaceholder).toBe(false);
+    expect(wedding.proposal.locationIsPlaceholder).toBe(false);
+    expect(wedding.proposal.dateLabel).toContain("December 13");
     expect(weddingLocationLine()).toContain("Lake Wales");
   });
 

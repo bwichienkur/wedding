@@ -132,8 +132,7 @@ export function VenueSection({ venue }: { venue: VenueInfo }) {
           Open map
         </ButtonLink>
         <p className="flex min-h-11 items-center text-sm text-ink-muted">
-          Map opens to a search for {venue.mapQuery}. Exact pin arrives with the
-          street address.
+          Opens Google Maps for {venue.addressLine1}.
         </p>
       </div>
     </Section>
