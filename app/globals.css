@@ -243,10 +243,10 @@
     align-items: flex-start;
     justify-content: center;
     padding:
-      max(0.15rem, env(safe-area-inset-top))
-      max(0.2rem, env(safe-area-inset-right))
-      calc(3.1rem + env(safe-area-inset-bottom, 0px))
-      max(0.2rem, env(safe-area-inset-left));
+      max(0.1rem, env(safe-area-inset-top))
+      max(0.15rem, env(safe-area-inset-right))
+      calc(2.85rem + env(safe-area-inset-bottom, 0px))
+      max(0.15rem, env(safe-area-inset-left));
     min-height: 100svh;
     min-height: 100dvh;
     /* Overlay paints the navy stage; keep this clear so peel reveals the site */
@@ -257,11 +257,11 @@
     position: relative;
     /* Fill nearly all space above the skip/RSVP bar (may stretch past 2:3 on phones) */
     height: min(
-      calc(100dvh - 3.25rem - env(safe-area-inset-top, 0px)),
-      calc(100svh - 3.25rem - env(safe-area-inset-top, 0px)),
+      calc(100dvh - 2.85rem - env(safe-area-inset-top, 0px)),
+      calc(100svh - 2.85rem - env(safe-area-inset-top, 0px)),
       66rem
     );
-    width: min(calc(100vw - 0.35rem), 36rem);
+    width: min(calc(100vw - 0.3rem), 36rem);
     max-height: none;
     aspect-ratio: auto;
   }
