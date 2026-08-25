@@ -13,15 +13,18 @@ describe("hero slides", () => {
 });
 
 describe("navigation", () => {
-  it("keeps desktop primary destinations for guests", () => {
+  it("keeps compact desktop primary destinations for guests", () => {
     expect(primaryNav.map((item) => item.id)).toEqual([
       "story",
       "wedding-day",
       "venue",
       "travel",
+      "party",
+      "gallery",
       "faq",
       "registry",
     ]);
+    expect(primaryNav.every((item) => item.label.length <= 10)).toBe(true);
   });
 
   it("groups mobile drawer destinations for clear section finding", () => {
@@ -30,6 +33,8 @@ describe("navigation", () => {
       "wedding-group",
       "guests-group",
     ]);
-    expect(mobileQuickNav.length).toBeGreaterThanOrEqual(5);
+    expect(mobileQuickNav.map((item) => item.id)).toEqual(
+      primaryNav.map((item) => item.id),
+    );
   });
 });

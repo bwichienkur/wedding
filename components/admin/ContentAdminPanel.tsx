@@ -174,10 +174,6 @@ export function ContentAdminPanel() {
                 region: venue.region,
                 addressLine1: venue.addressLine1,
                 addressIsPlaceholder: venue.addressIsPlaceholder,
-                directions: venue.directions,
-                directionsIsPlaceholder: venue.directionsIsPlaceholder,
-                weather: venue.weather,
-                weatherIsPlaceholder: venue.weatherIsPlaceholder,
               },
               "Venue details saved.",
             )
@@ -269,30 +265,17 @@ function VenueEditor({
           ["city", "City"],
           ["region", "Region"],
           ["addressLine1", "Address"],
-          ["directions", "Directions"],
-          ["weather", "Weather"],
         ] as const
       ).map(([key, label]) => (
         <label key={key} className="block">
           <span className={labelClass}>{label}</span>
-          {key === "directions" || key === "weather" ? (
-            <textarea
-              rows={3}
-              className={fieldClass}
-              value={venue[key]}
-              onChange={(event) =>
-                onChange({ ...venue, [key]: event.target.value })
-              }
-            />
-          ) : (
-            <input
-              className={fieldClass}
-              value={venue[key]}
-              onChange={(event) =>
-                onChange({ ...venue, [key]: event.target.value })
-              }
-            />
-          )}
+          <input
+            className={fieldClass}
+            value={venue[key]}
+            onChange={(event) =>
+              onChange({ ...venue, [key]: event.target.value })
+            }
+          />
         </label>
       ))}
       <Button type="button" variant="gold" disabled={busy} onClick={onSave}>

@@ -3,7 +3,6 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
 import type { VenueInfo } from "@/data/logistics-types";
-import { cn } from "@/lib/cn";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -52,7 +51,7 @@ export function VenueSection({
     >
       <div
         ref={ref}
-        className="relative mb-12 aspect-[16/10] overflow-hidden bg-parchment"
+        className="relative mb-10 aspect-[16/10] overflow-hidden bg-parchment"
       >
         {venue.layers.map((layer, index) => (
           <div
@@ -82,29 +81,15 @@ export function VenueSection({
         </div>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <div className="space-y-5">
-          <InfoBlock
-            label="Address"
-            value={venue.addressLine1}
-            placeholder={venue.addressIsPlaceholder}
-          />
-          <InfoBlock
-            label="Directions"
-            value={venue.directions}
-            placeholder={venue.directionsIsPlaceholder}
-          />
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div>
+          <p className="font-sans text-xs uppercase tracking-[0.18em] text-gold">
+            Address
+          </p>
+          <p className="mt-2 text-base leading-relaxed text-charcoal">
+            {venue.addressLine1}
+          </p>
         </div>
-        <div className="space-y-5">
-          <InfoBlock
-            label="Weather"
-            value={venue.weather}
-            placeholder={venue.weatherIsPlaceholder}
-          />
-        </div>
-      </div>
-
-      <div className="mt-10 flex flex-wrap gap-3">
         <ButtonLink
           href={venue.mapUrl}
           variant="gold"
@@ -113,36 +98,7 @@ export function VenueSection({
         >
           Open map
         </ButtonLink>
-        <p className="flex min-h-11 items-center text-sm text-ink-muted">
-          Opens Google Maps for {venue.addressLine1}.
-        </p>
       </div>
     </Section>
-  );
-}
-
-function InfoBlock({
-  label,
-  value,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  placeholder?: boolean;
-}) {
-  return (
-    <div>
-      <p className="font-sans text-xs uppercase tracking-[0.18em] text-gold">
-        {label}
-      </p>
-      <p
-        className={cn(
-          "mt-2 text-base leading-relaxed text-charcoal",
-          placeholder && "placeholder-copy text-ink-muted",
-        )}
-      >
-        {value}
-      </p>
-    </div>
   );
 }

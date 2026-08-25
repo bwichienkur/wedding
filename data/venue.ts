@@ -12,10 +12,6 @@ export const venue: VenueInfo = {
   addressIsPlaceholder: false,
   mapQuery,
   mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`,
-  directions: "Add driving directions and preferred arrival routes.",
-  directionsIsPlaceholder: true,
-  weather: "Add weather guidance and an indoor/outdoor contingency note.",
-  weatherIsPlaceholder: true,
   layers: [
     {
       id: "architecture",

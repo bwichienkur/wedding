@@ -49,19 +49,18 @@ describe("logistics defaults", () => {
     expect(venue.addressIsPlaceholder).toBe(false);
     expect(venue.addressLine1).toContain("3111 Masterpiece");
     expect("parking" in venue).toBe(false);
-    expect("accessibility" in venue).toBe(false);
-    expect("ceremonyLocation" in venue).toBe(false);
-    expect("receptionLocation" in venue).toBe(false);
-    expect("arrivalGuidance" in venue).toBe(false);
-    expect("transportationNotes" in venue).toBe(false);
+    expect("directions" in venue).toBe(false);
+    expect("weather" in venue).toBe(false);
   });
 
-  it("omits secondary airport, hotels, and restaurant placeholders", () => {
-    expect(travel.airports.map((item) => item.id)).toEqual(["mco"]);
-    expect(travel.hotels).toEqual([]);
-    expect(
-      travel.recommendations.some((item) => item.category === "restaurant"),
-    ).toBe(false);
+  it("lists Orlando airport, Holiday Inn Express, and Bok Tower Gardens", () => {
+    expect(travel.airports).toHaveLength(1);
+    expect(travel.airports[0]?.code).toBe("MCO");
+    expect(travel.airports[0]?.name).toMatch(/Orlando International/i);
+    expect(travel.hotels[0]?.bookingCode).toBe("BLW");
+    expect(travel.hotels[0]?.address).toContain("2953 Ridge Way");
+    expect(travel.recommendations[0]?.id).toBe("bok-tower-gardens");
+    expect(travel.recommendations[0]?.imageSrc).toMatch(/bok-tower/);
   });
 
   it("seeds thirteen wedding-party people including a ceremony pianist", () => {

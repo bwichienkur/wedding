@@ -49,16 +49,6 @@ export function sanitizeVenue(input: unknown, fallback: VenueInfo): VenueInfo {
     mapUrl:
       asString(input.mapUrl) ||
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`,
-    directions: asString(input.directions, fallback.directions),
-    directionsIsPlaceholder: asBoolean(
-      input.directionsIsPlaceholder,
-      fallback.directionsIsPlaceholder,
-    ),
-    weather: asString(input.weather, fallback.weather),
-    weatherIsPlaceholder: asBoolean(
-      input.weatherIsPlaceholder,
-      fallback.weatherIsPlaceholder,
-    ),
     layers: Array.isArray(input.layers)
       ? input.layers
           .filter(isRecord)
@@ -123,6 +113,8 @@ export function sanitizeTravel(input: unknown, fallback: TravelInfo): TravelInfo
           description: asString(item.description, ""),
           isPlaceholder: asBoolean(item.isPlaceholder, true),
           url: asString(item.url) || undefined,
+          imageSrc: asString(item.imageSrc) || undefined,
+          imageAlt: asString(item.imageAlt) || undefined,
         }))
       : fallback.recommendations,
     emergencyContact: asString(

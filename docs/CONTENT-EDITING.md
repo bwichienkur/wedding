@@ -14,7 +14,7 @@ Public wedding copy and logistics live in typed files under `data/`. Presentatio
 | `data/wedding.ts` | Names, date, venue facts, hero/closing copy, feature flags, site mode |
 | `data/story.ts` | Relationship milestones and perspectives |
 | `data/schedule.ts` | Wedding-day timeline |
-| `data/venue.ts` | Bella Cosa address, directions, weather, layers (defaults; admin can override) |
+| `data/venue.ts` | Bella Cosa address + layers (defaults; admin can override) |
 | `data/travel.ts` | Airports, transport, recommendations (defaults; admin can override) |
 | `data/party.ts` | Wedding party defaults (13 people; admin can add/edit/remove) |
 | `data/faq.ts` | FAQ defaults (admin can add/edit/remove) |

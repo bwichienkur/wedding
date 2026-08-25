@@ -26,10 +26,6 @@ export interface VenueInfo {
   addressIsPlaceholder: boolean;
   mapQuery: string;
   mapUrl: string;
-  directions: string;
-  directionsIsPlaceholder: boolean;
-  weather: string;
-  weatherIsPlaceholder: boolean;
   layers: Array<{
     id: string;
     label: string;
@@ -67,6 +63,8 @@ export interface LocalRecommendation {
   description: string;
   isPlaceholder?: boolean;
   url?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
 export interface TravelInfo {
