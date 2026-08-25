@@ -55,8 +55,9 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         <div
           className={cn(
             "envelope-closed-master absolute inset-0 z-[6]",
-            "transition-opacity duration-400 ease-out",
-            closedVisual ? "opacity-100" : "pointer-events-none opacity-0",
+            closedVisual
+              ? "opacity-100"
+              : "pointer-events-none opacity-0 duration-0",
           )}
           aria-hidden
         >
