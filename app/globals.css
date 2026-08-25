@@ -567,15 +567,16 @@
   .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura,
   .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
     position: absolute;
-    inset: -12%;
+    inset: -8%;
     border-radius: 50%;
     pointer-events: none;
+    /* Soft seal halo only — no glitter spray on the paper */
     background:
       radial-gradient(
         circle,
-        rgb(236 204 118 / 0.38) 0%,
-        rgb(220 186 96 / 0.22) 48%,
-        transparent 74%
+        rgb(236 204 118 / 0.28) 0%,
+        rgb(220 186 96 / 0.12) 42%,
+        transparent 68%
       );
   }
 
