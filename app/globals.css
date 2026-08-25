@@ -414,20 +414,20 @@
 
   .envelope-floral-glow.is-lit {
     opacity: 1;
-    /* Modest — emboss ridges only, no fog bloom */
-    filter: brightness(1.06) saturate(1.04);
+    /* Bright gold on emboss overlay only — paper stays unfiltered */
+    filter: brightness(1.55) saturate(1.25) contrast(1.08);
     -webkit-mask-size: 300% 300%;
     mask-size: 300% 300%;
   }
 
   .envelope-floral-glow-face.is-lit {
     opacity: 1;
-    filter: brightness(1.06) saturate(1.04);
+    filter: brightness(1.55) saturate(1.25) contrast(1.08);
   }
 
   /* Do not brighten the whole envelope paper on click */
   .intro-envelope-stage.is-floral-glow .envelope-closed-master > img:first-child {
-    filter: none;
+    filter: none !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
