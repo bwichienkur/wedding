@@ -414,25 +414,15 @@
 
   .envelope-floral-glow.is-lit {
     opacity: 1;
-    filter: brightness(1.22) saturate(1.1);
+    /* Modest — emboss ridges only, no fog bloom */
+    filter: brightness(1.06) saturate(1.04);
     -webkit-mask-size: 300% 300%;
     mask-size: 300% 300%;
   }
 
-  .envelope-floral-glow-face {
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 100% 100%;
-    opacity: 0;
-    mix-blend-mode: screen;
-    z-index: 2;
-    filter: none;
-    transition: opacity calc(var(--intro-glow, 4500ms) * 0.5) cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
   .envelope-floral-glow-face.is-lit {
     opacity: 1;
-    filter: brightness(1.22) saturate(1.1);
+    filter: brightness(1.06) saturate(1.04);
   }
 
   /* Do not brighten the whole envelope paper on click */
