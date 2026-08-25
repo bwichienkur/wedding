@@ -136,6 +136,7 @@ export function CinematicEntry({
           "--intro-glow": INTRO_CSS_VARS.glow,
           "--intro-open": INTRO_CSS_VARS.open,
           "--intro-exit": INTRO_CSS_VARS.exit,
+          "--intro-monogram-delay": INTRO_CSS_VARS.monogramDelay,
         } as CSSProperties
       }
     >
