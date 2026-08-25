@@ -288,8 +288,9 @@
   .envelope-master-face {
     background-color: #0c1a30;
     background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 100% 100%;
+    background-position: center top;
+    /* Master art has a dark margin under the bottom flap — crop it */
+    background-size: 100% 106%;
   }
 
   .envelope-interior {
@@ -376,7 +377,7 @@
     z-index: 2;
     filter: none;
     /* Belt-and-suspenders: hide any residual top-edge gold bar */
-    clip-path: inset(1.35% 0 0 0);
+    clip-path: inset(2.4% 0 0 0);
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
@@ -690,6 +691,12 @@
 
   .envelope-closed-master img {
     display: block;
+    /* Master art has a dark margin under the bottom flap — crop it */
+    object-fit: fill;
+    object-position: center top;
+    height: 106%;
+    width: 100%;
+    max-height: none;
   }
 
   .intro-seal-image {

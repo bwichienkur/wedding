@@ -37,7 +37,7 @@ export function EnvelopeFlap({ side, phase, reduceMotion }: EnvelopeFlapProps) {
         <div
           className="envelope-flap-face absolute inset-0 envelope-master-face"
           style={{
-            backgroundImage: "url(/images/envelope-master-closed.webp)",
+            backgroundImage: "url(/images/envelope-master.webp)",
           }}
         />
         <div
