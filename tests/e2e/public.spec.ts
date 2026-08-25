@@ -63,12 +63,14 @@ test.describe("public invitation", () => {
     await gotoHome(page, "#wedding-day");
     await expect(page.getByRole("heading", { name: "Ceremony" })).toBeVisible();
     await expect(page.getByText("4:00 PM").first()).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Google Calendar" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Reception" })).toBeVisible();
+    await expect(page.getByText("5:30 PM").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Google Calendar" })).toHaveCount(
+      2,
+    );
     await expect(
       page.getByRole("button", { name: "Download ICS" }),
-    ).toBeVisible();
+    ).toHaveCount(2);
   });
 
   test("FAQ search filters questions", async ({ page }) => {
