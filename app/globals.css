@@ -245,7 +245,7 @@
     padding:
       max(0.15rem, env(safe-area-inset-top))
       max(0.2rem, env(safe-area-inset-right))
-      calc(3.35rem + env(safe-area-inset-bottom, 0px))
+      calc(3.1rem + env(safe-area-inset-bottom, 0px))
       max(0.2rem, env(safe-area-inset-left));
     min-height: 100svh;
     min-height: 100dvh;
@@ -255,27 +255,26 @@
 
   .intro-envelope-stage {
     position: relative;
-    /* Height-first portrait: fill nearly all space above the skip/RSVP bar */
-    --intro-stage-h: min(
-      calc(100dvh - 3.5rem - env(safe-area-inset-top, 0px)),
-      calc(100svh - 3.5rem - env(safe-area-inset-top, 0px)),
-      64rem
+    /* Fill nearly all space above the skip/RSVP bar (may stretch past 2:3 on phones) */
+    height: min(
+      calc(100dvh - 3.25rem - env(safe-area-inset-top, 0px)),
+      calc(100svh - 3.25rem - env(safe-area-inset-top, 0px)),
+      66rem
     );
-    height: var(--intro-stage-h);
-    width: auto;
-    max-width: min(calc(100vw - 0.4rem), 34rem);
-    aspect-ratio: 2 / 3;
+    width: min(calc(100vw - 0.35rem), 36rem);
+    max-height: none;
+    aspect-ratio: auto;
   }
 
   @media (min-width: 768px) {
     .intro-envelope-stage {
-      max-width: min(calc(100vw - 0.75rem), 36rem);
+      width: min(calc(100vw - 0.75rem), 38rem);
     }
   }
 
   @media (min-width: 1280px) {
     .intro-envelope-stage {
-      max-width: min(38rem, 44vw);
+      width: min(40rem, 46vw);
     }
   }
 
