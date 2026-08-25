@@ -7,8 +7,7 @@ import { heroSlides, type HeroSlide } from "@/data/hero-slides";
 import { storyMilestones } from "@/data/story";
 import type { StoryMilestone } from "@/data/types";
 import { memoryGallery, type MemoryCard } from "@/data/memories";
-import { venue } from "@/data/venue";
-import { weddingParty } from "@/data/party";
+import { getResolvedLogistics } from "@/lib/logistics/store";
 
 export function mediaAssetToStoryImage(asset: MediaAsset): StoryImage | null {
   if (asset.kind !== "image" || !asset.publicUrl) return null;
@@ -102,6 +101,7 @@ export async function resolveMemoryCards(): Promise<MemoryCard[]> {
 }
 
 export async function resolveVenueLayers() {
+  const { venue } = await getResolvedLogistics();
   const layers = await Promise.all(
     venue.layers.map(async (layer) => {
       const assets = await listPublishedByPlacement(`venue.${layer.id}`);
@@ -114,11 +114,15 @@ export async function resolveVenueLayers() {
 }
 
 export async function resolvePartyMembers() {
+  const { party } = await getResolvedLogistics();
   const portraits = await listPublishedByPlacement("party");
-  if (portraits.length === 0) return weddingParty;
+  if (portraits.length === 0) return party;
 
-  return weddingParty.map((member, index) => {
-    const asset = portraits[index];
+  return party.map((member, index) => {
+    const byId = portraits.find(
+      (asset) => asset.title === member.id || asset.alt === member.id,
+    );
+    const asset = byId ?? portraits[index];
     if (!asset?.publicUrl) return member;
     return {
       ...member,

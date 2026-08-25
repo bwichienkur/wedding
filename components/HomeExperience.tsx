@@ -17,7 +17,12 @@ import { WeddingMarquee } from "@/components/sections/WeddingMarquee";
 import { MemoryGallerySection } from "@/components/three/MemoryGallery";
 import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import type { HeroSlide } from "@/data/hero-slides";
-import type { VenueInfo, WeddingPartyMember } from "@/data/logistics-types";
+import type {
+  FaqItem,
+  TravelInfo,
+  VenueInfo,
+  WeddingPartyMember,
+} from "@/data/logistics-types";
 import type { MemoryCard } from "@/data/memories";
 import type { StoryImage, StoryMilestone } from "@/data/types";
 import { mainContentId } from "@/data/navigation";
@@ -33,6 +38,8 @@ export interface HomeMediaBundle {
   partyMembers: WeddingPartyMember[];
   closingImage: StoryImage | null;
   proposalStill: StoryImage | null;
+  travel: TravelInfo;
+  faqItems: FaqItem[];
 }
 
 export function HomeExperience({
@@ -125,6 +132,7 @@ export function HomeExperience({
           ) : null}
           {show("travel") ? (
             <TravelSection
+              travel={media.travel}
               eyebrow={sections.travel.eyebrow}
               title={sections.travel.title}
               description={sections.travel.description}
@@ -147,6 +155,7 @@ export function HomeExperience({
           ) : null}
           {show("faq") ? (
             <FaqSection
+              items={media.faqItems}
               eyebrow={sections.faq.eyebrow}
               title={sections.faq.title}
               description={sections.faq.description}
