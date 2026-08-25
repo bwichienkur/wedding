@@ -395,8 +395,8 @@
     mask-image: radial-gradient(circle, #000 0%, #000 52%, transparent 72%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    -webkit-mask-position: 50% 50%;
-    mask-position: 50% 50%;
+    -webkit-mask-position: 50% 46.5%;
+    mask-position: 50% 46.5%;
     -webkit-mask-size: 0% 0%;
     mask-size: 0% 0%;
     transition:
@@ -560,8 +560,8 @@
     mask-image: radial-gradient(circle, #000 0%, #000 55%, transparent 78%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    -webkit-mask-position: 50% 50.5%;
-    mask-position: 50% 50.5%;
+    -webkit-mask-position: 50% 46.5%;
+    mask-position: 50% 46.5%;
     -webkit-mask-size: 0% 0%;
     mask-size: 0% 0%;
     transition:

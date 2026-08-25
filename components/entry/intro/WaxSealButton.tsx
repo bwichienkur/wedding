@@ -87,7 +87,12 @@ export function WaxSealButton({
           "intro-seal-hint pointer-events-none absolute left-1/2 z-20 -translate-x-1/2",
           "font-sans uppercase tracking-[0.2em] text-[#e0c56a]",
           "transition-opacity duration-500",
-          !(glowing || activating) || opening || !visible
+          /* Master art already paints the tap line — only show HTML hint when
+             we render a separate seal image (not hotspot-only). */
+          hotspotOnly ||
+            !(glowing || activating) ||
+            opening ||
+            !visible
             ? "opacity-0"
             : "opacity-100",
         )}
