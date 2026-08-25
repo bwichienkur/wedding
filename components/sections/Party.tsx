@@ -2,17 +2,35 @@ import { Section } from "@/components/ui/Section";
 import type { WeddingPartyMember } from "@/data/logistics-types";
 import { cn } from "@/lib/cn";
 
+const SIDE_ORDER: Array<WeddingPartyMember["side"]> = [
+  "lexi",
+  "bright",
+  "shared",
+];
+
+const SIDE_LABELS: Record<WeddingPartyMember["side"], string> = {
+  lexi: "Lexi’s bridesmaids",
+  bright: "Bright’s groomsmen",
+  shared: "Standing with us",
+};
+
 export function PartySection({
   members,
   eyebrow = "Wedding party",
   title = "Standing beside us",
-  description = "An editorial introduction to the people celebrating with Bright and Lexi. Names and photographs remain placeholders until supplied.",
+  description = "Five bridesmaids, five groomsmen, our ceremony pianist, and the people celebrating with us. Edit each person from the admin.",
 }: {
   members: WeddingPartyMember[];
   eyebrow?: string;
   title?: string;
   description?: string;
 }) {
+  const groups = SIDE_ORDER.map((side) => ({
+    side,
+    label: SIDE_LABELS[side],
+    people: members.filter((member) => member.side === side),
+  })).filter((group) => group.people.length > 0);
+
   return (
     <Section
       id="party"
@@ -20,69 +38,63 @@ export function PartySection({
       title={title}
       description={description}
     >
-      <div className="space-y-16">
-        {members.map((member, index) => {
-          const reverse = index % 2 === 1;
-          return (
-            <article
-              key={member.id}
-              className={cn(
-                "grid items-center gap-8 md:grid-cols-12",
-                reverse && "md:[&>*:first-child]:order-2",
-              )}
-            >
-              <div className="md:col-span-5">
-                <div className="aspect-[4/5] overflow-hidden bg-parchment">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={member.photoSrc ?? "/images/placeholders/party-portrait.svg"}
-                    alt={member.photoAlt ?? `${member.name} portrait`}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
-              <div className="md:col-span-7 md:px-4">
-                <p className="font-sans text-xs uppercase tracking-[0.18em] text-gold">
-                  {member.role} · {member.side}
-                </p>
-                <h3 className="mt-3 font-display text-3xl text-forest">
-                  {member.name}
-                </h3>
-                <p
-                  className={cn(
-                    "mt-3 text-sm text-ink-muted",
-                    member.relationshipIsPlaceholder && "placeholder-copy",
-                  )}
-                >
-                  {member.relationship}
-                </p>
-                <p
-                  className={cn(
-                    "mt-4 max-w-prose text-base leading-relaxed text-charcoal",
-                    member.descriptionIsPlaceholder && "placeholder-copy",
-                  )}
-                >
-                  {member.description}
-                </p>
-                {member.funFact ? (
+      <div className="space-y-20">
+        {groups.map((group) => (
+          <div key={group.side}>
+            <h3 className="font-display text-2xl text-forest md:text-3xl">
+              {group.label}
+            </h3>
+            <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+              {group.people.map((member) => (
+                <article key={member.id} className="flex flex-col">
+                  <div className="aspect-[4/5] overflow-hidden bg-parchment">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        member.photoSrc ??
+                        "/images/placeholders/party-portrait.svg"
+                      }
+                      alt={member.photoAlt ?? `${member.name} portrait`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <p className="mt-4 font-sans text-xs uppercase tracking-[0.18em] text-gold">
+                    {member.role}
+                  </p>
+                  <h4 className="mt-2 font-display text-2xl text-forest">
+                    {member.name}
+                  </h4>
                   <p
                     className={cn(
-                      "mt-4 font-annotation text-lg text-ink-muted",
-                      member.funFactIsPlaceholder && "placeholder-copy",
+                      "mt-2 text-sm text-ink-muted",
+                      member.relationshipIsPlaceholder && "placeholder-copy",
                     )}
                   >
-                    {member.funFact}
+                    {member.relationship}
                   </p>
-                ) : null}
-                {member.sharedMemory ? (
-                  <p className="placeholder-copy mt-3 text-sm text-ink-muted">
-                    {member.sharedMemory}
+                  <p
+                    className={cn(
+                      "mt-3 text-base leading-relaxed text-charcoal",
+                      member.descriptionIsPlaceholder && "placeholder-copy",
+                    )}
+                  >
+                    {member.description}
                   </p>
-                ) : null}
-              </div>
-            </article>
-          );
-        })}
+                  {member.funFact ? (
+                    <p
+                      className={cn(
+                        "mt-3 font-annotation text-lg text-ink-muted",
+                        member.funFactIsPlaceholder && "placeholder-copy",
+                      )}
+                    >
+                      {member.funFact}
+                    </p>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </Section>
   );

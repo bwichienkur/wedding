@@ -61,15 +61,20 @@ test.describe("public invitation", () => {
     page,
   }) => {
     await gotoHome(page, "#wedding-day");
-    await expect(page.getByRole("heading", { name: "Ceremony" })).toBeVisible();
-    await expect(page.getByText("4:00 PM").first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Reception" })).toBeVisible();
-    await expect(page.getByText("5:30 PM").first()).toBeVisible();
-    await expect(page.getByRole("link", { name: "Google Calendar" })).toHaveCount(
-      2,
-    );
+    const schedule = page.locator("#wedding-day");
     await expect(
-      page.getByRole("button", { name: "Download ICS" }),
+      schedule.getByRole("heading", { name: "Ceremony", exact: true }),
+    ).toBeVisible();
+    await expect(schedule.getByText("4:00 PM").first()).toBeVisible();
+    await expect(
+      schedule.getByRole("heading", { name: "Reception", exact: true }),
+    ).toBeVisible();
+    await expect(schedule.getByText("5:30 PM").first()).toBeVisible();
+    await expect(
+      schedule.getByRole("link", { name: "Google Calendar" }),
+    ).toHaveCount(2);
+    await expect(
+      schedule.getByRole("button", { name: "Download ICS" }),
     ).toHaveCount(2);
   });
 

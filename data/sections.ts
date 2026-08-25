@@ -91,9 +91,9 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     label: "Travel",
     defaultVisible: true,
     defaultEyebrow: "Travel",
-    defaultTitle: "Travel & accommodations",
+    defaultTitle: "Travel",
     defaultDescription:
-      "Travel notes for Lake Wales, Florida. Confirmed bookings appear clearly; everything else stays labeled as a placeholder.",
+      "Travel notes for Lake Wales, Florida. Confirmed details appear clearly; everything else stays labeled as a placeholder.",
     hasDescription: true,
   },
   {
@@ -103,7 +103,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     defaultEyebrow: "Wedding party",
     defaultTitle: "Standing beside us",
     defaultDescription:
-      "An editorial introduction to the people celebrating with Bright and Lexi. Names and photographs remain placeholders until supplied.",
+      "Five bridesmaids, five groomsmen, our ceremony pianist, and the people celebrating with us.",
     hasDescription: true,
   },
   {

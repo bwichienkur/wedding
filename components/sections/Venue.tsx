@@ -74,9 +74,11 @@ export function VenueSection({
         ))}
         <div className="absolute bottom-4 left-4 rounded-sm bg-ivory/90 px-3 py-2">
           <p className="font-sans text-xs uppercase tracking-[0.16em] text-gold">
-            Bella Cosa
+            {venue.name}
           </p>
-          <p className="font-display text-lg text-forest">Lake Wales, Florida</p>
+          <p className="font-display text-lg text-forest">
+            {venue.city}, {venue.region}
+          </p>
         </div>
       </div>
 
@@ -92,42 +94,12 @@ export function VenueSection({
             value={venue.directions}
             placeholder={venue.directionsIsPlaceholder}
           />
-          <InfoBlock
-            label="Parking"
-            value={venue.parking}
-            placeholder={venue.parkingIsPlaceholder}
-          />
-          <InfoBlock
-            label="Accessibility"
-            value={venue.accessibility}
-            placeholder={venue.accessibilityIsPlaceholder}
-          />
         </div>
         <div className="space-y-5">
-          <InfoBlock
-            label="Ceremony"
-            value={venue.ceremonyLocation}
-            placeholder={venue.ceremonyIsPlaceholder}
-          />
-          <InfoBlock
-            label="Reception"
-            value={venue.receptionLocation}
-            placeholder={venue.receptionIsPlaceholder}
-          />
           <InfoBlock
             label="Weather"
             value={venue.weather}
             placeholder={venue.weatherIsPlaceholder}
-          />
-          <InfoBlock
-            label="Arrival"
-            value={venue.arrivalGuidance}
-            placeholder={venue.arrivalIsPlaceholder}
-          />
-          <InfoBlock
-            label="Transportation"
-            value={venue.transportationNotes}
-            placeholder={venue.transportationIsPlaceholder}
           />
         </div>
       </div>

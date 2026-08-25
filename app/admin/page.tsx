@@ -22,7 +22,7 @@ export default async function AdminHomePage() {
       </p>
       <h1 className="mt-3 font-display text-4xl text-forest">Bright & Lexi</h1>
       <p className="mt-4 max-w-prose text-ink-muted">
-        Secure tools for sections, media, and RSVP management.
+        Secure tools for sections, content, media, and RSVP management.
       </p>
       <ul className="mt-10 space-y-4">
         <li>
@@ -31,6 +31,14 @@ export default async function AdminHomePage() {
             className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
           >
             Sections — visibility &amp; descriptions
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/admin/content"
+            className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+          >
+            Section content — FAQ, party, venue, travel
           </Link>
         </li>
         <li>

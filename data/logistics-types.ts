@@ -28,20 +28,8 @@ export interface VenueInfo {
   mapUrl: string;
   directions: string;
   directionsIsPlaceholder: boolean;
-  parking: string;
-  parkingIsPlaceholder: boolean;
-  accessibility: string;
-  accessibilityIsPlaceholder: boolean;
   weather: string;
   weatherIsPlaceholder: boolean;
-  arrivalGuidance: string;
-  arrivalIsPlaceholder: boolean;
-  ceremonyLocation: string;
-  ceremonyIsPlaceholder: boolean;
-  receptionLocation: string;
-  receptionIsPlaceholder: boolean;
-  transportationNotes: string;
-  transportationIsPlaceholder: boolean;
   layers: Array<{
     id: string;
     label: string;

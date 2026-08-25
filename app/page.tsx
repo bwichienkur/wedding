@@ -2,6 +2,7 @@ import { HomeExperience, type HomeMediaBundle } from "@/components/HomeExperienc
 import { WeddingEventJsonLd } from "@/components/seo/WeddingEventJsonLd";
 import { wedding } from "@/data/wedding";
 import { getResolvedSiteSections } from "@/lib/content/store";
+import { getResolvedLogistics } from "@/lib/logistics/store";
 import {
   resolveClosingImage,
   resolveHeroSlides,
@@ -34,6 +35,7 @@ export default async function HomePage() {
     closingImage,
     proposalStill,
     sections,
+    logistics,
   ] = await Promise.all([
     resolveHeroSlides(),
     resolveStoryMilestones(),
@@ -43,6 +45,7 @@ export default async function HomePage() {
     resolveClosingImage(),
     resolveProposalStill(),
     getResolvedSiteSections(),
+    getResolvedLogistics(),
   ]);
 
   const media: HomeMediaBundle = {
@@ -53,6 +56,8 @@ export default async function HomePage() {
     partyMembers,
     closingImage,
     proposalStill,
+    travel: logistics.travel,
+    faqItems: logistics.faq,
   };
 
   return (
