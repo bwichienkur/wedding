@@ -23,10 +23,9 @@ export const wedding: WeddingConfig = {
     accessBegins: "9:00 AM",
     photographyBegins: "2:00 PM",
     ceremonyBegins: "4:00 PM",
-    dinnerStyle: "Plated dinner",
+    dinnerStyle: "Reception",
     receptionNotes: [
-      "Toasts and speeches",
-      "Dancing",
+      "Reception begins at 5:30 PM",
       "Sparkler sendoff",
     ],
   },
@@ -61,10 +60,10 @@ export const wedding: WeddingConfig = {
   },
   proposal: {
     transitionCopy: "And then, everything changed.",
-    dateLabel: "Add the proposal date.",
-    dateIsPlaceholder: true,
-    locationLabel: "Add the proposal location.",
-    locationIsPlaceholder: true,
+    dateLabel: "December 13, 2025",
+    dateIsPlaceholder: false,
+    locationLabel: "Joe & Jodi’s home, Longwood, Florida",
+    locationIsPlaceholder: false,
   },
   contact: {
     email: "Add a contact email.",

@@ -1,14 +1,15 @@
 import type { VenueInfo } from "./logistics-types";
 import { wedding } from "./wedding";
 
-const mapQuery = `${wedding.wedding.venueName}, ${wedding.wedding.city}, ${wedding.wedding.region}`;
+const addressLine1 = "3111 Masterpiece Rd, Lake Wales, FL 33898";
+const mapQuery = `${wedding.wedding.venueName}, ${addressLine1}`;
 
 export const venue: VenueInfo = {
   name: wedding.wedding.venueName,
   city: wedding.wedding.city,
   region: wedding.wedding.region,
-  addressLine1: "Add the street address for Bella Cosa.",
-  addressIsPlaceholder: true,
+  addressLine1,
+  addressIsPlaceholder: false,
   mapQuery,
   mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`,
   directions: "Add driving directions and preferred arrival routes.",
@@ -29,22 +30,10 @@ export const venue: VenueInfo = {
   transportationIsPlaceholder: true,
   layers: [
     {
-      id: "sky",
-      label: "Sky",
-      src: "/images/placeholders/venue-sky.svg",
-      alt: "Placeholder background sky layer for Bella Cosa",
-    },
-    {
       id: "architecture",
-      label: "Architecture",
-      src: "/images/placeholders/venue-architecture.svg",
-      alt: "Placeholder architecture layer for Bella Cosa",
-    },
-    {
-      id: "foliage",
-      label: "Foliage",
-      src: "/images/placeholders/venue-foliage.svg",
-      alt: "Placeholder foreground foliage layer for Bella Cosa",
+      label: "Bella Cosa",
+      src: "/images/venue/bella-cosa.webp",
+      alt: "Bella Cosa estate in Lake Wales, framed by live oaks and Spanish moss",
     },
   ],
 };
