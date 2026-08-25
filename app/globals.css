@@ -301,7 +301,15 @@
     overflow: hidden;
     transform: none;
     transition: none;
+    /* Clip only — keep transforms on .envelope-flap-hinge */
+  }
+
+  .envelope-flap-hinge {
+    transform: none;
+    transition: none;
+    transform-style: preserve-3d;
     backface-visibility: hidden;
+    will-change: transform, opacity;
   }
 
   .envelope-flap-face {
@@ -440,32 +448,44 @@
   /* Four-flap geometry — apex at seal (46.5%), matching the painted X seams */
   .envelope-flap-top {
     clip-path: polygon(0 0, 100% 0, 50% 46.5%);
-    transform-origin: 50% 0%;
     z-index: 4;
+  }
+
+  .envelope-flap-top .envelope-flap-hinge {
+    transform-origin: 50% 0%;
   }
 
   .envelope-flap-bottom {
     clip-path: polygon(50% 46.5%, 100% 100%, 0 100%);
-    transform-origin: 50% 100%;
     z-index: 1;
+  }
+
+  .envelope-flap-bottom .envelope-flap-hinge {
+    transform-origin: 50% 100%;
   }
 
   .envelope-flap-left {
     clip-path: polygon(0 0, 50% 46.5%, 0 100%);
-    transform-origin: 0% 50%;
     z-index: 2;
+  }
+
+  .envelope-flap-left .envelope-flap-hinge {
+    transform-origin: 0% 50%;
   }
 
   .envelope-flap-right {
     clip-path: polygon(100% 0, 100% 100%, 50% 46.5%);
-    transform-origin: 100% 50%;
     z-index: 2;
   }
 
-  .envelope-shell-open .envelope-flap {
+  .envelope-flap-right .envelope-flap-hinge {
+    transform-origin: 100% 50%;
+  }
+
+  .envelope-shell-open .envelope-flap-hinge {
     transition:
       transform var(--intro-open, 2400ms) cubic-bezier(0.16, 1, 0.3, 1),
-      opacity calc(var(--intro-open, 2400ms) * 0.7) ease;
+      opacity calc(var(--intro-open, 2400ms) * 0.75) ease;
   }
 
   .envelope-shell.envelope-shell-open {
@@ -476,32 +496,31 @@
     overflow: visible;
   }
 
-  .envelope-flap-top.is-open {
+  .envelope-flap-top .envelope-flap-hinge.is-open {
     transform: rotateX(-168deg);
-    opacity: 0.15;
+    opacity: 0.12;
     transition-delay: 0.12s;
-    z-index: 6;
   }
 
-  .envelope-flap-bottom.is-open {
+  .envelope-flap-bottom .envelope-flap-hinge.is-open {
     transform: rotateX(168deg);
-    opacity: 0.15;
+    opacity: 0.12;
     transition-delay: 0.28s;
   }
 
-  .envelope-flap-left.is-open {
+  .envelope-flap-left .envelope-flap-hinge.is-open {
     transform: rotateY(-168deg);
-    opacity: 0.15;
+    opacity: 0.12;
     transition-delay: 0.04s;
   }
 
-  .envelope-flap-right.is-open {
+  .envelope-flap-right .envelope-flap-hinge.is-open {
     transform: rotateY(168deg);
-    opacity: 0.15;
+    opacity: 0.12;
     transition-delay: 0.2s;
   }
 
-  .envelope-flap.is-open-instant {
+  .envelope-flap-hinge.is-open-instant {
     opacity: 0;
     transition: none;
   }
