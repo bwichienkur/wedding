@@ -407,8 +407,8 @@
 
   .envelope-floral-glow-face {
     background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 100% 100%;
+    background-position: center top;
+    background-size: 100% 106%;
     opacity: 0;
     mix-blend-mode: screen;
     z-index: 2;
