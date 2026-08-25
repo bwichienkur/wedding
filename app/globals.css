@@ -290,7 +290,7 @@
     background-repeat: no-repeat;
     background-position: center top;
     /* Master art has a dark margin under the bottom flap — crop it */
-    background-size: 100% 106%;
+    background-size: 100% 110%;
   }
 
   .envelope-interior {
@@ -377,7 +377,7 @@
     z-index: 2;
     filter: none;
     /* Belt-and-suspenders: hide any residual top-edge gold bar */
-    clip-path: inset(2.4% 0 0 0);
+    clip-path: inset(3.2% 0 0 0);
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
@@ -408,7 +408,7 @@
   .envelope-floral-glow-face {
     background-repeat: no-repeat;
     background-position: center top;
-    background-size: 100% 106%;
+    background-size: 100% 110%;
     opacity: 0;
     mix-blend-mode: screen;
     z-index: 2;
@@ -694,7 +694,7 @@
     /* Master art has a dark margin under the bottom flap — crop it */
     object-fit: fill;
     object-position: center top;
-    height: 106%;
+    height: 110%;
     width: 100%;
     max-height: none;
   }
