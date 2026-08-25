@@ -396,10 +396,10 @@
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 48%,
-      transparent 70%
+      #000 72%,
+      transparent 100%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 48%, transparent 70%);
+    mask-image: radial-gradient(circle, #000 0%, #000 72%, transparent 100%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
@@ -513,10 +513,10 @@
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 58%,
-      transparent 78%
+      #000 68%,
+      transparent 92%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 58%, transparent 78%);
+    mask-image: radial-gradient(circle, #000 0%, #000 68%, transparent 92%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
@@ -533,11 +533,11 @@
   }
 
   .intro-monogram-glow.is-lit {
-    opacity: 0.92;
-    filter: brightness(1.05) saturate(1.05);
+    opacity: 0.96;
+    filter: brightness(1.08) saturate(1.08);
     /* Wide enough to cover the full wax disc in the master art */
-    -webkit-mask-size: 36% 26%;
-    mask-size: 36% 26%;
+    -webkit-mask-size: 42% 30%;
+    mask-size: 42% 30%;
   }
 
   /* Idle twinkle on the full seal before the first tap */
@@ -567,16 +567,16 @@
   .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura,
   .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
     position: absolute;
-    inset: -8%;
+    inset: -14%;
     border-radius: 50%;
     pointer-events: none;
     /* Soft seal halo only — no glitter spray on the paper */
     background:
       radial-gradient(
         circle,
-        rgb(236 204 118 / 0.28) 0%,
-        rgb(220 186 96 / 0.12) 42%,
-        transparent 68%
+        rgb(236 204 118 / 0.34) 0%,
+        rgb(220 186 96 / 0.16) 46%,
+        transparent 72%
       );
   }
 
