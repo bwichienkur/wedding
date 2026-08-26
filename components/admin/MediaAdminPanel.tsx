@@ -41,6 +41,7 @@ export function MediaAdminPanel() {
   const [publishOnUpload, setPublishOnUpload] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
+  const [uploadPhase, setUploadPhase] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [storageReady, setStorageReady] = useState<boolean | null>(null);
@@ -119,6 +120,7 @@ export function MediaAdminPanel() {
   async function uploadPhoto(file: File) {
     setUploading(true);
     setProgress(null);
+    setUploadPhase(null);
     setError(null);
     setSuccess(null);
     try {
@@ -154,6 +156,7 @@ export function MediaAdminPanel() {
       if (useDirectBlob) {
         try {
           const pathname = `wedding/images/${crypto.randomUUID()}.${extensionForMime(mimeType)}`;
+          setUploadPhase("Authorizing upload…");
           setProgress(0);
 
           const tokenResponse = await fetch("/api/media/photo/client-upload", {
@@ -173,15 +176,23 @@ export function MediaAdminPanel() {
             );
           }
 
+          setUploadPhase("Uploading to storage…");
+          setProgress(1);
+
+          // Single-request put (no multipart). Multipart often stalls at 0% on
+          // mobile Safari; 15 MB is well within a direct client Blob put.
           const blob = await put(pathname, file, {
             access: "public",
             token: tokenPayload.clientToken,
             contentType: mimeType,
-            multipart: file.size > FORM_UPLOAD_SAFE_BYTES,
+            multipart: false,
             onUploadProgress: ({ percentage }) => {
-              setProgress(Math.round(percentage));
+              setProgress(Math.max(1, Math.min(99, Math.round(percentage))));
             },
           });
+
+          setUploadPhase("Saving to library…");
+          setProgress(99);
 
           response = await fetch("/api/media/photo", {
             method: "POST",
@@ -199,6 +210,7 @@ export function MediaAdminPanel() {
             throw directError;
           }
           // Small-file fallback through the API (local/dev or Blob token hiccup).
+          setUploadPhase("Uploading…");
           const form = new FormData();
           form.set("file", file);
           form.set("title", meta.title);
@@ -214,6 +226,7 @@ export function MediaAdminPanel() {
           });
         }
       } else {
+        setUploadPhase("Uploading…");
         const form = new FormData();
         form.set("file", file);
         form.set("title", meta.title);
@@ -240,7 +253,8 @@ export function MediaAdminPanel() {
       setTitle("");
       setDescription("");
       setAlt("");
-      setProgress(null);
+      setProgress(100);
+      setUploadPhase(null);
       setSuccess(
         publishOnUpload
           ? `Uploaded and published “${payload.asset?.title ?? file.name}” to ${placement.label}.`
@@ -253,6 +267,8 @@ export function MediaAdminPanel() {
       );
     } finally {
       setUploading(false);
+      setProgress(null);
+      setUploadPhase(null);
     }
   }
 
@@ -526,12 +542,13 @@ export function MediaAdminPanel() {
 
         {progress !== null ? (
           <p className="mt-3 text-sm text-ink-muted" role="status">
-            Upload progress: {progress}%
+            {uploadPhase ? `${uploadPhase} ` : "Upload progress: "}
+            {progress}%
           </p>
         ) : null}
         {uploading && progress === null ? (
           <p className="mt-3 text-sm text-ink-muted" role="status">
-            Uploading…
+            {uploadPhase ?? "Uploading…"}
           </p>
         ) : null}
       </section>
