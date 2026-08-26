@@ -1,11 +1,19 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { Button } from "@/components/ui/Button";
 import {
   sectionMediaPlacements,
   type SectionMediaPlacement,
 } from "@/data/section-media";
 import {
+  extensionForMime,
+  isHeicFile,
+  resolveImageMime,
+} from "@/lib/media/image-upload";
+import {
+  MAX_IMAGE_BYTES,
+  MAX_IMAGE_MB,
   MEDIA_CATEGORY_LABELS,
   type MediaAsset,
 } from "@/lib/media/types";
@@ -34,6 +42,7 @@ export function MediaAdminPanel() {
   const [loaded, setLoaded] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [storageReady, setStorageReady] = useState<boolean | null>(null);
+  const [blobConfigured, setBlobConfigured] = useState(false);
   const [storageHints, setStorageHints] = useState<string[]>([]);
 
   const placement = useMemo(
@@ -85,10 +94,12 @@ export function MediaAdminPanel() {
       if (statusResponse.ok) {
         const status = (await statusResponse.json()) as {
           photoUploadReady?: boolean;
+          blobConfigured?: boolean;
           hints?: string[];
         };
         if (!cancelled) {
           setStorageReady(status.photoUploadReady ?? null);
+          setBlobConfigured(Boolean(status.blobConfigured));
           setStorageHints(status.hints ?? []);
         }
       }
@@ -109,22 +120,71 @@ export function MediaAdminPanel() {
     setError(null);
     setSuccess(null);
     try {
-      const form = new FormData();
-      form.set("file", file);
-      form.set("title", title || file.name);
-      form.set("description", description);
-      form.set("alt", alt || title || file.name);
-      form.set("placementKey", placement.key);
-      form.set("publish", publishOnUpload ? "true" : "false");
-      form.set(
-        "sortOrder",
-        String(assetsForPlacement.length > 0 ? assetsForPlacement.length : 0),
-      );
+      const mimeType = resolveImageMime(file);
+      if (!mimeType) {
+        setError(
+          isHeicFile(file)
+            ? "HEIC photos from iPhone are not supported. Export as JPEG first."
+            : "Unsupported image type. Use JPEG, PNG, WebP, GIF, or AVIF.",
+        );
+        return;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        setError(`Image must be ${MAX_IMAGE_MB} MB or smaller.`);
+        return;
+      }
 
-      const response = await fetch("/api/media/photo", {
-        method: "POST",
-        body: form,
-      });
+      const meta = {
+        title: title || file.name,
+        description,
+        alt: alt || title || file.name,
+        placementKey: placement.key,
+        publish: publishOnUpload,
+        sortOrder:
+          assetsForPlacement.length > 0 ? assetsForPlacement.length : 0,
+      };
+
+      let response: Response;
+
+      if (blobConfigured) {
+        // Direct-to-Blob (supports 10+ MB; bypasses the ~4.5 MB API body cap).
+        const pathname = `wedding/images/${crypto.randomUUID()}.${extensionForMime(mimeType)}`;
+        const blob = await upload(pathname, file, {
+          access: "public",
+          handleUploadUrl: "/api/media/photo/client-upload",
+          contentType: mimeType,
+          multipart: true,
+          onUploadProgress: ({ percentage }) => {
+            setProgress(Math.round(percentage));
+          },
+        });
+
+        response = await fetch("/api/media/photo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...meta,
+            mimeType,
+            publicUrl: blob.url,
+            storagePath: blob.pathname,
+          }),
+        });
+      } else {
+        const form = new FormData();
+        form.set("file", file);
+        form.set("title", meta.title);
+        form.set("description", meta.description);
+        form.set("alt", meta.alt);
+        form.set("placementKey", meta.placementKey);
+        form.set("publish", meta.publish ? "true" : "false");
+        form.set("sortOrder", String(meta.sortOrder));
+
+        response = await fetch("/api/media/photo", {
+          method: "POST",
+          body: form,
+        });
+      }
+
       if (!response.ok) {
         const payload = (await response.json()) as { error?: string };
         setError(payload.error ?? `Photo upload failed (${response.status}).`);
@@ -135,6 +195,7 @@ export function MediaAdminPanel() {
       setTitle("");
       setDescription("");
       setAlt("");
+      setProgress(null);
       setSuccess(
         publishOnUpload
           ? `Uploaded and published “${payload.asset?.title ?? file.name}” to ${placement.label}.`
@@ -366,6 +427,9 @@ export function MediaAdminPanel() {
             <label className="inline-flex min-h-11 cursor-pointer flex-col justify-center border border-stone bg-ivory px-4 py-3 text-sm text-forest">
               <span className="font-sans text-xs uppercase tracking-[0.14em] text-ink-muted">
                 Upload photo
+              </span>
+              <span className="mt-1 text-xs text-ink-muted">
+                Up to {MAX_IMAGE_MB} MB · JPEG/PNG/WebP
               </span>
               <input
                 type="file"

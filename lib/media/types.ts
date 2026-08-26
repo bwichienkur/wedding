@@ -125,4 +125,6 @@ export const IMAGE_MIME_TYPES = new Set([
   "image/avif",
 ]);
 
-export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+/** Max photo upload size (client Blob upload bypasses the ~4.5 MB API body cap). */
+export const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
+export const MAX_IMAGE_MB = 15;

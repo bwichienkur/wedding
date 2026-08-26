@@ -3,6 +3,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { isAdminAuthConfigured, isAdminAuthenticated } from "@/lib/auth/admin";
 import { isBlobStorageEnabled } from "@/lib/media/blob-env";
+import { MAX_IMAGE_MB } from "@/lib/media/types";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,7 @@ export async function GET() {
     blobConfigured,
     production: isProduction,
     photoUploadReady: !isProduction || blobConfigured,
+    maxImageMb: MAX_IMAGE_MB,
     hints: [
       !isAdminAuthConfigured()
         ? "Set WEDDING_ADMIN_PASSWORD in Vercel environment variables."
@@ -27,7 +29,7 @@ export async function GET() {
       isProduction && !blobConfigured
         ? "Connect Vercel Blob (Storage → Blob) to add BLOB_READ_WRITE_TOKEN, then redeploy."
         : null,
-      "Use JPEG or PNG under 4 MB. iPhone HEIC is not supported.",
+      `JPEG/PNG/WebP up to ${MAX_IMAGE_MB} MB. iPhone HEIC is not supported.`,
       "Choose a section, upload, and keep “Publish when ready” checked.",
       "Homepage photos appear immediately after upload — no redeploy needed.",
     ].filter(Boolean),
