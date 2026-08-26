@@ -43,6 +43,10 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
+    // SDK default is only ~30s — too short for large mobile uploads.
+    // Cap is 24h; use 1h so slow networks still finish.
+    const validUntil = Date.now() + 60 * 60 * 1000;
+
     const clientToken = await generateClientTokenFromReadWriteToken({
       token: requireBlobToken(),
       pathname,
@@ -50,9 +54,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       maximumSizeInBytes: MAX_IMAGE_BYTES,
       addRandomSuffix: false,
       allowOverwrite: true,
+      validUntil,
     });
 
-    return NextResponse.json({ clientToken, pathname });
+    return NextResponse.json({ clientToken, pathname, validUntil });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unable to authorize photo upload.";
