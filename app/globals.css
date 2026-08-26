@@ -391,15 +391,15 @@
     pointer-events: none;
     z-index: 2;
     filter: none;
-    /* Only shave the razor top edge — keep the top embossed crest */
-    clip-path: inset(0.35% 0 0 0);
+    /* Keep full top crest visible — do not clip emboss tips */
+    clip-path: none;
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 72%,
+      #000 88%,
       transparent 100%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 72%, transparent 100%);
+    mask-image: radial-gradient(circle, #000 0%, #000 88%, transparent 100%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: var(--intro-seal-x, 49.91%) var(--intro-seal-y, 46.08%);
@@ -416,8 +416,9 @@
     opacity: 1;
     /* Bright gold on emboss overlay only — paper stays unfiltered */
     filter: brightness(1.55) saturate(1.25) contrast(1.08);
-    -webkit-mask-size: 300% 300%;
-    mask-size: 300% 300%;
+    /* Oversized so top crest + bottom florals fully clear the fade edge */
+    -webkit-mask-size: 360% 360%;
+    mask-size: 360% 360%;
   }
 
   .envelope-floral-glow-face.is-lit {
@@ -533,18 +534,18 @@
   }
 
   .intro-monogram-glow.is-lit {
-    opacity: 0.96;
-    filter: brightness(1.08) saturate(1.08);
-    /* Wide enough to cover the full wax disc in the master art */
-    -webkit-mask-size: 42% 30%;
-    mask-size: 42% 30%;
+    opacity: 0.9;
+    filter: brightness(1.05) saturate(1.05);
+    /* Tight to the wax disc — no glitter spray beyond the seal */
+    -webkit-mask-size: 22% 16%;
+    mask-size: 22% 16%;
   }
 
   /* Idle twinkle on the full seal before the first tap */
   .intro-monogram-glow.is-idle-twinkle {
-    opacity: 0.5;
-    -webkit-mask-size: 32% 22%;
-    mask-size: 32% 22%;
+    opacity: 0.4;
+    -webkit-mask-size: 20% 14%;
+    mask-size: 20% 14%;
     animation: intro-seal-twinkle 2.8s ease-in-out infinite;
   }
 
