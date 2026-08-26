@@ -82,10 +82,11 @@ function isAllowedBlobRef(publicUrl: string, storagePath: string): boolean {
   if (!storagePath.startsWith("wedding/images/")) return false;
   try {
     const url = new URL(publicUrl);
+    if (url.protocol !== "https:") return false;
+    // storeId.public.blob.vercel-storage.com (and future regional hosts)
     return (
-      url.protocol === "https:" &&
-      (url.hostname.endsWith(".public.blob.vercel-storage.com") ||
-        url.hostname.endsWith(".blob.vercel-storage.com"))
+      url.hostname.endsWith(".blob.vercel-storage.com") ||
+      url.hostname.endsWith(".vercel-storage.com")
     );
   } catch {
     return false;

@@ -1,19 +1,25 @@
 import "server-only";
 
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
-import { isBlobStorageEnabled } from "@/lib/media/blob-env";
+import { isBlobStorageEnabled, requireBlobToken } from "@/lib/media/blob-env";
 import { IMAGE_MIME_TYPES, MAX_IMAGE_BYTES } from "@/lib/media/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 /**
- * Issues short-lived Blob client tokens so the browser can upload photos
- * directly to Vercel Blob (needed for files above the ~4.5 MB function body limit).
+ * Issues a short-lived client token for direct browser → Vercel Blob uploads.
+ * Prefer this over `handleUpload` so auth cookies and error messages stay explicit.
  */
 export async function POST(request: Request): Promise<NextResponse> {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   if (!isBlobStorageEnabled()) {
     return NextResponse.json(
       {
@@ -24,49 +30,40 @@ export async function POST(request: Request): Promise<NextResponse> {
     );
   }
 
-  let body: HandleUploadBody;
+  let pathname = "";
   try {
-    body = (await request.json()) as HandleUploadBody;
+    const body = (await request.json()) as { pathname?: string };
+    pathname = String(body.pathname || "").trim();
   } catch {
     return NextResponse.json({ error: "Invalid upload request." }, { status: 400 });
   }
 
+  if (!pathname.startsWith("wedding/images/")) {
+    return NextResponse.json({ error: "Invalid upload path." }, { status: 400 });
+  }
+
   try {
-    // Token generation runs in the browser's request (cookies present).
-    // Completion callbacks are server-to-server and are optional here —
-    // the admin UI registers the asset after `upload()` resolves.
-    const jsonResponse = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async (pathname) => {
-        try {
-          await requireAdmin();
-        } catch {
-          throw new Error("Unauthorized");
-        }
-
-        if (!pathname.startsWith("wedding/images/")) {
-          throw new Error("Invalid upload path.");
-        }
-
-        return {
-          allowedContentTypes: [...IMAGE_MIME_TYPES],
-          maximumSizeInBytes: MAX_IMAGE_BYTES,
-          addRandomSuffix: false,
-          allowOverwrite: true,
-          tokenPayload: JSON.stringify({ pathname }),
-        };
-      },
-      onUploadCompleted: async () => {
-        // Asset registration happens from the admin client after upload().
-      },
+    const clientToken = await generateClientTokenFromReadWriteToken({
+      token: requireBlobToken(),
+      pathname,
+      allowedContentTypes: [...IMAGE_MIME_TYPES],
+      maximumSizeInBytes: MAX_IMAGE_BYTES,
+      addRandomSuffix: false,
+      allowOverwrite: true,
     });
 
-    return NextResponse.json(jsonResponse);
+    return NextResponse.json({ clientToken, pathname });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unable to authorize photo upload.";
-    const status = message === "Unauthorized" ? 401 : 400;
-    return NextResponse.json({ error: message }, { status });
+    console.error("[media/photo/client-upload]", error);
+    return NextResponse.json(
+      {
+        error: message.includes("BLOB") || message.includes("token")
+          ? "Blob token error. Confirm Vercel Blob is connected and redeploy."
+          : `Unable to start photo upload: ${message}`,
+      },
+      { status: 500 },
+    );
   }
 }
