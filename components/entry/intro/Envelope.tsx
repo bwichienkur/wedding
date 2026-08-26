@@ -38,8 +38,8 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
       )}
       style={
         {
-          ["--intro-seal-x" as string]: "49.91%",
-          ["--intro-seal-y" as string]: "46.08%",
+          ["--intro-seal-x" as string]: "49.78%",
+          ["--intro-seal-y" as string]: "42.34%",
         } as CSSProperties
       }
     >

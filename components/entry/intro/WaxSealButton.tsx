@@ -37,7 +37,7 @@ export function WaxSealButton({
     <>
       <div
         className={cn(
-          "intro-seal-wrap absolute left-1/2 top-[var(--intro-seal-y,46.08%)] z-30 -translate-x-1/2 -translate-y-1/2",
+          "intro-seal-wrap absolute left-1/2 top-[var(--intro-seal-y,42.34%)] z-30 -translate-x-1/2 -translate-y-1/2",
           "transition-opacity duration-500",
           !visible && "opacity-0",
           idleTwinkle && "is-idle-twinkle",
