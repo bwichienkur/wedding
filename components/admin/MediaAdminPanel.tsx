@@ -1,6 +1,6 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
+import { put } from "@vercel/blob/client";
 import { Button } from "@/components/ui/Button";
 import {
   sectionMediaPlacements,
@@ -19,6 +19,8 @@ import {
 } from "@/lib/media/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+const FORM_UPLOAD_SAFE_BYTES = 4 * 1024 * 1024;
 
 function placementLabel(key: string | null): string {
   if (!key) return "Unassigned";
@@ -146,29 +148,71 @@ export function MediaAdminPanel() {
 
       let response: Response;
 
-      if (blobConfigured) {
-        // Direct-to-Blob (supports 10+ MB; bypasses the ~4.5 MB API body cap).
-        const pathname = `wedding/images/${crypto.randomUUID()}.${extensionForMime(mimeType)}`;
-        const blob = await upload(pathname, file, {
-          access: "public",
-          handleUploadUrl: "/api/media/photo/client-upload",
-          contentType: mimeType,
-          multipart: true,
-          onUploadProgress: ({ percentage }) => {
-            setProgress(Math.round(percentage));
-          },
-        });
+      // Prefer direct Blob upload whenever Blob is configured (supports 10+ MB).
+      // Fall back to form upload for smaller files if the token step fails.
+      const useDirectBlob = blobConfigured;
+      if (useDirectBlob) {
+        try {
+          const pathname = `wedding/images/${crypto.randomUUID()}.${extensionForMime(mimeType)}`;
+          setProgress(0);
 
-        response = await fetch("/api/media/photo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...meta,
-            mimeType,
-            publicUrl: blob.url,
-            storagePath: blob.pathname,
-          }),
-        });
+          const tokenResponse = await fetch("/api/media/photo/client-upload", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pathname }),
+          });
+          const tokenPayload = (await tokenResponse.json()) as {
+            clientToken?: string;
+            error?: string;
+          };
+          if (!tokenResponse.ok || !tokenPayload.clientToken) {
+            throw new Error(
+              tokenPayload.error ??
+                `Unable to start photo upload (${tokenResponse.status}).`,
+            );
+          }
+
+          const blob = await put(pathname, file, {
+            access: "public",
+            token: tokenPayload.clientToken,
+            contentType: mimeType,
+            multipart: file.size > FORM_UPLOAD_SAFE_BYTES,
+            onUploadProgress: ({ percentage }) => {
+              setProgress(Math.round(percentage));
+            },
+          });
+
+          response = await fetch("/api/media/photo", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...meta,
+              mimeType,
+              publicUrl: blob.url,
+              storagePath: blob.pathname,
+            }),
+          });
+        } catch (directError) {
+          if (file.size > FORM_UPLOAD_SAFE_BYTES) {
+            throw directError;
+          }
+          // Small-file fallback through the API (local/dev or Blob token hiccup).
+          const form = new FormData();
+          form.set("file", file);
+          form.set("title", meta.title);
+          form.set("description", meta.description);
+          form.set("alt", meta.alt);
+          form.set("placementKey", meta.placementKey);
+          form.set("publish", meta.publish ? "true" : "false");
+          form.set("sortOrder", String(meta.sortOrder));
+          response = await fetch("/api/media/photo", {
+            method: "POST",
+            credentials: "include",
+            body: form,
+          });
+        }
       } else {
         const form = new FormData();
         form.set("file", file);
@@ -181,6 +225,7 @@ export function MediaAdminPanel() {
 
         response = await fetch("/api/media/photo", {
           method: "POST",
+          credentials: "include",
           body: form,
         });
       }
@@ -464,6 +509,21 @@ export function MediaAdminPanel() {
           ) : null}
         </div>
 
+        {error ? (
+          <p
+            className="mt-4 border border-gold/50 bg-gold/15 px-3 py-3 text-sm text-forest"
+            role="alert"
+          >
+            {error}
+          </p>
+        ) : null}
+
+        {success ? (
+          <p className="mt-4 text-sm text-forest/80" role="status">
+            {success}
+          </p>
+        ) : null}
+
         {progress !== null ? (
           <p className="mt-3 text-sm text-ink-muted" role="status">
             Upload progress: {progress}%
@@ -475,18 +535,6 @@ export function MediaAdminPanel() {
           </p>
         ) : null}
       </section>
-
-      {error ? (
-        <p className="text-sm text-forest" role="alert">
-          {error}
-        </p>
-      ) : null}
-
-      {success ? (
-        <p className="text-sm text-forest/80" role="status">
-          {success}
-        </p>
-      ) : null}
 
       <section>
         <h2 className="font-display text-2xl text-forest">
