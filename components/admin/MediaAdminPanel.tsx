@@ -156,40 +156,62 @@ export function MediaAdminPanel() {
       if (useDirectBlob) {
         try {
           const pathname = `wedding/images/${crypto.randomUUID()}.${extensionForMime(mimeType)}`;
-          setUploadPhase("Authorizing upload…");
-          setProgress(0);
 
-          const tokenResponse = await fetch("/api/media/photo/client-upload", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ pathname }),
-          });
-          const tokenPayload = (await tokenResponse.json()) as {
-            clientToken?: string;
-            error?: string;
-          };
-          if (!tokenResponse.ok || !tokenPayload.clientToken) {
-            throw new Error(
-              tokenPayload.error ??
-                `Unable to start photo upload (${tokenResponse.status}).`,
-            );
+          async function fetchClientToken(path: string): Promise<string> {
+            setUploadPhase("Authorizing upload…");
+            setProgress(0);
+            const tokenResponse = await fetch("/api/media/photo/client-upload", {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ pathname: path }),
+            });
+            const tokenPayload = (await tokenResponse.json()) as {
+              clientToken?: string;
+              error?: string;
+            };
+            if (!tokenResponse.ok || !tokenPayload.clientToken) {
+              throw new Error(
+                tokenPayload.error ??
+                  `Unable to start photo upload (${tokenResponse.status}).`,
+              );
+            }
+            return tokenPayload.clientToken;
           }
 
-          setUploadPhase("Uploading to storage…");
-          setProgress(1);
+          async function putWithToken(path: string, token: string) {
+            setUploadPhase("Uploading to storage…");
+            setProgress(1);
+            // Single-request put (no multipart). Multipart often stalls at 0% on
+            // mobile Safari; 15 MB is well within a direct client Blob put.
+            return put(path, file, {
+              access: "public",
+              token,
+              contentType: mimeType,
+              multipart: false,
+              onUploadProgress: ({ percentage }) => {
+                setProgress(Math.max(1, Math.min(99, Math.round(percentage))));
+              },
+            });
+          }
 
-          // Single-request put (no multipart). Multipart often stalls at 0% on
-          // mobile Safari; 15 MB is well within a direct client Blob put.
-          const blob = await put(pathname, file, {
-            access: "public",
-            token: tokenPayload.clientToken,
-            contentType: mimeType,
-            multipart: false,
-            onUploadProgress: ({ percentage }) => {
-              setProgress(Math.max(1, Math.min(99, Math.round(percentage))));
-            },
-          });
+          let clientToken = await fetchClientToken(pathname);
+          let blob;
+          try {
+            blob = await putWithToken(pathname, clientToken);
+          } catch (putError) {
+            const msg =
+              putError instanceof Error ? putError.message : String(putError);
+            // Token default was ~30s; if still expired (slow auth, clock skew),
+            // mint a fresh token once and retry the put.
+            if (/expired|token/i.test(msg)) {
+              setUploadPhase("Refreshing upload authorization…");
+              clientToken = await fetchClientToken(pathname);
+              blob = await putWithToken(pathname, clientToken);
+            } else {
+              throw putError;
+            }
+          }
 
           setUploadPhase("Saving to library…");
           setProgress(99);
