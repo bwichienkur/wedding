@@ -70,7 +70,7 @@ function MilestoneCard({
             }
           />
           {milestone.image?.placeholder ? (
-            <p className="absolute bottom-3 left-3 right-3 bg-ivory/90 px-3 py-2 font-sans text-xs text-ink-muted">
+            <p className="absolute bottom-3 left-3 right-3 bg-parchment/90 px-3 py-2 font-sans text-xs text-ivory/70">
               {milestone.image.caption ?? "Photograph coming soon."}
             </p>
           ) : null}
@@ -84,14 +84,14 @@ function MilestoneCard({
         {milestone.locationLabel ? (
           <p
             className={cn(
-              "mt-2 font-sans text-sm text-ink-muted",
+              "mt-2 font-sans text-sm text-ivory/70",
               milestone.locationLabel.startsWith("Add ") && "placeholder-copy",
             )}
           >
             {milestone.locationLabel}
           </p>
         ) : null}
-        <h3 className="mt-4 font-display text-3xl text-forest sm:text-4xl">
+        <h3 className="mt-4 font-display text-3xl text-gold sm:text-4xl">
           {milestone.title}
         </h3>
 
@@ -110,8 +110,8 @@ function MilestoneCard({
                 className={cn(
                   "min-h-11 rounded-sm border px-3 py-2 font-sans text-xs uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
                   perspective === option
-                    ? "border-gold bg-gold/10 text-forest"
-                    : "border-stone text-ink-muted hover:border-forest hover:text-forest",
+                    ? "border-gold bg-gold/10 text-gold"
+                    : "border-gold/40 text-ivory/70 hover:border-gold hover:text-ivory",
                 )}
                 onClick={() => setPerspective(option)}
               >
@@ -130,13 +130,13 @@ function MilestoneCard({
           {activePassages.map((passage, passageIndex) => (
             <div key={`${passage.perspective}-${passageIndex}`}>
               {passage.title ? (
-                <p className="mb-2 font-display text-xl text-forest">
+                <p className="mb-2 font-display text-xl text-gold-soft">
                   {passage.title}
                 </p>
               ) : null}
               <p
                 className={cn(
-                  "max-w-prose text-base leading-relaxed text-charcoal sm:text-lg",
+                  "max-w-prose text-base leading-relaxed text-ivory/80 sm:text-lg",
                   passage.isPlaceholder && "placeholder-copy",
                 )}
               >
@@ -167,7 +167,7 @@ export function OurStory({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-ivory"
+      className="bg-parchment/80"
     >
       <div className="relative">
         {/* Mobile: single left-rail filament */}

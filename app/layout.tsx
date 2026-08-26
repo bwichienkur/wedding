@@ -59,7 +59,7 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${body.variable} ${annotation.variable} h-full antialiased`}
     >
-      <body className="min-h-full font-sans text-forest">
+      <body className="min-h-full font-sans text-ivory">
         <SkipLinks />
         {children}
       </body>

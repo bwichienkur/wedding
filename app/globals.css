@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Navy + gold — sealed-envelope luxury */
-  --ivory: #eef2f7;
-  --parchment: #e2e8f0;
+  /* Navy + gold — sealed-envelope luxury (navy ground, gold light) */
+  --ivory: #f4ebda;
+  --parchment: #122036;
   --blush: #e8d9a8;
-  --sage: #8b95a5;
-  --sage-deep: #5c6778;
-  --forest: #0a1628;
-  --charcoal: #142338;
-  --stone: #b7c0ce;
-  --gold: #c9a227;
-  --gold-soft: #dbb84a;
-  --rose: #c9a227;
-  --rose-deep: #a8871f;
-  --ink-muted: #4d5a6c;
+  --sage: #9aa5b5;
+  --sage-deep: #7d8899;
+  --forest: #070f1c;
+  --charcoal: #e6dcc4;
+  --stone: #3a4d66;
+  --gold: #d4af37;
+  --gold-soft: #e8c65a;
+  --rose: #d4af37;
+  --rose-deep: #b8942a;
+  --ink-muted: #a8b4c4;
 
   --text-xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
   --text-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
@@ -71,28 +71,33 @@
   body {
     background:
       radial-gradient(
-        110% 70% at 50% -15%,
-        color-mix(in srgb, var(--gold) 16%, transparent),
-        transparent 52%
+        95% 55% at 50% -8%,
+        color-mix(in srgb, var(--gold) 22%, transparent),
+        transparent 55%
       ),
       radial-gradient(
-        90% 50% at 100% 20%,
-        color-mix(in srgb, var(--forest) 6%, transparent),
-        transparent 45%
+        70% 45% at 100% 30%,
+        color-mix(in srgb, var(--gold) 8%, transparent),
+        transparent 50%
+      ),
+      radial-gradient(
+        80% 50% at 0% 80%,
+        color-mix(in srgb, #1a3050 55%, transparent),
+        transparent 55%
       ),
       linear-gradient(
         180deg,
-        #e6ecf4 0%,
-        var(--ivory) 32%,
-        var(--ivory) 100%
+        #0c1830 0%,
+        var(--forest) 40%,
+        #050a14 100%
       );
-    color: var(--forest);
+    color: var(--ivory);
     font-family: var(--font-body), "Segoe UI", sans-serif;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--gold) 42%, transparent);
+    background: color-mix(in srgb, var(--gold) 48%, transparent);
     color: var(--forest);
   }
 }
@@ -159,17 +164,17 @@
 
   .editorial-frame {
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--gold) 36%, transparent),
-      0 18px 40px -28px rgb(10 22 40 / 0.4);
+      inset 0 0 0 1px color-mix(in srgb, var(--gold) 42%, transparent),
+      0 22px 48px -28px rgb(0 0 0 / 0.55);
   }
 
   .field-editorial {
     min-height: 2.75rem;
     width: 100%;
-    border: 1px solid var(--stone);
-    background: color-mix(in srgb, var(--ivory) 88%, white);
+    border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--stone));
+    background: color-mix(in srgb, var(--parchment) 88%, black);
     padding: 0.65rem 0.85rem;
-    color: var(--forest);
+    color: var(--ivory);
     transition:
       border-color 0.25s ease,
       box-shadow 0.25s ease,
@@ -178,9 +183,9 @@
 
   .field-editorial:focus {
     outline: none;
-    border-color: color-mix(in srgb, var(--gold) 70%, var(--stone));
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent);
-    background: white;
+    border-color: color-mix(in srgb, var(--gold) 75%, var(--stone));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 24%, transparent);
+    background: color-mix(in srgb, var(--parchment) 70%, black);
   }
 
   @keyframes marquee-scroll {

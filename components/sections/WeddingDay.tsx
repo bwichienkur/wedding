@@ -27,11 +27,11 @@ export function WeddingDaySection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-parchment/60"
+      className="bg-parchment/50"
     >
       <div className="relative mb-12">
         <GoldenThread chapter="wedding" className="h-20 w-full text-gold opacity-55 sm:h-24" />
-        <p className="mt-4 font-sans text-xs uppercase tracking-[0.22em] text-ink-muted">
+        <p className="mt-4 font-sans text-xs uppercase tracking-[0.22em] text-ivory/70">
           The golden thread becomes the day’s route
         </p>
       </div>
@@ -54,34 +54,34 @@ export function WeddingDaySection({
                   </p>
                 </div>
                 <div className="border-l border-gold/40 pl-5 md:border-l-0 md:pl-0">
-                  <h3 className="font-display text-2xl text-forest sm:text-3xl">
+                  <h3 className="font-display text-2xl text-gold sm:text-3xl">
                     {item.title}
                   </h3>
                   <p
                     className={cn(
-                      "mt-3 max-w-prose text-base leading-relaxed text-ink-muted",
+                      "mt-3 max-w-prose text-base leading-relaxed text-ivory/70",
                       item.descriptionIsPlaceholder && "placeholder-copy",
                     )}
                   >
                     {item.description}
                   </p>
                   {item.locationLabel ? (
-                    <p className="mt-2 text-sm text-charcoal">
+                    <p className="mt-2 text-sm text-ivory/80">
                       {item.locationLabel}
                     </p>
                   ) : null}
                   {item.arrivalGuidance ? (
-                    <p className="placeholder-copy mt-3 text-sm text-ink-muted">
+                    <p className="placeholder-copy mt-3 text-sm text-ivory/70">
                       {item.arrivalGuidance}
                     </p>
                   ) : null}
                   {item.attireNote ? (
-                    <p className="placeholder-copy mt-2 text-sm text-ink-muted">
+                    <p className="placeholder-copy mt-2 text-sm text-ivory/70">
                       {item.attireNote}
                     </p>
                   ) : null}
                   {item.accessibilityNote ? (
-                    <p className="placeholder-copy mt-2 text-sm text-ink-muted">
+                    <p className="placeholder-copy mt-2 text-sm text-ivory/70">
                       {item.accessibilityNote}
                     </p>
                   ) : null}
@@ -100,7 +100,7 @@ export function WeddingDaySection({
                       ) : null}
                       <button
                         type="button"
-                        className="inline-flex min-h-11 items-center justify-center border border-stone px-5 font-sans text-sm uppercase tracking-[0.12em] text-forest transition-transform hover:scale-[1.01] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+                        className="inline-flex min-h-11 items-center justify-center border border-gold/40 px-5 font-sans text-sm uppercase tracking-[0.12em] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                         onClick={() => downloadIcs(item)}
                       >
                         Download ICS
@@ -114,7 +114,7 @@ export function WeddingDaySection({
         })}
       </RevealGroup>
 
-      <p className="mt-4 text-sm text-ink-muted">
+      <p className="mt-4 text-sm text-ivory/70">
         Venue access begins {wedding.wedding.accessBegins}. Photography and
         videography begin {wedding.wedding.photographyBegins}. Ceremony begins{" "}
         {wedding.wedding.ceremonyBegins}. Times marked “coming soon” will be

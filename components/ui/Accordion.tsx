@@ -48,7 +48,7 @@ function AccordionItem({
           aria-controls={panelId}
           onClick={() => setOpen((value) => !value)}
         >
-          <span className="font-display text-xl text-forest sm:text-2xl">
+          <span className="font-display text-xl text-gold sm:text-2xl">
             {title}
           </span>
           <span
@@ -89,7 +89,7 @@ export function Expandable({
   const buttonId = useId();
 
   return (
-    <div className="border border-stone/80 bg-ivory">
+    <div className="border border-gold/25 bg-parchment">
       <h3>
         <button
           id={buttonId}
@@ -99,7 +99,7 @@ export function Expandable({
           aria-controls={panelId}
           onClick={() => setOpen((value) => !value)}
         >
-          <span className="font-display text-xl text-forest">{title}</span>
+          <span className="font-display text-xl text-gold">{title}</span>
           {badge ? (
             <span className="font-sans text-[0.65rem] uppercase tracking-[0.16em] text-gold">
               {badge}

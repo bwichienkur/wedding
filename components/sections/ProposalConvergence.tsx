@@ -149,7 +149,7 @@ function ProposalThreadConvergence({ still }: { still?: StoryImage | null }) {
           opacity="0.06"
         />
       </svg>
-      <p className="mt-3 text-center font-sans text-xs text-ink-muted">
+      <p className="mt-3 text-center font-sans text-xs text-ivory/70">
         {still?.src
           ? "Two paths become one"
           : "Proposal photograph coming soon"}
@@ -180,7 +180,7 @@ export function ProposalConvergenceSection({
     <Section
       id="proposal"
       contained
-      className="bg-ivory"
+      className="bg-parchment/80"
       aria-labelledby={headingId}
     >
       <header className="mb-10 max-w-2xl md:mb-14">
@@ -189,11 +189,11 @@ export function ProposalConvergenceSection({
         </p>
         <h2
           id={headingId}
-          className="font-display text-balance text-3xl text-forest sm:text-4xl md:text-5xl"
+          className="font-display text-balance text-3xl text-gold sm:text-4xl md:text-5xl"
         >
           {title}
         </h2>
-        <p className="mt-4 text-base text-ink-muted">{intro}</p>
+        <p className="mt-4 text-base text-ivory/70">{intro}</p>
       </header>
 
       <ProposalThreadConvergence still={still} />

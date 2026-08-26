@@ -91,8 +91,8 @@ export function WeddingPlayer({
       >
         <div className="flex aspect-video items-center justify-center px-6 text-center">
           <div>
-            <p className="font-display text-2xl text-forest">{title}</p>
-            <p className="mt-3 text-sm text-ink-muted">Processing video…</p>
+            <p className="font-display text-2xl text-gold">{title}</p>
+            <p className="mt-3 text-sm text-ivory/70">Processing video…</p>
           </div>
         </div>
       </div>
@@ -115,10 +115,10 @@ export function WeddingPlayer({
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : null}
-          <div className="absolute inset-0 flex items-center justify-center bg-ivory/70 px-6 text-center">
+          <div className="absolute inset-0 flex items-center justify-center bg-parchment/80 px-6 text-center">
             <div>
-              <p className="font-display text-2xl text-forest">{title}</p>
-              <p className="mt-3 text-sm text-ink-muted">
+              <p className="font-display text-2xl text-gold">{title}</p>
+              <p className="mt-3 text-sm text-ivory/70">
                 Film coming soon — poster and captions will appear here.
               </p>
             </div>
@@ -137,14 +137,14 @@ export function WeddingPlayer({
         )}
         role="alert"
       >
-        <p className="font-display text-2xl text-forest">Unable to play video</p>
-        <p className="mt-3 text-sm text-ink-muted">
+        <p className="font-display text-2xl text-gold">Unable to play video</p>
+        <p className="mt-3 text-sm text-ivory/70">
           Please try again on a stronger connection, or continue the story below.
         </p>
         {onClose ? (
           <button
             type="button"
-            className="mt-6 min-h-11 px-4 font-sans text-sm uppercase tracking-[0.12em] text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="mt-6 min-h-11 px-4 font-sans text-sm uppercase tracking-[0.12em] text-ivory underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             onClick={handleClose}
           >
             Close
@@ -167,9 +167,9 @@ export function WeddingPlayer({
         tokens={playbackToken ? { playback: playbackToken } : undefined}
         streamType="on-demand"
         poster={posterUrl ?? undefined}
-        primaryColor="#F3EEE4"
-        secondaryColor="#1C2A22"
-        accentColor="#A6873B"
+        primaryColor="#F4EBDA"
+        secondaryColor="#070F1C"
+        accentColor="#D4AF37"
         metadata={{ video_title: title }}
         playsInline
         autoPlay={autoPlayMuted ? "muted" : false}
@@ -203,15 +203,15 @@ export function WeddingPlayer({
         ) : null}
       </MuxPlayer>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-ivory px-4 py-3">
-        <p className="font-sans text-xs uppercase tracking-[0.16em] text-ink-muted">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gold/25 bg-parchment px-4 py-3">
+        <p className="font-sans text-xs uppercase tracking-[0.16em] text-ivory/70">
           {title}
         </p>
         <div className="flex flex-wrap gap-2">
           {transcript ? (
             <button
               type="button"
-              className="min-h-11 px-3 font-sans text-xs uppercase tracking-[0.12em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="min-h-11 px-3 font-sans text-xs uppercase tracking-[0.12em] text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               onClick={() => setShowTranscript((value) => !value)}
               aria-expanded={showTranscript}
             >
@@ -221,7 +221,7 @@ export function WeddingPlayer({
           {onClose ? (
             <button
               type="button"
-              className="min-h-11 px-3 font-sans text-xs uppercase tracking-[0.12em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="min-h-11 px-3 font-sans text-xs uppercase tracking-[0.12em] text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               onClick={handleClose}
             >
               Close
@@ -231,7 +231,7 @@ export function WeddingPlayer({
       </div>
 
       {showTranscript && transcript ? (
-        <div className="max-h-48 overflow-auto border-t border-stone bg-parchment px-4 py-3 text-sm leading-relaxed text-charcoal">
+        <div className="max-h-48 overflow-auto border-t border-gold/25 bg-parchment px-4 py-3 text-sm leading-relaxed text-ivory/80">
           {transcript}
         </div>
       ) : null}

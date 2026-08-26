@@ -156,11 +156,11 @@ export function HeroCarousel({
       ) : (
         <>
           <div
-            className="absolute inset-0 bg-gradient-to-t from-ivory via-ivory/55 to-ivory/15 sm:via-ivory/45"
+            className="absolute inset-0 bg-gradient-to-t from-forest via-forest/55 to-forest/15 sm:via-forest/45"
             aria-hidden
           />
           <div
-            className="grain absolute inset-0 opacity-25 mix-blend-multiply"
+            className="grain absolute inset-0 opacity-25 mix-blend-soft-light"
             aria-hidden
           />
         </>
@@ -189,12 +189,10 @@ export function HeroCarousel({
                 className={cn(
                   "block h-1.5 w-1.5 transition-all",
                   slideIndex === index
-                    ? editorial
-                      ? "w-5 bg-gold"
-                      : "w-5 bg-forest"
+                    ? "w-5 bg-gold"
                     : editorial
                       ? "bg-ivory/40 hover:bg-ivory/65"
-                      : "bg-forest/35 hover:bg-forest/55",
+                      : "bg-ivory/35 hover:bg-ivory/55",
                 )}
               />
             </button>

@@ -27,10 +27,10 @@ export class SectionErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="mx-auto max-w-xl px-5 py-16 text-center" role="alert">
-          <p className="font-display text-2xl text-forest">
+          <p className="font-display text-2xl text-gold">
             {this.props.title ?? "This section couldn’t load"}
           </p>
-          <p className="mt-3 text-sm text-ink-muted">
+          <p className="mt-3 text-sm text-ivory/70">
             The rest of the invitation remains available. Refresh to try again,
             or continue to wedding details.
           </p>

@@ -35,7 +35,7 @@ export function Section({
           ) : null}
           {title ? (
             <RevealItem>
-              <h2 className="font-display text-balance text-4xl font-medium text-forest sm:text-5xl md:text-6xl">
+              <h2 className="font-display text-balance text-4xl font-medium text-gold sm:text-5xl md:text-6xl">
                 {title}
               </h2>
             </RevealItem>
@@ -47,7 +47,7 @@ export function Section({
           ) : null}
           {description ? (
             <RevealItem compact>
-              <p className="mt-5 max-w-prose text-base leading-relaxed text-ink-muted sm:text-lg">
+              <p className="mt-5 max-w-prose text-base leading-relaxed text-ivory/75 sm:text-lg">
                 {description}
               </p>
             </RevealItem>

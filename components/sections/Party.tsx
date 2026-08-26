@@ -13,14 +13,14 @@ function PartyPerson({ member }: { member: WeddingPartyMember }) {
           className="h-full w-full object-cover"
         />
       </div>
-      <h4 className="mt-3 font-display text-sm uppercase tracking-[0.12em] text-forest sm:text-base">
+      <h4 className="mt-3 font-display text-sm uppercase tracking-[0.12em] text-gold sm:text-base">
         {member.name}
       </h4>
-      <p className="mt-1 font-sans text-[0.7rem] uppercase tracking-[0.16em] text-ink-muted">
+      <p className="mt-1 font-sans text-[0.7rem] uppercase tracking-[0.16em] text-ivory/70">
         {member.role}
       </p>
       {member.description && !member.descriptionIsPlaceholder ? (
-        <p className="mt-2 max-w-[16rem] text-sm leading-snug text-charcoal">
+        <p className="mt-2 max-w-[16rem] text-sm leading-snug text-ivory/80">
           {member.description}
         </p>
       ) : null}
@@ -37,7 +37,7 @@ function PartyColumn({
 }) {
   return (
     <div>
-      <h3 className="border-b border-stone/50 pb-3 text-center font-display text-lg text-forest sm:text-xl">
+      <h3 className="border-b border-gold/25 pb-3 text-center font-display text-lg text-gold sm:text-xl">
         {label}
       </h3>
       <ul>
@@ -79,14 +79,14 @@ export function PartySection({
       description={description}
     >
       <div className="mx-auto max-w-3xl">
-        <div className="grid grid-cols-2 divide-x divide-stone/40 border border-stone/40">
+        <div className="grid grid-cols-2 divide-x divide-gold/25 border border-gold/25">
           <PartyColumn label="Groomsmen" people={groomsmen} />
           <PartyColumn label="Bridesmaids" people={bridesmaids} />
         </div>
 
         {shared.length > 0 ? (
           <div className="mt-10">
-            <h3 className="border-b border-stone/50 pb-3 text-center font-display text-lg text-forest sm:text-xl">
+            <h3 className="border-b border-gold/25 pb-3 text-center font-display text-lg text-gold sm:text-xl">
               Standing with us
             </h3>
             <ul className="mx-auto grid max-w-2xl grid-cols-1 sm:grid-cols-3">

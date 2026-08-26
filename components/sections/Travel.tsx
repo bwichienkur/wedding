@@ -28,19 +28,19 @@ export function TravelSection({
       <div className="space-y-12">
         {travel.airports.length > 0 ? (
           <div>
-            <h3 className="font-display text-2xl text-forest">Airport</h3>
+            <h3 className="font-display text-2xl text-gold">Airport</h3>
             <ul className="mt-6 space-y-6">
               {travel.airports.map((airport) => (
                 <li key={airport.id} className="border-l border-gold/50 pl-4">
-                  <p className="font-display text-xl text-forest">
+                  <p className="font-display text-xl text-gold">
                     {airport.name}{" "}
-                    <span className="font-sans text-sm tracking-[0.14em] text-gold">
+                    <span className="font-sans text-sm tracking-[0.14em] text-gold-soft">
                       {airport.code}
                     </span>
                   </p>
                   <p
                     className={cn(
-                      "mt-2 text-sm text-ink-muted",
+                      "mt-2 text-sm text-ivory/70",
                       airport.driveTimeIsPlaceholder && "placeholder-copy",
                     )}
                   >
@@ -48,7 +48,7 @@ export function TravelSection({
                   </p>
                   <p
                     className={cn(
-                      "mt-2 text-sm text-charcoal",
+                      "mt-2 text-sm text-ivory/80",
                       airport.notesIsPlaceholder && "placeholder-copy",
                     )}
                   >
@@ -62,12 +62,15 @@ export function TravelSection({
 
         {travel.hotels.length > 0 ? (
           <div>
-            <h3 className="font-display text-2xl text-forest">Accommodations</h3>
+            <h3 className="font-display text-2xl text-gold">Accommodations</h3>
             <ul className="mt-6 space-y-8">
               {travel.hotels.map((hotel) => (
-                <li key={hotel.id} className="border border-stone/50 bg-ivory p-5 sm:p-6">
+                <li
+                  key={hotel.id}
+                  className="border border-gold/25 bg-parchment p-5 sm:p-6"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <h4 className="font-display text-xl text-forest sm:text-2xl">
+                    <h4 className="font-display text-xl text-gold sm:text-2xl">
                       {hotel.name}
                     </h4>
                     {hotel.status === "confirmed" ? (
@@ -76,17 +79,17 @@ export function TravelSection({
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-3 text-sm text-charcoal">{hotel.address}</p>
+                  <p className="mt-3 text-sm text-ivory/80">{hotel.address}</p>
                   {hotel.bookingCode ? (
-                    <p className="mt-3 font-sans text-sm text-forest">
+                    <p className="mt-3 font-sans text-sm text-ivory">
                       Discount code{" "}
-                      <span className="font-semibold tracking-[0.08em]">
+                      <span className="font-semibold tracking-[0.08em] text-gold">
                         {hotel.bookingCode}
                       </span>
                     </p>
                   ) : null}
                   {hotel.notes ? (
-                    <p className="mt-2 text-sm text-ink-muted">{hotel.notes}</p>
+                    <p className="mt-2 text-sm text-ivory/70">{hotel.notes}</p>
                   ) : null}
                   <div className="mt-4 flex flex-wrap gap-3">
                     {hotel.bookingUrl ? (
@@ -120,10 +123,10 @@ export function TravelSection({
         ) : null}
 
         <div>
-          <h3 className="font-display text-2xl text-forest">Transportation</h3>
+          <h3 className="font-display text-2xl text-gold">Transportation</h3>
           <p
             className={cn(
-              "mt-4 max-w-prose text-base text-ink-muted",
+              "mt-4 max-w-prose text-base text-ivory/70",
               travel.transportationIsPlaceholder && "placeholder-copy",
             )}
           >
@@ -133,7 +136,7 @@ export function TravelSection({
 
         {travel.recommendations.length > 0 ? (
           <div>
-            <h3 className="font-display text-2xl text-forest">
+            <h3 className="font-display text-2xl text-gold">
               Something nearby
             </h3>
             <ul className="mt-6 grid gap-8 md:grid-cols-2">
@@ -152,12 +155,12 @@ export function TravelSection({
                   <p className="font-sans text-xs uppercase tracking-[0.16em] text-gold">
                     {item.category}
                   </p>
-                  <p className="mt-2 font-display text-xl text-forest">
+                  <p className="mt-2 font-display text-xl text-gold">
                     {item.name}
                   </p>
                   <p
                     className={cn(
-                      "mt-2 text-sm text-ink-muted",
+                      "mt-2 text-sm text-ivory/70",
                       item.isPlaceholder && "placeholder-copy",
                     )}
                   >
@@ -182,10 +185,10 @@ export function TravelSection({
         ) : null}
 
         <div>
-          <h3 className="font-display text-2xl text-forest">Day-of contact</h3>
+          <h3 className="font-display text-2xl text-gold">Day-of contact</h3>
           <p
             className={cn(
-              "mt-4 text-base text-ink-muted",
+              "mt-4 text-base text-ivory/70",
               travel.emergencyIsPlaceholder && "placeholder-copy",
             )}
           >
