@@ -190,7 +190,7 @@ export function HeroCarousel({
                   "block h-1.5 w-1.5 transition-all",
                   slideIndex === index
                     ? editorial
-                      ? "w-5 bg-blush"
+                      ? "w-5 bg-gold"
                       : "w-5 bg-forest"
                     : editorial
                       ? "bg-ivory/40 hover:bg-ivory/65"

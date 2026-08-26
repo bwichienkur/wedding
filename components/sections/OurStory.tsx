@@ -78,7 +78,7 @@ function MilestoneCard({
       </div>
 
       <div className="md:col-span-7 md:px-4">
-        <p className="font-sans text-xs uppercase tracking-[0.22em] text-rose">
+        <p className="font-sans text-xs uppercase tracking-[0.22em] text-gold">
           {milestone.dateLabel}
         </p>
         {milestone.locationLabel ? (

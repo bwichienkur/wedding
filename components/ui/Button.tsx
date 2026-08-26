@@ -18,7 +18,7 @@ const variants: Record<Variant, string> = {
   ghost:
     "bg-transparent text-forest hover:text-gold focus-visible:outline-gold",
   gold:
-    "bg-gold text-forest shadow-sm hover:bg-gold-soft hover:shadow-md focus-visible:outline-forest",
+    "bg-gold text-forest shadow-[0_8px_24px_-12px_rgba(201,162,39,0.65)] hover:bg-gold-soft hover:shadow-[0_10px_28px_-12px_rgba(201,162,39,0.75)] focus-visible:outline-forest",
 };
 
 const sizes: Record<Size, string> = {

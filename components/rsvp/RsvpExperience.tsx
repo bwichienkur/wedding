@@ -204,7 +204,7 @@ export function RsvpExperience() {
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <p className="font-sans text-xs uppercase tracking-[0.28em] text-rose">
+      <p className="font-sans text-xs uppercase tracking-[0.28em] text-gold">
         RSVP
       </p>
       <h1 className="mt-3 font-display text-4xl font-medium text-forest sm:text-5xl">
@@ -544,7 +544,7 @@ export function RsvpExperience() {
       {step === "done" ? (
         <div className="mt-14 flex flex-col items-center space-y-5 text-center">
           <span
-            className="heart-pulse font-display text-4xl text-rose"
+            className="heart-pulse font-display text-4xl text-gold"
             aria-hidden
           >
             ♥

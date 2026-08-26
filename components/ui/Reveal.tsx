@@ -113,7 +113,7 @@ export function RevealLine({
   if (reduceMotion) {
     return (
       <div
-        className={cn("h-px w-16 bg-rose/70", className)}
+        className={cn("h-px w-16 bg-gold/80", className)}
         aria-hidden
       />
     );
@@ -121,7 +121,7 @@ export function RevealLine({
 
   return (
     <motion.div
-      className={cn("h-px w-16 origin-left bg-rose/70", className)}
+      className={cn("h-px w-16 origin-left bg-gold/80", className)}
       style={{ transformOrigin: origin === "center" ? "center" : "left" }}
       initial={{ scaleX: 0, opacity: 0.35 }}
       whileInView={{ scaleX: 1, opacity: 1 }}

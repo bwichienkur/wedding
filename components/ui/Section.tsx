@@ -28,7 +28,7 @@ export function Section({
         <RevealGroup className="mb-10 max-w-2xl md:mb-14">
           {eyebrow ? (
             <RevealItem compact>
-              <p className="mb-3 font-sans text-xs uppercase tracking-[0.28em] text-rose">
+              <p className="mb-3 font-sans text-xs uppercase tracking-[0.28em] text-gold">
                 {eyebrow}
               </p>
             </RevealItem>

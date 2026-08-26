@@ -30,7 +30,7 @@ export function WeddingDaySection({
       className="bg-parchment/60"
     >
       <div className="relative mb-12">
-        <GoldenThread chapter="wedding" className="h-20 w-full text-rose opacity-55 sm:h-24" />
+        <GoldenThread chapter="wedding" className="h-20 w-full text-gold opacity-55 sm:h-24" />
         <p className="mt-4 font-sans text-xs uppercase tracking-[0.22em] text-ink-muted">
           The golden thread becomes the day’s route
         </p>
@@ -49,11 +49,11 @@ export function WeddingDaySection({
                   />
                 ) : null}
                 <div>
-                  <p className="font-sans text-xs uppercase tracking-[0.2em] text-rose">
+                  <p className="font-sans text-xs uppercase tracking-[0.2em] text-gold">
                     {item.timeLabel}
                   </p>
                 </div>
-                <div className="border-l border-rose/35 pl-5 md:border-l-0 md:pl-0">
+                <div className="border-l border-gold/40 pl-5 md:border-l-0 md:pl-0">
                   <h3 className="font-display text-2xl text-forest sm:text-3xl">
                     {item.title}
                   </h3>
@@ -100,7 +100,7 @@ export function WeddingDaySection({
                       ) : null}
                       <button
                         type="button"
-                        className="inline-flex min-h-11 items-center justify-center border border-stone px-5 font-sans text-sm uppercase tracking-[0.12em] text-forest transition-transform hover:scale-[1.01] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+                        className="inline-flex min-h-11 items-center justify-center border border-stone px-5 font-sans text-sm uppercase tracking-[0.12em] text-forest transition-transform hover:scale-[1.01] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                         onClick={() => downloadIcs(item)}
                       >
                         Download ICS

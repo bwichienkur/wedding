@@ -107,11 +107,13 @@ export function SiteHeader({
     };
   }, [open]);
 
+  const solidChrome = scrolled || open;
+
   const linkTone = (active: boolean) =>
-    scrolled || open
+    solidChrome
       ? active
-        ? "text-forest"
-        : "text-ink-muted hover:text-forest"
+        ? "text-gold-soft"
+        : "text-ivory/75 hover:text-ivory"
       : active
         ? "text-ivory"
         : "text-ivory/75 hover:text-ivory";
@@ -120,8 +122,8 @@ export function SiteHeader({
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-500",
-        scrolled || open
-          ? "border-b border-stone/40 bg-ivory/90 backdrop-blur-md"
+        solidChrome
+          ? "border-b border-gold/25 bg-forest/94 backdrop-blur-md"
           : "border-b border-transparent bg-transparent",
       )}
     >
@@ -129,8 +131,8 @@ export function SiteHeader({
         <a
           href="#home"
           className={cn(
-            "justify-self-start font-display text-lg tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose sm:text-xl",
-            scrolled || open ? "text-forest" : "text-ivory",
+            "justify-self-start font-display text-lg tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:text-xl",
+            "text-ivory",
           )}
         >
           {wedding.couple.displayName}
@@ -146,14 +148,14 @@ export function SiteHeader({
               href={item.href}
               aria-current={activeId === item.id ? "true" : undefined}
               className={cn(
-                "group relative min-h-11 px-2 py-2 text-center font-display text-[0.8rem] tracking-[0.06em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose xl:px-2.5 xl:text-sm",
+                "group relative min-h-11 px-2 py-2 text-center font-display text-[0.8rem] tracking-[0.06em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold xl:px-2.5 xl:text-sm",
                 linkTone(activeId === item.id),
               )}
             >
               {item.label}
               <span
                 className={cn(
-                  "absolute inset-x-2 bottom-1 h-px origin-center scale-x-0 bg-current transition-transform duration-500 ease-out group-hover:scale-x-100",
+                  "absolute inset-x-2 bottom-1 h-px origin-center scale-x-0 bg-gold transition-transform duration-500 ease-out group-hover:scale-x-100",
                   activeId === item.id && "scale-x-100",
                 )}
               />
@@ -170,10 +172,8 @@ export function SiteHeader({
           <button
             type="button"
             className={cn(
-              "inline-flex min-h-11 min-w-11 items-center justify-center border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose lg:hidden",
-              scrolled || open
-                ? "border-stone text-forest"
-                : "border-ivory/40 text-ivory",
+              "inline-flex min-h-11 min-w-11 items-center justify-center border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold lg:hidden",
+              "border-ivory/35 text-ivory",
             )}
             aria-expanded={open}
             aria-controls={menuId}
@@ -208,7 +208,7 @@ export function SiteHeader({
         aria-label="Sections"
         className={cn(
           "border-t lg:hidden",
-          scrolled || open ? "border-stone/40" : "border-ivory/15",
+          solidChrome ? "border-gold/20" : "border-ivory/15",
         )}
       >
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-1 gap-y-0 px-3 py-1.5 sm:px-6">
@@ -218,14 +218,10 @@ export function SiteHeader({
               href={item.href}
               aria-current={activeId === item.id ? "true" : undefined}
               className={cn(
-                "px-2 py-2 text-center font-sans text-[0.65rem] uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
-                scrolled || open
-                  ? activeId === item.id
-                    ? "border-b border-rose text-forest"
-                    : "border-b border-transparent text-ink-muted"
-                  : activeId === item.id
-                    ? "border-b border-blush text-ivory"
-                    : "border-b border-transparent text-ivory/70",
+                "px-2 py-2 text-center font-sans text-[0.65rem] uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
+                activeId === item.id
+                  ? "border-b border-gold text-gold-soft"
+                  : "border-b border-transparent text-ivory/70 hover:text-ivory",
               )}
             >
               {item.label}
@@ -238,19 +234,19 @@ export function SiteHeader({
         {open ? (
           <motion.div
             id={menuId}
-            className="fixed inset-0 z-50 flex flex-col bg-ivory lg:hidden"
+            className="fixed inset-0 z-50 flex flex-col bg-forest lg:hidden"
             initial={reduceMotion ? false : { opacity: 0, y: "-4%" }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: "-2%" }}
             transition={{ duration: 0.45, ease: editorialEase }}
           >
             <div className="flex min-h-14 items-center justify-between px-5 sm:min-h-16 sm:px-8">
-              <p className="font-display text-xl text-forest">
+              <p className="font-display text-xl text-ivory">
                 {wedding.couple.displayName}
               </p>
               <button
                 type="button"
-                className="inline-flex min-h-11 min-w-11 items-center justify-center border border-stone text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center border border-gold/40 text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                 onClick={() => setOpen(false)}
               >
                 <span className="sr-only">Close menu</span>
@@ -270,7 +266,7 @@ export function SiteHeader({
               <motion.a
                 href="#home"
                 variants={fadeUpSmallVariants}
-                className="mb-8 font-display text-3xl text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+                className="mb-8 font-display text-3xl text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                 onClick={() => setOpen(false)}
               >
                 Home
@@ -282,7 +278,7 @@ export function SiteHeader({
                   variants={fadeUpSmallVariants}
                   className="mb-8"
                 >
-                  <p className="mb-3 font-sans text-[0.65rem] uppercase tracking-[0.24em] text-rose">
+                  <p className="mb-3 font-sans text-[0.65rem] uppercase tracking-[0.24em] text-gold">
                     {group.label}
                   </p>
                   <ul className="space-y-1">
@@ -294,8 +290,8 @@ export function SiteHeader({
                             activeId === item.id ? "true" : undefined
                           }
                           className={cn(
-                            "flex min-h-12 items-center justify-center font-display text-2xl text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose",
-                            activeId === item.id && "text-rose-deep",
+                            "flex min-h-12 items-center justify-center font-display text-2xl text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
+                            activeId === item.id && "text-gold-soft",
                           )}
                           onClick={() => setOpen(false)}
                         >

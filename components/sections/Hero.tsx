@@ -47,7 +47,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
           <motion.p
             variants={fadeUpSmallVariants}
             transition={heroItemTransition}
-            className="mb-5 font-sans text-xs uppercase tracking-[0.32em] text-blush"
+            className="mb-5 font-sans text-xs uppercase tracking-[0.32em] text-gold-soft"
           >
             Together with their families
           </motion.p>
@@ -59,7 +59,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
             className="font-display text-balance text-5xl font-medium leading-[1.05] text-ivory sm:text-6xl md:text-7xl lg:text-[5.5rem]"
           >
             <span className="block">{wedding.couple.partnerOne}</span>
-            <span className="my-1 block font-display text-4xl font-normal text-blush sm:text-5xl">
+            <span className="my-1 block font-display text-4xl font-normal text-gold-soft sm:text-5xl">
               &
             </span>
             <span className="block">{wedding.couple.partnerTwo}</span>
@@ -68,7 +68,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
           <motion.div
             variants={fadeUpSmallVariants}
             transition={heroItemTransition}
-            className="mx-auto mt-7 h-px w-16 bg-blush/80 sm:mx-0"
+            className="mx-auto mt-7 h-px w-16 bg-gold/80 sm:mx-0"
             aria-hidden
           />
 
