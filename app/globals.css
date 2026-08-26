@@ -253,8 +253,9 @@
   .intro-overlay {
     --intro-navy-deep: #070e1a;
     --intro-navy-paper: #0c1a30;
-    --intro-gold: #d4b65c;
-    --intro-gold-soft: #e8c872;
+    --intro-gold: #e8c872;
+    --intro-gold-soft: #f0d98a;
+    --intro-gold-warm: #d4af37;
     /* Registered to seal center in envelope-master-closed.webp */
     --intro-seal-x: 49.78%;
     --intro-seal-y: 42.34%;
@@ -267,10 +268,10 @@
     align-items: flex-start;
     justify-content: center;
     padding:
-      max(0.1rem, env(safe-area-inset-top))
-      max(0.15rem, env(safe-area-inset-right))
-      calc(2.85rem + env(safe-area-inset-bottom, 0px))
-      max(0.15rem, env(safe-area-inset-left));
+      max(0.05rem, env(safe-area-inset-top))
+      max(0.05rem, env(safe-area-inset-right))
+      calc(2.65rem + env(safe-area-inset-bottom, 0px))
+      max(0.05rem, env(safe-area-inset-left));
     min-height: 100svh;
     min-height: 100dvh;
     /* Overlay paints the navy stage; keep this clear so peel reveals the site */
@@ -281,24 +282,24 @@
     position: relative;
     /* Fill nearly all space above the skip/RSVP bar (may stretch past 2:3 on phones) */
     height: min(
-      calc(100dvh - 2.85rem - env(safe-area-inset-top, 0px)),
-      calc(100svh - 2.85rem - env(safe-area-inset-top, 0px)),
+      calc(100dvh - 2.65rem - env(safe-area-inset-top, 0px)),
+      calc(100svh - 2.65rem - env(safe-area-inset-top, 0px)),
       66rem
     );
-    width: min(calc(100vw - 0.3rem), 36rem);
+    width: min(calc(100vw - 0.25rem), 44rem);
     max-height: none;
     aspect-ratio: auto;
   }
 
   @media (min-width: 768px) {
     .intro-envelope-stage {
-      width: min(calc(100vw - 0.75rem), 38rem);
+      width: min(calc(100vw - 1.25rem), 48rem);
     }
   }
 
   @media (min-width: 1280px) {
     .intro-envelope-stage {
-      width: min(40rem, 46vw);
+      width: min(50rem, 56vw);
     }
   }
 
@@ -417,10 +418,10 @@
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 88%,
+      #000 82%,
       transparent 100%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 88%, transparent 100%);
+    mask-image: radial-gradient(circle, #000 0%, #000 82%, transparent 100%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
@@ -434,17 +435,19 @@
   }
 
   .envelope-floral-glow.is-lit {
-    opacity: 1;
-    /* Bright gold on emboss overlay only — paper stays unfiltered */
-    filter: brightness(1.55) saturate(1.25) contrast(1.08);
+    opacity: 0.92;
+    /* Warm gold rim on emboss + creases — paper stays unfiltered */
+    filter: brightness(1.28) saturate(1.18) contrast(1.04)
+      sepia(0.12) hue-rotate(-4deg);
     /* Oversized so top crest + bottom florals fully clear the fade edge */
-    -webkit-mask-size: 360% 360%;
-    mask-size: 360% 360%;
+    -webkit-mask-size: 340% 340%;
+    mask-size: 340% 340%;
   }
 
   .envelope-floral-glow-face.is-lit {
-    opacity: 1;
-    filter: brightness(1.55) saturate(1.25) contrast(1.08);
+    opacity: 0.92;
+    filter: brightness(1.28) saturate(1.18) contrast(1.04)
+      sepia(0.12) hue-rotate(-4deg);
   }
 
   /* Do not brighten the whole envelope paper on click */
@@ -526,7 +529,7 @@
     text-wrap: balance;
   }
 
-  /* Full wax-seal glow — whole disc, not just the monogram letters */
+  /* Full wax-seal glow — warm halo matching the baked seal art */
   .intro-monogram-glow {
     opacity: 0;
     mix-blend-mode: screen;
@@ -535,10 +538,10 @@
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 68%,
-      transparent 92%
+      #000 72%,
+      transparent 96%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 68%, transparent 92%);
+    mask-image: radial-gradient(circle, #000 0%, #000 72%, transparent 96%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
@@ -555,18 +558,19 @@
   }
 
   .intro-monogram-glow.is-lit {
-    opacity: 0.9;
-    filter: brightness(1.05) saturate(1.05);
-    /* Tight to the wax disc — no glitter spray beyond the seal */
-    -webkit-mask-size: 22% 16%;
-    mask-size: 22% 16%;
+    opacity: 0.88;
+    filter: brightness(1.12) saturate(1.15) sepia(0.08);
+    /* Sized to the wax disc in the new master art */
+    -webkit-mask-size: 24% 14.5%;
+    mask-size: 24% 14.5%;
   }
 
   /* Idle twinkle on the full seal before the first tap */
   .intro-monogram-glow.is-idle-twinkle {
-    opacity: 0.4;
-    -webkit-mask-size: 20% 14%;
-    mask-size: 20% 14%;
+    opacity: 0.38;
+    filter: brightness(1.08) saturate(1.1);
+    -webkit-mask-size: 22% 13%;
+    mask-size: 22% 13%;
     animation: intro-seal-twinkle 2.8s ease-in-out infinite;
   }
 
@@ -589,16 +593,17 @@
   .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura,
   .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
     position: absolute;
-    inset: -8%;
+    inset: -10%;
     border-radius: 50%;
     pointer-events: none;
-    /* Soft seal halo only — keep navy paper clean, no muddy vignette */
+    /* Warm seal halo aligned with mockup gold */
     background:
       radial-gradient(
         circle,
-        rgb(236 204 118 / 0.22) 0%,
-        rgb(220 186 96 / 0.08) 40%,
-        transparent 68%
+        rgb(250 220 120 / 0.28) 0%,
+        rgb(232 196 92 / 0.14) 38%,
+        rgb(212 175 55 / 0.05) 58%,
+        transparent 72%
       );
   }
 
@@ -618,20 +623,20 @@
   @keyframes intro-seal-twinkle {
     0%,
     100% {
-      opacity: 0.32;
+      opacity: 0.28;
       filter: brightness(1);
     }
     40% {
-      opacity: 0.72;
-      filter: brightness(1.35);
+      opacity: 0.62;
+      filter: brightness(1.22);
     }
     55% {
-      opacity: 0.48;
-      filter: brightness(1.1);
+      opacity: 0.42;
+      filter: brightness(1.08);
     }
     70% {
-      opacity: 0.85;
-      filter: brightness(1.45);
+      opacity: 0.72;
+      filter: brightness(1.28);
     }
   }
 
@@ -770,6 +775,12 @@
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
+    background: linear-gradient(
+      180deg,
+      rgb(7 14 26 / 0) 0%,
+      rgb(7 14 26 / 0.88) 35%,
+      rgb(5 10 18 / 0.96) 100%
+    );
     padding:
       0.65rem 1rem
       calc(0.75rem + env(safe-area-inset-bottom, 0px));
