@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Navy + gold — matches the sealed envelope intro */
-  --ivory: #f5f2ea;
-  --parchment: #ebe4d4;
+  /* Navy + gold — sealed-envelope luxury */
+  --ivory: #eef2f7;
+  --parchment: #e2e8f0;
   --blush: #e8d9a8;
-  --sage: #9aa3b0;
-  --sage-deep: #6b7585;
-  --forest: #0f1c33;
-  --charcoal: #1a2a42;
-  --stone: #c8c2b4;
-  --gold: #d4b65c;
-  --gold-soft: #e0c56a;
-  --rose: #c9a84a;
-  --rose-deep: #a8872e;
-  --ink-muted: #5a6575;
+  --sage: #8b95a5;
+  --sage-deep: #5c6778;
+  --forest: #0a1628;
+  --charcoal: #142338;
+  --stone: #b7c0ce;
+  --gold: #c9a227;
+  --gold-soft: #dbb84a;
+  --rose: #c9a227;
+  --rose-deep: #a8871f;
+  --ink-muted: #4d5a6c;
 
   --text-xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
   --text-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
@@ -69,14 +69,30 @@
   }
 
   body {
-    background: var(--ivory);
+    background:
+      radial-gradient(
+        110% 70% at 50% -15%,
+        color-mix(in srgb, var(--gold) 16%, transparent),
+        transparent 52%
+      ),
+      radial-gradient(
+        90% 50% at 100% 20%,
+        color-mix(in srgb, var(--forest) 6%, transparent),
+        transparent 45%
+      ),
+      linear-gradient(
+        180deg,
+        #e6ecf4 0%,
+        var(--ivory) 32%,
+        var(--ivory) 100%
+      );
     color: var(--forest);
     font-family: var(--font-body), "Segoe UI", sans-serif;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--gold) 38%, transparent);
+    background: color-mix(in srgb, var(--gold) 42%, transparent);
     color: var(--forest);
   }
 }
@@ -143,8 +159,8 @@
 
   .editorial-frame {
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--gold) 32%, transparent),
-      0 18px 40px -28px rgb(15 28 51 / 0.35);
+      inset 0 0 0 1px color-mix(in srgb, var(--gold) 36%, transparent),
+      0 18px 40px -28px rgb(10 22 40 / 0.4);
   }
 
   .field-editorial {

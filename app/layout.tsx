@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: wedding.colors.ivory,
+  themeColor: wedding.colors.forest,
   width: "device-width",
   initialScale: 1,
 };
@@ -59,7 +59,7 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${body.variable} ${annotation.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-ivory font-sans text-forest">
+      <body className="min-h-full font-sans text-forest">
         <SkipLinks />
         {children}
       </body>
