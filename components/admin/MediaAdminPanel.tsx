@@ -124,8 +124,8 @@ export function MediaAdminPanel() {
     setError(null);
     setSuccess(null);
     try {
-      const mimeType = resolveImageMime(file);
-      if (!mimeType) {
+      const resolvedMime = resolveImageMime(file);
+      if (!resolvedMime) {
         setError(
           isHeicFile(file)
             ? "HEIC photos from iPhone are not supported. Export as JPEG first."
@@ -133,6 +133,8 @@ export function MediaAdminPanel() {
         );
         return;
       }
+      // Capture as string so nested upload helpers keep a non-null type.
+      const mimeType: string = resolvedMime;
       if (file.size > MAX_IMAGE_BYTES) {
         setError(`Image must be ${MAX_IMAGE_MB} MB or smaller.`);
         return;
@@ -204,7 +206,7 @@ export function MediaAdminPanel() {
               putError instanceof Error ? putError.message : String(putError);
             // Token default was ~30s; if still expired (slow auth, clock skew),
             // mint a fresh token once and retry the put.
-            if (/expired|token/i.test(msg)) {
+            if (/expired/i.test(msg)) {
               setUploadPhase("Refreshing upload authorization…");
               clientToken = await fetchClientToken(pathname);
               blob = await putWithToken(pathname, clientToken);
