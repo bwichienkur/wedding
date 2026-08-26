@@ -57,7 +57,7 @@ export function MemoryGalleryCanvas({
           onSelect={onSelect}
         />
       </CanvasShell>
-      <p className="pointer-events-none absolute bottom-4 left-4 right-4 text-center font-sans text-xs uppercase tracking-[0.16em] text-ink-muted">
+      <p className="pointer-events-none absolute bottom-4 left-4 right-4 text-center font-sans text-xs uppercase tracking-[0.16em] text-ivory/70">
         Scroll to move through the memories · select a print for its story
       </p>
     </div>

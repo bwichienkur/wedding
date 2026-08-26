@@ -104,13 +104,13 @@ export function ProposalFilmExperience() {
             className="h-full w-full object-cover"
           />
         ) : (
-          <p className="flex h-full items-center justify-center px-6 font-sans text-sm text-ink-muted">
+          <p className="flex h-full items-center justify-center px-6 font-sans text-sm text-ivory/70">
             Proposal poster coming soon
           </p>
         )}
       </div>
 
-      <p className="placeholder-copy mx-auto mt-6 max-w-prose text-left text-base text-ink-muted">
+      <p className="placeholder-copy mx-auto mt-6 max-w-prose text-left text-base text-ivory/70">
         Add a short introduction to the proposal chapter.
       </p>
 
@@ -132,7 +132,7 @@ export function ProposalFilmExperience() {
         >
           Restore focus target
         </button>
-        <p className="text-xs text-ink-muted">
+        <p className="text-xs text-ivory/70">
           Never autoplays with sound · full film available after the highlight
         </p>
         <ButtonLink href="#wedding-day" variant="secondary" size="md">
@@ -150,17 +150,17 @@ export function ProposalFilmExperience() {
             role="dialog"
             aria-modal="true"
             aria-labelledby={dialogTitleId}
-            className="max-h-[92svh] w-full max-w-3xl overflow-auto bg-ivory"
+            className="max-h-[92svh] w-full max-w-3xl overflow-auto border border-gold/25 bg-parchment"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3 border-b border-stone px-4 py-3">
-              <h3 id={dialogTitleId} className="font-display text-xl text-forest">
+            <div className="flex items-center justify-between gap-3 border-b border-gold/25 px-4 py-3">
+              <h3 id={dialogTitleId} className="font-display text-xl text-gold">
                 {placement?.title ?? "Proposal film"}
               </h3>
               <button
                 ref={closeButtonRef}
                 type="button"
-                className="min-h-11 min-w-11 font-sans text-xs uppercase tracking-[0.14em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+                className="min-h-11 min-w-11 font-sans text-xs uppercase tracking-[0.14em] text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                 onClick={closeFilm}
               >
                 Close
@@ -169,7 +169,7 @@ export function ProposalFilmExperience() {
 
             <div className="p-3 sm:p-5">
               {loading ? (
-                <p className="py-16 text-center text-sm text-ink-muted" role="status">
+                <p className="py-16 text-center text-sm text-ivory/70" role="status">
                   Preparing playback…
                 </p>
               ) : (
@@ -188,8 +188,8 @@ export function ProposalFilmExperience() {
               )}
 
               {showEndCard ? (
-                <div className="mt-6 space-y-3 border-t border-stone pt-6 text-left">
-                  <p className="font-display text-2xl text-forest">
+                <div className="mt-6 space-y-3 border-t border-gold/25 pt-6 text-left">
+                  <p className="font-display text-2xl text-gold">
                     Thank you for watching
                   </p>
                   <div className="flex flex-col gap-3 sm:flex-row">

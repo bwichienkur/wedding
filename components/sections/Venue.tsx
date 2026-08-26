@@ -47,7 +47,7 @@ export function VenueSection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-ivory"
+      className="bg-parchment/80"
     >
       <div
         ref={ref}
@@ -71,11 +71,11 @@ export function VenueSection({
             />
           </div>
         ))}
-        <div className="absolute bottom-4 left-4 rounded-sm bg-ivory/90 px-3 py-2">
+        <div className="absolute bottom-4 left-4 rounded-sm border border-gold/25 bg-parchment/90 px-3 py-2">
           <p className="font-sans text-xs uppercase tracking-[0.16em] text-gold">
             {venue.name}
           </p>
-          <p className="font-display text-lg text-forest">
+          <p className="font-display text-lg text-ivory">
             {venue.city}, {venue.region}
           </p>
         </div>
@@ -86,7 +86,7 @@ export function VenueSection({
           <p className="font-sans text-xs uppercase tracking-[0.18em] text-gold">
             Address
           </p>
-          <p className="mt-2 text-base leading-relaxed text-charcoal">
+          <p className="mt-2 text-base leading-relaxed text-ivory/80">
             {venue.addressLine1}
           </p>
         </div>

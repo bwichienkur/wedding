@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500" role="img" aria-label="Portrait placeholder">
-  <rect width="1200" height="1500" fill="#E8E1D4"/>
-  <circle cx="600" cy="560" r="160" fill="none" stroke="#A6873B" stroke-width="2" opacity="0.5"/>
-  <path d="M320 1100 C420 900, 780 900, 880 1100" fill="none" stroke="#A6873B" stroke-width="2" opacity="0.5"/>
-  <text x="600" y="1280" text-anchor="middle" fill="#5A615C" font-family="Georgia, serif" font-size="36">Portrait coming soon</text>
+  <rect width="1200" height="1500" fill="#122036"/>
+  <circle cx="600" cy="560" r="160" fill="none" stroke="#d4af37" stroke-width="2" opacity="0.45"/>
+  <path d="M320 1100 C420 900, 780 900, 880 1100" fill="none" stroke="#d4af37" stroke-width="2" opacity="0.45"/>
+  <text x="600" y="1280" text-anchor="middle" fill="#d4af37" font-family="Georgia, serif" font-size="36" opacity="0.85">Portrait coming soon</text>
 </svg>

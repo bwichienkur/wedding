@@ -18,7 +18,7 @@ const MemoryGalleryCanvas = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-[50vh] min-h-[20rem] items-center justify-center bg-parchment/50">
-        <p className="font-sans text-sm text-ink-muted">Loading gallery…</p>
+        <p className="font-sans text-sm text-ivory/70">Loading gallery…</p>
       </div>
     ),
   },
@@ -54,17 +54,17 @@ function MemoryTimelineFallback({
             <p className="font-sans text-xs uppercase tracking-[0.18em] text-gold">
               {card.dateLabel}
             </p>
-            <h3 className="mt-2 font-display text-2xl text-forest">
+            <h3 className="mt-2 font-display text-2xl text-gold">
               {card.title}
             </h3>
             {card.annotation ? (
-              <p className="mt-2 font-annotation text-lg text-ink-muted">
+              <p className="mt-2 font-annotation text-lg text-ivory/70">
                 {card.annotation}
               </p>
             ) : null}
             <a
               href={card.storyHref}
-              className="mt-3 inline-flex min-h-11 items-center font-sans text-sm text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="mt-3 inline-flex min-h-11 items-center font-sans text-sm text-ivory underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
               View in our story
             </a>
@@ -109,7 +109,7 @@ function MemoryDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-[90svh] w-full max-w-lg overflow-auto bg-ivory p-5 sm:p-8"
+        className="max-h-[90svh] w-full max-w-lg overflow-auto border border-gold/25 bg-parchment p-5 sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -121,15 +121,15 @@ function MemoryDialog({
         <p className="mt-5 font-sans text-xs uppercase tracking-[0.18em] text-gold">
           {card.dateLabel}
         </p>
-        <h3 id={titleId} className="mt-2 font-display text-3xl text-forest">
+        <h3 id={titleId} className="mt-2 font-display text-3xl text-gold">
           {card.title}
         </h3>
         {card.annotation ? (
-          <p className="mt-3 font-annotation text-xl text-ink-muted">
+          <p className="mt-3 font-annotation text-xl text-ivory/70">
             {card.annotation}
           </p>
         ) : (
-          <p className="placeholder-copy mt-3 text-sm text-ink-muted">
+          <p className="placeholder-copy mt-3 text-sm text-ivory/70">
             Add a short note or caption for this memory.
           </p>
         )}
@@ -137,14 +137,14 @@ function MemoryDialog({
           <button
             ref={closeRef}
             type="button"
-            className="inline-flex min-h-11 items-center justify-center rounded-sm border border-stone px-5 font-sans text-sm uppercase tracking-[0.08em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="inline-flex min-h-11 items-center justify-center rounded-sm border border-gold/40 px-5 font-sans text-sm uppercase tracking-[0.08em] text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             onClick={onClose}
           >
             Close
           </button>
           <a
             href={card.storyHref}
-            className="inline-flex min-h-11 items-center px-2 font-sans text-sm uppercase tracking-[0.12em] text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="inline-flex min-h-11 items-center px-2 font-sans text-sm uppercase tracking-[0.12em] text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             onClick={onClose}
           >
             Continue in story

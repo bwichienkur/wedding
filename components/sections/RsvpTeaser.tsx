@@ -22,7 +22,7 @@ export function RsvpSection({
     >
       <p
         className={cn(
-          "mb-6 text-sm text-ink-muted",
+          "mb-6 text-sm text-ivory/70",
           wedding.rsvp.deadlineIsPlaceholder && "placeholder-copy",
         )}
       >

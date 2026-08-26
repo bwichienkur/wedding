@@ -22,15 +22,15 @@ export function RegistrySection({
     >
       <p
         className={cn(
-          "max-w-prose text-base leading-relaxed text-charcoal",
-          registry.noteIsPlaceholder && "placeholder-copy text-ink-muted",
+          "max-w-prose text-base leading-relaxed text-ivory/80",
+          registry.noteIsPlaceholder && "placeholder-copy text-ivory/70",
         )}
       >
         {registry.note}
       </p>
       <p
         className={cn(
-          "mt-4 max-w-prose text-base text-ink-muted",
+          "mt-4 max-w-prose text-base text-ivory/70",
           registry.presenceIsPlaceholder && "placeholder-copy",
         )}
       >
@@ -41,7 +41,7 @@ export function RegistrySection({
         {registry.links.map((link) => (
           <li key={link.id} className="flex flex-wrap items-center gap-3">
             {link.urlIsPlaceholder ? (
-              <p className="placeholder-copy text-sm text-ink-muted">
+              <p className="placeholder-copy text-sm text-ivory/70">
                 {link.label} — add the registry URL when ready.
               </p>
             ) : (
@@ -56,14 +56,14 @@ export function RegistrySection({
               </ButtonLink>
             )}
             {link.description ? (
-              <span className="text-sm text-ink-muted">{link.description}</span>
+              <span className="text-sm text-ivory/70">{link.description}</span>
             ) : null}
           </li>
         ))}
         {registry.honeymoonFund ? (
           <li className="pt-2">
             {registry.honeymoonFund.urlIsPlaceholder ? (
-              <p className="placeholder-copy text-sm text-ink-muted">
+              <p className="placeholder-copy text-sm text-ivory/70">
                 {registry.honeymoonFund.label} — add the fund link if desired.
               </p>
             ) : (

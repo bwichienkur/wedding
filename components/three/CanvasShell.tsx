@@ -87,9 +87,9 @@ export function CanvasShell({
 /** Presentational pause notice for when WebGL is unavailable — unused helper export for tests. */
 export function WebGlUnavailableNotice({ onContinue }: { onContinue?: () => void }) {
   return (
-    <div className="rounded-sm border border-stone bg-ivory px-4 py-6 text-center">
-      <p className="font-display text-xl text-forest">Simplified view</p>
-      <p className="mt-2 text-sm text-ink-muted">
+    <div className="rounded-sm border border-gold/25 bg-parchment px-4 py-6 text-center">
+      <p className="font-display text-xl text-gold">Simplified view</p>
+      <p className="mt-2 text-sm text-ivory/70">
         This device is using the non-3D experience so everything stays smooth and
         readable.
       </p>

@@ -207,12 +207,12 @@ export function RsvpExperience() {
       <p className="font-sans text-xs uppercase tracking-[0.28em] text-gold">
         RSVP
       </p>
-      <h1 className="mt-3 font-display text-4xl font-medium text-forest sm:text-5xl">
+      <h1 className="mt-3 font-display text-4xl font-medium text-gold sm:text-5xl">
         {wedding.couple.displayName}
       </h1>
       <p
         className={cn(
-          "mt-4 text-sm text-ink-muted",
+          "mt-4 text-sm text-ivory/70",
           wedding.rsvp.deadlineIsPlaceholder && "placeholder-copy",
         )}
       >
@@ -220,7 +220,7 @@ export function RsvpExperience() {
       </p>
 
       {error ? (
-        <p className="mt-6 text-sm text-forest" role="alert">
+        <p className="mt-6 text-sm text-gold-soft" role="alert">
           {error}
         </p>
       ) : null}
@@ -228,7 +228,7 @@ export function RsvpExperience() {
       {step === "lookup" ? (
         <form onSubmit={onLookup} className="mt-10 space-y-5">
           <label className="block text-sm">
-            <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+            <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
               Full name or invitation code
             </span>
             <input
@@ -240,7 +240,7 @@ export function RsvpExperience() {
               minLength={2}
             />
           </label>
-          <p className="text-sm text-ink-muted">
+          <p className="text-sm text-ivory/70">
             Try a fictional demo name like <strong>Alex Rivera</strong> or code{" "}
             <strong>RIVERA27</strong>.
           </p>
@@ -258,7 +258,7 @@ export function RsvpExperience() {
 
       {step === "select" ? (
         <div className="mt-10 space-y-4">
-          <p className="text-base text-charcoal">
+          <p className="text-base text-ivory/80">
             Multiple invitations matched. Choose the correct household.
           </p>
           <ul className="space-y-3">
@@ -266,14 +266,14 @@ export function RsvpExperience() {
               <li key={candidate.confirmationToken}>
                 <button
                   type="button"
-                  className="w-full border border-stone bg-parchment/40 px-4 py-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+                  className="w-full border border-gold/25 bg-parchment px-4 py-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                   onClick={() => void selectCandidate(candidate)}
                   disabled={pending}
                 >
-                  <span className="font-display text-xl text-forest">
+                  <span className="font-display text-xl text-gold">
                     {candidate.displayName}
                   </span>
-                  <span className="mt-2 block text-sm text-ink-muted">
+                  <span className="mt-2 block text-sm text-ivory/70">
                     {candidate.guestPreview.join(", ")}
                   </span>
                 </button>
@@ -285,10 +285,10 @@ export function RsvpExperience() {
 
       {workspace && (step === "respond" || step === "details" || step === "review") ? (
         <div className="mt-8">
-          <p className="font-display text-2xl text-forest">
+          <p className="font-display text-2xl text-gold">
             {workspace.household.displayName}
           </p>
-          <p className="mt-1 text-sm text-ink-muted">
+          <p className="mt-1 text-sm text-ivory/70">
             Invited to {workspace.events.map((event) => event.title).join(", ")}
           </p>
         </div>
@@ -297,15 +297,15 @@ export function RsvpExperience() {
       {workspace && step === "respond" ? (
         <div className="mt-8 space-y-8">
           {workspace.guests.map((guest) => (
-            <div key={guest.id} className="border-t border-stone/70 pt-6">
-              <h2 className="font-display text-2xl text-forest">
+            <div key={guest.id} className="border-t border-gold/25 pt-6">
+              <h2 className="font-display text-2xl text-gold">
                 {guest.isPlusOne && !guest.plusOneNamed
                   ? "Plus-one"
                   : guest.fullName}
               </h2>
               {guest.isPlusOne && !guest.plusOneNamed ? (
                 <label className="mt-3 block text-sm">
-                  <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+                  <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
                     Plus-one name
                   </span>
                   <input
@@ -346,8 +346,8 @@ export function RsvpExperience() {
                           className={cn(
                             "min-h-11 rounded-sm border px-4 text-sm uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
                             draft.attending === value
-                              ? "border-gold bg-gold/10 text-forest"
-                              : "border-stone text-ink-muted",
+                              ? "border-gold bg-gold/10 text-gold"
+                              : "border-gold/40 text-ivory/70",
                           )}
                           onClick={() =>
                             updateDraft(guest.id, eventRecord.id, {
@@ -365,7 +365,7 @@ export function RsvpExperience() {
                     eventRecord.collectMeals &&
                     meals.length > 0 ? (
                       <label className="mt-4 block text-sm">
-                        <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+                        <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
                           Meal
                         </span>
                         <select
@@ -421,13 +421,13 @@ export function RsvpExperience() {
               return (
                 <div
                   key={`${guest.id}-${eventRecord.id}`}
-                  className="border-t border-stone/70 pt-5"
+                  className="border-t border-gold/25 pt-5"
                 >
-                  <h2 className="font-display text-xl text-forest">
+                  <h2 className="font-display text-xl text-gold">
                     {guest.fullName} · {eventRecord.title}
                   </h2>
                   <label className="mt-3 block text-sm">
-                    <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+                    <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
                       Dietary restrictions
                     </span>
                     <textarea
@@ -441,7 +441,7 @@ export function RsvpExperience() {
                     />
                   </label>
                   <label className="mt-3 block text-sm">
-                    <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+                    <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
                       Accessibility needs
                     </span>
                     <textarea
@@ -461,7 +461,7 @@ export function RsvpExperience() {
           {attendingYes ? (
             <>
               <label className="block text-sm">
-                <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+                <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
                   Song request
                 </span>
                 <input
@@ -471,7 +471,7 @@ export function RsvpExperience() {
                 />
               </label>
               <label className="block text-sm">
-                <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+                <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
                   Message to Bright & Lexi
                 </span>
                 <textarea
@@ -495,8 +495,8 @@ export function RsvpExperience() {
 
       {workspace && step === "review" ? (
         <div className="mt-8 space-y-5">
-          <h2 className="font-display text-2xl text-forest">Review</h2>
-          <ul className="space-y-3 text-sm text-charcoal">
+          <h2 className="font-display text-2xl text-gold">Review</h2>
+          <ul className="space-y-3 text-sm text-ivory/80">
             {drafts.map((draft) => {
               const guest = workspace.guests.find((item) => item.id === draft.guestId);
               const eventRecord = workspace.events.find(
@@ -506,8 +506,8 @@ export function RsvpExperience() {
                 (item) => item.id === draft.mealOptionId,
               );
               return (
-                <li key={`${draft.guestId}-${draft.eventId}`} className="border-b border-stone/60 pb-3">
-                  <p className="font-display text-lg text-forest">
+                <li key={`${draft.guestId}-${draft.eventId}`} className="border-b border-gold/25 pb-3">
+                  <p className="font-display text-lg text-gold">
                     {draft.plusOneName || guest?.fullName} · {eventRecord?.title}
                   </p>
                   <p>Attendance: {draft.attending}</p>
@@ -549,10 +549,10 @@ export function RsvpExperience() {
           >
             ♥
           </span>
-          <h2 className="font-display text-3xl text-forest sm:text-4xl">
+          <h2 className="font-display text-3xl text-gold sm:text-4xl">
             Thank you
           </h2>
-          <p className="max-w-md text-base text-ink-muted">
+          <p className="max-w-md text-base text-ivory/70">
             Your RSVP is saved{status ? ` (${status})` : ""}.
             {workspace?.household.email
               ? " A confirmation email will send when email is enabled."

@@ -13,13 +13,13 @@ export interface ButtonLinkProps
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-forest text-ivory hover:bg-charcoal focus-visible:outline-gold",
+    "bg-gold text-forest shadow-[0_8px_24px_-12px_rgba(212,175,55,0.55)] hover:bg-gold-soft focus-visible:outline-gold",
   secondary:
-    "bg-transparent text-forest border border-stone hover:border-gold focus-visible:outline-gold",
+    "bg-transparent text-ivory border border-gold/45 hover:border-gold hover:text-gold-soft focus-visible:outline-gold",
   ghost:
-    "bg-transparent text-forest hover:text-gold focus-visible:outline-gold",
+    "bg-transparent text-ivory/85 hover:text-gold focus-visible:outline-gold",
   gold:
-    "bg-gold text-forest shadow-[0_8px_24px_-12px_rgba(201,162,39,0.65)] hover:bg-gold-soft hover:shadow-[0_10px_28px_-12px_rgba(201,162,39,0.75)] focus-visible:outline-forest",
+    "bg-gold text-forest shadow-[0_8px_24px_-12px_rgba(212,175,55,0.65)] hover:bg-gold-soft hover:shadow-[0_10px_28px_-12px_rgba(212,175,55,0.75)] focus-visible:outline-ivory",
 };
 
 const sizes: Record<Size, string> = {
