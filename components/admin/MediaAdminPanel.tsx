@@ -152,16 +152,18 @@ export function MediaAdminPanel() {
 
       let response: Response;
 
-      // Prefer direct Blob upload whenever Blob is configured (supports 10+ MB).
-      // Fall back to form upload for smaller files if the token step fails.
-      const useDirectBlob = blobConfigured;
+      // Small files go through the API in one shot (no Blob token / SDK retries).
+      // Direct Blob is only for larger photos that exceed the platform body limit.
+      const useDirectBlob =
+        blobConfigured && file.size > FORM_UPLOAD_SAFE_BYTES;
+
       if (useDirectBlob) {
         try {
           const pathname = `wedding/images/${crypto.randomUUID()}.${extensionForMime(mimeType)}`;
+          let uploadProgress = 0;
 
           async function fetchClientToken(path: string): Promise<string> {
             setUploadPhase("Authorizing upload…");
-            setProgress(0);
             const tokenResponse = await fetch("/api/media/photo/client-upload", {
               method: "POST",
               credentials: "include",
@@ -183,20 +185,26 @@ export function MediaAdminPanel() {
 
           async function putWithToken(path: string, token: string) {
             setUploadPhase("Uploading to storage…");
-            setProgress(1);
-            // Single-request put (no multipart). Multipart often stalls at 0% on
-            // mobile Safari; 15 MB is well within a direct client Blob put.
+            if (uploadProgress < 1) {
+              setProgress(1);
+            }
             return put(path, file, {
               access: "public",
               token,
               contentType: mimeType,
               multipart: false,
               onUploadProgress: ({ percentage }) => {
-                setProgress(Math.max(1, Math.min(99, Math.round(percentage))));
+                // Blob SDK retries reset percentage — keep the bar monotonic.
+                uploadProgress = Math.max(
+                  uploadProgress,
+                  Math.round(percentage),
+                );
+                setProgress(Math.max(1, Math.min(99, uploadProgress)));
               },
             });
           }
 
+          setProgress(0);
           let clientToken = await fetchClientToken(pathname);
           let blob;
           try {
@@ -204,8 +212,6 @@ export function MediaAdminPanel() {
           } catch (putError) {
             const msg =
               putError instanceof Error ? putError.message : String(putError);
-            // Token default was ~30s; if still expired (slow auth, clock skew),
-            // mint a fresh token once and retry the put.
             if (/expired/i.test(msg)) {
               setUploadPhase("Refreshing upload authorization…");
               clientToken = await fetchClientToken(pathname);
@@ -230,27 +236,11 @@ export function MediaAdminPanel() {
             }),
           });
         } catch (directError) {
-          if (file.size > FORM_UPLOAD_SAFE_BYTES) {
-            throw directError;
-          }
-          // Small-file fallback through the API (local/dev or Blob token hiccup).
-          setUploadPhase("Uploading…");
-          const form = new FormData();
-          form.set("file", file);
-          form.set("title", meta.title);
-          form.set("description", meta.description);
-          form.set("alt", meta.alt);
-          form.set("placementKey", meta.placementKey);
-          form.set("publish", meta.publish ? "true" : "false");
-          form.set("sortOrder", String(meta.sortOrder));
-          response = await fetch("/api/media/photo", {
-            method: "POST",
-            credentials: "include",
-            body: form,
-          });
+          throw directError;
         }
       } else {
         setUploadPhase("Uploading…");
+        setProgress(0);
         const form = new FormData();
         form.set("file", file);
         form.set("title", meta.title);

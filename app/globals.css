@@ -406,22 +406,21 @@
     filter: none;
   }
 
-  /* Gold floral rim-light — progressive fill from the seal outward */
+  /* Gold floral rim-light — emboss + crease art only (transparent elsewhere) */
   .envelope-floral-glow {
     opacity: 0;
     mix-blend-mode: screen;
     pointer-events: none;
     z-index: 2;
     filter: none;
-    /* Keep full top crest visible — do not clip emboss tips */
     clip-path: none;
     -webkit-mask-image: radial-gradient(
       circle,
       #000 0%,
-      #000 82%,
+      #000 80%,
       transparent 100%
     );
-    mask-image: radial-gradient(circle, #000 0%, #000 82%, transparent 100%);
+    mask-image: radial-gradient(circle, #000 0%, #000 80%, transparent 100%);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
@@ -435,19 +434,16 @@
   }
 
   .envelope-floral-glow.is-lit {
-    opacity: 0.92;
-    /* Warm gold rim on emboss + creases — paper stays unfiltered */
-    filter: brightness(1.28) saturate(1.18) contrast(1.04)
-      sepia(0.12) hue-rotate(-4deg);
-    /* Oversized so top crest + bottom florals fully clear the fade edge */
+    opacity: 1;
+    /* PNG is emboss-only — no extra paper wash */
+    filter: brightness(1.12) saturate(1.08);
     -webkit-mask-size: 340% 340%;
     mask-size: 340% 340%;
   }
 
   .envelope-floral-glow-face.is-lit {
-    opacity: 0.92;
-    filter: brightness(1.28) saturate(1.18) contrast(1.04)
-      sepia(0.12) hue-rotate(-4deg);
+    opacity: 1;
+    filter: brightness(1.12) saturate(1.08);
   }
 
   /* Do not brighten the whole envelope paper on click */
@@ -470,14 +466,12 @@
     }
 
     .intro-monogram-glow.is-lit {
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-      -webkit-mask-image: none;
-      mask-image: none;
+      opacity: 1;
     }
   }
 
   .envelope-closed-master {
+    isolation: isolate;
     transform-origin: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
     transition:
       opacity calc(var(--intro-open, 2800ms) * 0.85) ease,
@@ -529,48 +523,26 @@
     text-wrap: balance;
   }
 
-  /* Full wax-seal glow — warm halo matching the baked seal art */
+  /* Wax seal overlay — sampled from master art, fades in on tap */
   .intro-monogram-glow {
     opacity: 0;
     mix-blend-mode: screen;
     pointer-events: none;
     z-index: 3;
-    -webkit-mask-image: radial-gradient(
-      circle,
-      #000 0%,
-      #000 72%,
-      transparent 96%
-    );
-    mask-image: radial-gradient(circle, #000 0%, #000 72%, transparent 96%);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-position: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
-    mask-position: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
-    -webkit-mask-size: 0% 0%;
-    mask-size: 0% 0%;
     transition:
-      opacity calc(var(--intro-glow, 4500ms) * 0.45) cubic-bezier(0.22, 1, 0.36, 1)
-        var(--intro-monogram-delay, 900ms),
-      -webkit-mask-size calc(var(--intro-glow, 4500ms) * 0.55)
-        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 900ms),
-      mask-size calc(var(--intro-glow, 4500ms) * 0.55)
-        cubic-bezier(0.22, 1, 0.36, 1) var(--intro-monogram-delay, 900ms);
+      opacity calc(var(--intro-glow, 4500ms) * 0.4) cubic-bezier(0.22, 1, 0.36, 1)
+        var(--intro-monogram-delay, 900ms);
   }
 
   .intro-monogram-glow.is-lit {
-    opacity: 0.88;
-    filter: brightness(1.12) saturate(1.15) sepia(0.08);
-    /* Sized to the wax disc in the new master art */
-    -webkit-mask-size: 24% 14.5%;
-    mask-size: 24% 14.5%;
+    opacity: 1;
+    filter: brightness(1.06) saturate(1.08);
   }
 
-  /* Idle twinkle on the full seal before the first tap */
+  /* Idle twinkle on the wax seal before the first tap */
   .intro-monogram-glow.is-idle-twinkle {
-    opacity: 0.38;
-    filter: brightness(1.08) saturate(1.1);
-    -webkit-mask-size: 22% 13%;
-    mask-size: 22% 13%;
+    opacity: 0.42;
+    filter: brightness(1.04);
     animation: intro-seal-twinkle 2.8s ease-in-out infinite;
   }
 
@@ -592,28 +564,7 @@
 
   .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura,
   .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
-    position: absolute;
-    inset: -10%;
-    border-radius: 50%;
-    pointer-events: none;
-    /* Warm seal halo aligned with mockup gold */
-    background:
-      radial-gradient(
-        circle,
-        rgb(250 220 120 / 0.28) 0%,
-        rgb(232 196 92 / 0.14) 38%,
-        rgb(212 175 55 / 0.05) 58%,
-        transparent 72%
-      );
-  }
-
-  .intro-seal-wrap.is-idle-twinkle .intro-seal-idle-aura {
-    animation: intro-seal-aura 2.8s ease-in-out infinite;
-  }
-
-  .intro-seal-wrap.is-seal-lit .intro-seal-idle-aura {
-    opacity: 0.9;
-    animation: none;
+    display: none;
   }
 
   .intro-seal-idle-aura {
