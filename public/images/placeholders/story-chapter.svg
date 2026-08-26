@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1067" viewBox="0 0 1600 1067" role="img" aria-label="Milestone photograph placeholder">
-  <rect width="1600" height="1067" fill="#E8E1D4"/>
-  <rect x="80" y="80" width="1440" height="907" fill="none" stroke="#A6873B" stroke-width="1.5" opacity="0.45"/>
-  <text x="800" y="540" text-anchor="middle" fill="#5A615C" font-family="Georgia, serif" font-size="36">Add a relationship photograph</text>
+  <rect width="1600" height="1067" fill="#0a1628"/>
+  <rect x="80" y="80" width="1440" height="907" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.35"/>
+  <text x="800" y="540" text-anchor="middle" fill="#d4af37" font-family="Georgia, serif" font-size="36" opacity="0.85">Add a relationship photograph</text>
 </svg>

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Foliage placeholder">
-  <path d="M0 720 C220 620, 360 780, 520 700 S820 620, 980 720 S1280 800, 1600 680 L1600 900 L0 900 Z" fill="#A8B5A0" opacity="0.45"/>
-  <path d="M0 780 C180 720, 340 840, 560 760 S900 700, 1120 790 S1400 860, 1600 760 L1600 900 L0 900 Z" fill="#6E7F6A" opacity="0.35"/>
+  <rect width="1600" height="900" fill="#0c1830"/>
+  <ellipse cx="800" cy="520" rx="420" ry="220" fill="none" stroke="#d4af37" stroke-width="1.5" opacity="0.35"/>
+  <text x="800" y="530" text-anchor="middle" fill="#d4af37" font-family="Georgia, serif" font-size="32" opacity="0.8">Photograph coming soon</text>
 </svg>

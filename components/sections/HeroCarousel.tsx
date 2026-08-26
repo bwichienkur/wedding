@@ -145,11 +145,11 @@ export function HeroCarousel({
       {editorial ? (
         <>
           <div
-            className="absolute inset-0 bg-gradient-to-b from-forest/55 via-transparent to-forest/75"
+            className="absolute inset-0 bg-gradient-to-b from-forest/70 via-forest/35 to-forest/85"
             aria-hidden
           />
           <div
-            className="absolute inset-0 bg-gradient-to-t from-forest/40 via-transparent to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-forest/55 via-transparent to-transparent"
             aria-hidden
           />
         </>
