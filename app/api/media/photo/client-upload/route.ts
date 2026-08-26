@@ -43,9 +43,8 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
-    // SDK default is only ~30s — too short for large mobile uploads.
-    // Cap is 24h; use 1h so slow networks still finish.
-    const validUntil = Date.now() + 60 * 60 * 1000;
+    // Cap is 24h; use 4h for slow mobile uploads with SDK retries.
+    const validUntil = Date.now() + 4 * 60 * 60 * 1000;
 
     const clientToken = await generateClientTokenFromReadWriteToken({
       token: requireBlobToken(),
