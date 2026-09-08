@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: wedding.colors.forest,
+  themeColor: "#faf4ea",
   width: "device-width",
   initialScale: 1,
 };
