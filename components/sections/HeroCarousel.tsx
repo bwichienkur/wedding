@@ -21,11 +21,14 @@ const INTERVAL_MS = 5500;
 export function HeroCarousel({
   className,
   editorial = false,
+  framed = false,
   slides,
   indicatorsClassName,
 }: {
   className?: string;
   editorial?: boolean;
+  /** Inline invitation frame — no full-bleed dark overlays */
+  framed?: boolean;
   slides: HeroSlide[];
   /** Override dot position — e.g. higher when countdown sits above. */
   indicatorsClassName?: string;
@@ -72,8 +75,8 @@ export function HeroCarousel({
   return (
     <div
       className={cn(
-        "absolute inset-0 overflow-hidden",
-        editorial ? "bg-forest" : "bg-parchment",
+        framed ? "relative h-full w-full overflow-hidden" : "absolute inset-0 overflow-hidden",
+        !framed && (editorial ? "bg-forest" : "bg-parchment"),
         className,
       )}
       role="region"
@@ -142,7 +145,7 @@ export function HeroCarousel({
         );
       })}
 
-      {editorial ? (
+      {editorial && !framed ? (
         <>
           <div
             className="absolute inset-0 bg-gradient-to-b from-forest/70 via-forest/35 to-forest/85"
@@ -153,7 +156,7 @@ export function HeroCarousel({
             aria-hidden
           />
         </>
-      ) : (
+      ) : !framed ? (
         <>
           <div
             className="absolute inset-0 bg-gradient-to-t from-forest via-forest/55 to-forest/15 sm:via-forest/45"
@@ -164,7 +167,7 @@ export function HeroCarousel({
             aria-hidden
           />
         </>
-      )}
+      ) : null}
 
       {count > 1 ? (
         <div

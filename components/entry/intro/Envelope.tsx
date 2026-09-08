@@ -12,20 +12,16 @@ interface EnvelopeProps {
   onActivate: () => void;
 }
 
-/**
- * Closed master illustration with seal hotspot.
- * After glow, the sealed envelope lifts/fades open onto the homepage
- * (avoids misregistered 3D flap morphs on the baked diamond art).
- */
+/** Closed master illustration with seal hotspot and CSS-aligned radiance. */
 export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
   const opening = isOpeningPhase(phase);
   const illuminated = isIlluminatedPhase(phase);
   const sealVisible = isSealVisiblePhase(phase);
   const floralGlow =
     phase === "activating" || phase === "glowing" || phase === "opening";
-  const monogramLit =
+  const sealLit =
     phase === "activating" || phase === "glowing" || phase === "opening";
-  const idleTwinkle = phase === "closed" && !reduceMotion;
+  const idleTwinkle = false;
 
   return (
     <div
@@ -33,6 +29,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         "intro-envelope-stage",
         illuminated && "is-illuminated",
         floralGlow && "is-floral-glow",
+        sealLit && "is-seal-lit",
         opening && !reduceMotion && "intro-envelope-opening",
         opening && reduceMotion && "intro-envelope-exiting",
       )}
@@ -59,7 +56,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/envelope-master-closed.webp"
+            src="/images/envelope-master-closed.webp?v=3"
             alt=""
             className="h-full w-full object-fill"
             draggable={false}
@@ -70,7 +67,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/envelope-master-glow.webp"
+            src="/images/envelope-master-glow.webp?v=3"
             alt=""
             className={cn(
               "envelope-floral-glow absolute inset-0 h-full w-full object-fill",
@@ -78,16 +75,12 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             )}
             draggable={false}
           />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/seal-monogram-glow.webp"
-            alt=""
+          <div
             className={cn(
-              "intro-monogram-glow absolute inset-0 h-full w-full object-fill",
-              monogramLit && "is-lit",
-              idleTwinkle && "is-idle-twinkle",
+              "intro-seal-radiance pointer-events-none absolute z-[5]",
+              sealLit && "is-lit",
             )}
-            draggable={false}
+            aria-hidden
           />
         </div>
 

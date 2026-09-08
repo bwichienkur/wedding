@@ -25,29 +25,27 @@ export function Section({
   const body = (
     <>
       {(eyebrow || title || description) && (
-        <RevealGroup className="mb-10 max-w-2xl md:mb-14">
+        <RevealGroup className="mb-10 max-w-2xl text-center md:mb-12">
           {eyebrow ? (
             <RevealItem compact>
-              <p className="mb-3 font-sans text-xs uppercase tracking-[0.28em] text-gold">
+              <p className="mb-3 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-invite-gold">
                 {eyebrow}
               </p>
             </RevealItem>
           ) : null}
           {title ? (
             <RevealItem>
-              <h2 className="font-display text-balance text-4xl font-medium text-gold sm:text-5xl md:text-6xl">
-                {title}
-              </h2>
+              <h2 className="invite-section-heading text-balance">{title}</h2>
             </RevealItem>
           ) : null}
           {title ? (
             <RevealItem compact>
-              <RevealLine className="mt-5 w-20" />
+              <RevealLine className="mx-auto mt-5 w-16 bg-invite-gold/70" />
             </RevealItem>
           ) : null}
           {description ? (
             <RevealItem compact>
-              <p className="mt-5 max-w-prose text-base leading-relaxed text-ivory/75 sm:text-lg">
+              <p className="mx-auto mt-5 max-w-prose text-base leading-relaxed text-invite-body/85 sm:text-lg">
                 {description}
               </p>
             </RevealItem>
@@ -61,13 +59,14 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn("relative scroll-mt-28 py-16 md:py-28", className)}
+      className={cn(
+        "relative scroll-mt-28 border-t border-invite-gold/15 px-6 py-16 first:border-t-0 md:px-8 md:py-24",
+        className,
+      )}
       {...props}
     >
       {contained ? (
-        <div className="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10">
-          {body}
-        </div>
+        <div className="mx-auto w-full max-w-lg">{body}</div>
       ) : (
         body
       )}

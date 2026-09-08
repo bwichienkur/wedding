@@ -7,18 +7,14 @@ import { useEffect, useRef, useState } from "react";
 const VIDEO_SRC = "/videos/ambient-atmosphere.mp4";
 const POSTER_SRC = "/videos/ambient-atmosphere-poster.jpg";
 
-/**
- * Full-page ambient video inspired by luxury invite sites — soft motion behind
- * editorial sections with gentle parallax while scrolling.
- */
+/** Full-bleed ambient video — clearly visible behind the invitation scroll column. */
 export function AmbientBackground({ active }: { active: boolean }) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 2400], [0, -120]);
-  const scale = useTransform(scrollY, [0, 2400], [1.05, 1.12]);
-  const opacity = useTransform(scrollY, [0, 400, 1200], [0.55, 0.42, 0.28]);
+  const y = useTransform(scrollY, [0, 3000], [0, -180]);
+  const scale = useTransform(scrollY, [0, 3000], [1.08, 1.18]);
 
   useEffect(() => {
     if (!active || reduceMotion) return;
@@ -26,16 +22,11 @@ export function AmbientBackground({ active }: { active: boolean }) {
     if (!video) return;
 
     const play = () => {
-      void video.play().catch(() => {
-        /* Autoplay may be blocked until interaction; poster remains visible */
-      });
+      void video.play().catch(() => {});
     };
 
-    if (video.readyState >= 2) {
-      play();
-    } else {
-      video.addEventListener("canplay", play, { once: true });
-    }
+    if (video.readyState >= 2) play();
+    else video.addEventListener("canplay", play, { once: true });
 
     return () => video.removeEventListener("canplay", play);
   }, [active, reduceMotion]);
@@ -51,19 +42,17 @@ export function AmbientBackground({ active }: { active: boolean }) {
       )}
       aria-hidden
     >
-      <div className="absolute inset-0 bg-forest" />
-
       {reduceMotion ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={POSTER_SRC}
           alt=""
-          className="absolute inset-0 h-full w-full scale-105 object-cover opacity-40"
+          className="absolute inset-0 h-full w-full scale-105 object-cover"
         />
       ) : (
         <motion.div
           className="absolute inset-0 will-change-transform"
-          style={{ y, scale, opacity }}
+          style={{ y, scale }}
         >
           <video
             ref={videoRef}
@@ -80,10 +69,8 @@ export function AmbientBackground({ active }: { active: boolean }) {
         </motion.div>
       )}
 
-      {/* Navy wash so sections stay readable over the warm video */}
-      <div className="absolute inset-0 bg-gradient-to-b from-forest/60 via-forest/45 to-forest/75" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(212,175,55,0.08),transparent_55%)]" />
-      <div className="absolute inset-0 opacity-[0.35] mix-blend-soft-light grain-overlay" />
+      {/* Soft edge vignette — video stays prominent */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_50%_45%,transparent_20%,rgba(7,15,28,0.22)_100%)]" />
     </div>
   );
 }

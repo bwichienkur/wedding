@@ -19,7 +19,7 @@ export function WeddingMarquee({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden border-y border-gold/25 bg-forest py-4",
+        "relative overflow-hidden py-4 invite-marquee",
         className,
       )}
       aria-hidden
@@ -30,7 +30,7 @@ export function WeddingMarquee({ className }: { className?: string }) {
             {sequence.map((phrase, index) => (
               <span
                 key={`${copy}-${phrase}-${index}`}
-                className="font-display text-xl tracking-wide text-ivory/90 sm:text-2xl"
+                className="font-display text-xl tracking-wide text-invite-navy/85 sm:text-2xl"
               >
                 {phrase}
                 <span className="ml-10 inline-block text-gold/80">·</span>

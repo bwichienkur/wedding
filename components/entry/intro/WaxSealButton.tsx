@@ -67,9 +67,6 @@ export function WaxSealButton({
             hotspotOnly && "intro-seal-hotspot",
           )}
         >
-          {(idleTwinkle || activating || glowing) && !opening ? (
-            <span className="intro-seal-idle-aura" aria-hidden />
-          ) : null}
           {hotspotOnly ? (
             <span className="intro-seal-hotspot-area" aria-hidden />
           ) : (
