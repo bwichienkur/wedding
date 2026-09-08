@@ -16,6 +16,14 @@
   --rose-deep: #b8942a;
   --ink-muted: #a8b4c4;
 
+  /* Invitation scroll (post-envelope) — wooowinvites-inspired cream column */
+  --invite-cream: #faf6ef;
+  --invite-cream-deep: #f3ebdf;
+  --invite-navy: #1a3050;
+  --invite-navy-soft: #2a4468;
+  --invite-body: #5c4f45;
+  --invite-gold: #c9a24d;
+
   --text-xs: clamp(0.7rem, 0.68rem + 0.1vw, 0.75rem);
   --text-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
@@ -43,6 +51,10 @@
   --color-rose: var(--rose);
   --color-rose-deep: var(--rose-deep);
   --color-ink-muted: var(--ink-muted);
+  --color-invite-cream: var(--invite-cream);
+  --color-invite-navy: var(--invite-navy);
+  --color-invite-body: var(--invite-body);
+  --color-invite-gold: var(--invite-gold);
   --font-sans: var(--font-body);
   --font-display: var(--font-display-family);
   --font-annotation: var(--font-annotation-family);
@@ -94,6 +106,11 @@
     color: var(--ivory);
     font-family: var(--font-body), "Segoe UI", sans-serif;
     text-rendering: optimizeLegibility;
+  }
+
+  body.invite-revealed {
+    background: transparent;
+    color: var(--invite-body);
   }
 
   ::selection {
@@ -257,8 +274,8 @@
     --intro-gold-soft: #f0d98a;
     --intro-gold-warm: #d4af37;
     /* Registered to seal center in envelope-master-closed.webp */
-    --intro-seal-x: 49.78%;
-    --intro-seal-y: 42.34%;
+    --intro-seal-x: 47.73%;
+    --intro-seal-y: 47.5%;
   }
 
   .intro-envelope-viewport {
@@ -280,27 +297,75 @@
 
   .intro-envelope-stage {
     position: relative;
-    /* Fill nearly all space above the skip/RSVP bar (may stretch past 2:3 on phones) */
+    /* Portrait envelope proportions from uploaded art (390×842) */
+    aspect-ratio: 390 / 842;
     height: min(
       calc(100dvh - 2.65rem - env(safe-area-inset-top, 0px)),
       calc(100svh - 2.65rem - env(safe-area-inset-top, 0px)),
       66rem
     );
-    width: min(calc(100vw - 0.25rem), 44rem);
+    width: auto;
+    max-width: min(calc(100vw - 0.25rem), 44rem);
     max-height: none;
-    aspect-ratio: auto;
   }
 
   @media (min-width: 768px) {
     .intro-envelope-stage {
-      width: min(calc(100vw - 1.25rem), 48rem);
+      max-width: min(calc(100vw - 1.25rem), 48rem);
     }
   }
 
   @media (min-width: 1280px) {
     .intro-envelope-stage {
-      width: min(50rem, 56vw);
+      max-width: min(50rem, 56vw);
     }
+  }
+
+  .intro-envelope-copy {
+    display: block;
+    pointer-events: none;
+  }
+
+  .intro-envelope-names {
+    position: absolute;
+    left: 50%;
+    top: 11.5%;
+    z-index: 8;
+    width: 78%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(1.2rem, 0.85rem + 2.5vw, 2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    color: #e8c872;
+    text-shadow:
+      0 1px 2px rgb(4 10 24 / 0.75),
+      0 0 18px rgb(212 175 55 / 0.25);
+  }
+
+  .intro-envelope-tap {
+    position: absolute;
+    left: 50%;
+    bottom: 8.5%;
+    z-index: 8;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(0.85rem, 0.65rem + 1.2vw, 1.2rem);
+    font-weight: 400;
+    color: #e0c56a;
+    opacity: 0.92;
+    text-shadow: 0 1px 2px rgb(4 10 24 / 0.7);
+  }
+
+  .intro-envelope-stage.is-floral-glow .intro-envelope-names,
+  .intro-envelope-stage.is-floral-glow .intro-envelope-tap {
+    text-shadow:
+      0 0 12px rgb(232 200 114 / 0.55),
+      0 0 28px rgb(212 175 55 / 0.35),
+      0 1px 2px rgb(4 10 24 / 0.65);
+    transition: text-shadow calc(var(--intro-glow, 4500ms) * 0.35) ease;
   }
 
   .intro-envelope {
@@ -454,7 +519,7 @@
   @media (prefers-reduced-motion: reduce) {
     .envelope-floral-glow,
     .envelope-floral-glow-face,
-    .intro-monogram-glow {
+    .intro-seal-radiance {
       transition: opacity 0.25s ease;
     }
 
@@ -465,14 +530,14 @@
       mask-image: none;
     }
 
-    .intro-monogram-glow.is-lit {
-      opacity: 1;
+    .intro-seal-radiance.is-lit {
+      opacity: 0.85;
     }
   }
 
   .envelope-closed-master {
     isolation: isolate;
-    transform-origin: var(--intro-seal-x, 49.78%) var(--intro-seal-y, 42.34%);
+    transform-origin: var(--intro-seal-x, 47.73%) var(--intro-seal-y, 47.5%);
     transition:
       opacity calc(var(--intro-open, 2800ms) * 0.85) ease,
       transform var(--intro-open, 2800ms) cubic-bezier(0.22, 1, 0.36, 1),
@@ -523,37 +588,73 @@
     text-wrap: balance;
   }
 
-  /* Wax seal overlay — sampled from master art, fades in on tap */
-  .intro-monogram-glow {
+  /* CSS seal radiance — aligned to hotspot, replaces misregistered glow PNG */
+  .intro-seal-radiance {
+    left: var(--intro-seal-x, 47.73%);
+    top: var(--intro-seal-y, 47.5%);
+    width: min(26vw, 6.75rem);
+    height: min(26vw, 6.75rem);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
     opacity: 0;
+    background:
+      radial-gradient(
+        circle,
+        rgb(245 220 140 / 0.9) 0%,
+        rgb(212 175 55 / 0.5) 22%,
+        rgb(212 175 55 / 0.08) 46%,
+        transparent 62%
+      );
     mix-blend-mode: screen;
     pointer-events: none;
-    z-index: 3;
     transition:
-      opacity calc(var(--intro-glow, 4500ms) * 0.4) cubic-bezier(0.22, 1, 0.36, 1)
-        var(--intro-monogram-delay, 900ms);
+      opacity calc(var(--intro-glow, 4500ms) * 0.35) cubic-bezier(0.22, 1, 0.36, 1),
+      transform calc(var(--intro-glow, 4500ms) * 0.35) ease;
   }
 
-  .intro-monogram-glow.is-lit {
+  .intro-seal-radiance.is-lit {
     opacity: 1;
-    filter: brightness(1.06) saturate(1.08);
+    transform: translate(-50%, -50%) scale(1.02);
+    animation: intro-seal-radiance-bloom var(--intro-glow, 4500ms)
+      cubic-bezier(0.33, 0.1, 0.25, 1) forwards;
   }
 
-  /* Idle twinkle on the wax seal before the first tap */
-  .intro-monogram-glow.is-idle-twinkle {
-    opacity: 0.42;
-    filter: brightness(1.04);
-    animation: intro-seal-twinkle 2.8s ease-in-out infinite;
+  @keyframes intro-seal-radiance-pulse {
+    0%,
+    100% {
+      opacity: 0.22;
+      transform: translate(-50%, -50%) scale(0.96);
+    }
+    45% {
+      opacity: 0.55;
+      transform: translate(-50%, -50%) scale(1.04);
+    }
+  }
+
+  @keyframes intro-seal-radiance-bloom {
+    0% {
+      opacity: 0.35;
+      transform: translate(-50%, -50%) scale(0.92);
+    }
+    35% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+      opacity: 0.85;
+      transform: translate(-50%, -50%) scale(1.14);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .intro-monogram-glow {
+    .intro-seal-radiance {
       transition: opacity 0.25s ease;
     }
 
-    .intro-monogram-glow.is-idle-twinkle {
+    .intro-seal-radiance.is-idle-twinkle,
+    .intro-seal-radiance.is-lit {
       animation: none;
-      opacity: 0.35;
+      opacity: 0.7;
     }
   }
 
@@ -757,10 +858,142 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .intro-monogram-glow,
+    .intro-seal-radiance,
     .intro-invitation-card.is-rising {
       animation: none;
     }
+  }
+
+  /* ── Invitation scroll (post-envelope) ── */
+  .invite-canvas-outer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .invite-canvas-outer {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  .invite-canvas-column {
+    width: min(100%, 30rem);
+    background:
+      linear-gradient(
+        180deg,
+        rgb(250 246 239 / 0.58) 0%,
+        rgb(243 235 223 / 0.52) 50%,
+        rgb(250 246 239 / 0.56) 100%
+      );
+    box-shadow:
+      0 0 0 1px rgb(201 162 77 / 0.25),
+      0 28px 80px rgb(7 15 28 / 0.15),
+      0 8px 32px rgb(7 15 28 / 0.08);
+    backdrop-filter: blur(2px);
+  }
+
+  .invite-experience {
+    color: var(--invite-body);
+  }
+
+  .invite-ornament {
+    height: 2.5rem;
+    background:
+      linear-gradient(90deg, transparent, rgb(201 162 77 / 0.55), transparent)
+      center/70% 1px no-repeat,
+      radial-gradient(circle at 50% 50%, rgb(201 162 77 / 0.35) 0%, transparent 55%);
+  }
+
+  .invite-script-heading {
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(2.4rem, 1.6rem + 5vw, 3.6rem);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--invite-navy);
+  }
+
+  .invite-script-amp {
+    display: inline-block;
+    margin: 0 0.2em;
+    color: var(--invite-gold);
+    font-size: 0.92em;
+  }
+
+  .invite-script-subheading {
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.4rem);
+    color: var(--invite-navy);
+  }
+
+  .invite-photo-frame {
+    border: 3px solid rgb(201 162 77 / 0.45);
+    border-radius: 0.35rem;
+    padding: 0.35rem;
+    background: rgb(255 251 245 / 0.85);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.65),
+      0 10px 28px rgb(26 48 80 / 0.12);
+  }
+
+  .invite-outline-button {
+    border-color: rgb(26 48 80 / 0.35) !important;
+    color: var(--invite-navy) !important;
+    background: transparent !important;
+  }
+
+  .invite-outline-button:hover {
+    border-color: var(--invite-gold) !important;
+    color: var(--invite-navy) !important;
+    background: rgb(201 162 77 / 0.08) !important;
+  }
+
+  .invite-scroll-cue {
+    width: fit-content;
+  }
+
+  .invite-scroll-arrow {
+    display: block;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1.5px solid rgb(201 162 77 / 0.65);
+    border-radius: 9999px;
+    position: relative;
+  }
+
+  .invite-scroll-arrow::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-right: 1.5px solid rgb(201 162 77 / 0.8);
+    border-bottom: 1.5px solid rgb(201 162 77 / 0.8);
+    transform: translate(-50%, -30%) rotate(45deg);
+  }
+
+  .invite-section-heading {
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(2rem, 1.2rem + 3vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--invite-navy);
+  }
+
+  .invite-marquee {
+    border-block: 1px solid rgb(201 162 77 / 0.28);
+    background: rgb(243 235 223 / 0.55);
+  }
+
+  .invite-canvas-column :where(h3, h4) {
+    color: var(--invite-navy);
+  }
+
+  .invite-canvas-column :where(p, li, dd, dt) {
+    color: color-mix(in srgb, var(--invite-body) 88%, transparent);
   }
 
 }

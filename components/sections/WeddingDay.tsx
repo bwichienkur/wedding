@@ -27,7 +27,7 @@ export function WeddingDaySection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-parchment/50"
+      className=""
     >
       <div className="relative mb-12">
         <GoldenThread chapter="wedding" className="h-20 w-full text-gold opacity-55 sm:h-24" />

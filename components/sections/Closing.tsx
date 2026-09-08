@@ -10,7 +10,7 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
   return (
     <section
       id="closing"
-      className="relative overflow-hidden bg-forest px-5 py-24 text-ivory sm:px-8"
+      className="relative overflow-hidden border-t border-invite-gold/15 px-6 py-20 sm:px-8 sm:py-24"
       aria-labelledby="closing-title"
     >
       {image?.src ? (
@@ -19,7 +19,7 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
           <img
             src={image.src}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
+            className="absolute inset-0 h-full w-full object-cover opacity-20"
             style={
               image.focalPoint
                 ? {
@@ -29,30 +29,31 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
             }
             aria-hidden
           />
-          <div className="absolute inset-0 bg-forest/70" aria-hidden />
+          <div className="absolute inset-0 bg-invite-cream/75" aria-hidden />
         </>
       ) : null}
-      <div className="grain absolute inset-0 opacity-20" aria-hidden />
       <GoldenThread
         chapter="closing"
-        className="pointer-events-none absolute inset-x-0 top-10 h-28 w-full text-gold-soft opacity-40 sm:h-32 sm:opacity-45"
+        className="pointer-events-none absolute inset-x-0 top-10 h-28 w-full text-invite-gold opacity-35 sm:h-32"
       />
-      <div className="relative mx-auto max-w-3xl text-center">
-        <MonogramSvg className="mx-auto mb-8 h-20 w-20 text-gold-soft" />
+      <div className="relative mx-auto max-w-lg text-center">
+        <MonogramSvg className="mx-auto mb-8 h-20 w-20 text-invite-gold" />
         <p
           id="closing-title"
           className={cn(
-            "font-display text-2xl sm:text-3xl",
+            "invite-script-subheading text-balance",
             wedding.closing.messageIsPlaceholder && "opacity-80",
           )}
         >
           {wedding.closing.message}
         </p>
-        <p className="mt-8 font-display text-4xl">{wedding.couple.displayName}</p>
-        <p className="mt-3 font-sans text-sm uppercase tracking-[0.22em] text-gold-soft">
+        <p className="invite-script-heading mt-8 text-3xl sm:text-4xl">
+          {wedding.couple.displayName}
+        </p>
+        <p className="mt-3 font-sans text-sm uppercase tracking-[0.22em] text-invite-gold">
           {wedding.wedding.dateDisplay}
         </p>
-        <p className="mt-2 text-sm text-ivory/80">
+        <p className="mt-2 text-sm text-invite-body/80">
           {wedding.wedding.venueName} · {wedding.wedding.city},{" "}
           {wedding.wedding.region}
         </p>
@@ -68,7 +69,7 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
             }
             variant="secondary"
             size="lg"
-            className="border-ivory/40 text-ivory hover:border-ivory"
+            className="invite-outline-button"
           >
             Contact
           </ButtonLink>

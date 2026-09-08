@@ -1,5 +1,7 @@
 "use client";
 
+import { AmbientBackground } from "@/components/ambient/AmbientBackground";
+import { InviteCanvas } from "@/components/invite/InviteCanvas";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CinematicEntry } from "@/components/sections/CinematicEntry";
 import { ClosingSection } from "@/components/sections/Closing";
@@ -28,7 +30,7 @@ import type { StoryImage, StoryMilestone } from "@/data/types";
 import { mainContentId } from "@/data/navigation";
 import type { ResolvedSiteSections } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export interface HomeMediaBundle {
   heroSlides: HeroSlide[];
@@ -52,13 +54,15 @@ export function HomeExperience({
   const [introDone, setIntroDone] = useState(false);
   const [siteRevealed, setSiteRevealed] = useState(false);
 
+  const beginReveal = useCallback(() => {
+    setSiteRevealed(true);
+    document.body.classList.add("invite-revealed");
+  }, []);
+
   const completeIntro = useCallback(() => {
     setSiteRevealed(true);
     setIntroDone(true);
-  }, []);
-
-  const beginReveal = useCallback(() => {
-    setSiteRevealed(true);
+    document.body.classList.add("invite-revealed");
   }, []);
 
   const visibleIds = useMemo(() => {
@@ -77,14 +81,16 @@ export function HomeExperience({
         onComplete={completeIntro}
         onRevealStart={beginReveal}
       />
+      <AmbientBackground active={siteRevealed} />
       <div
         className={cn(
-          "transition-opacity duration-500 ease-out",
+          "invite-experience relative z-[1] transition-opacity duration-500 ease-out",
           siteRevealed ? "opacity-100" : "opacity-0",
         )}
       >
-        <SiteHeader visibleSectionIds={visibleIds} />
-        <main id={mainContentId} tabIndex={-1} className="outline-none">
+        <SiteHeader visibleSectionIds={visibleIds} inviteMode={siteRevealed} />
+        <InviteCanvas>
+          <main id={mainContentId} tabIndex={-1} className="outline-none">
           <Hero slides={media.heroSlides} />
           {show("marquee") ? <WeddingMarquee /> : null}
           {show("story") ? (
@@ -171,7 +177,8 @@ export function HomeExperience({
           {show("closing") ? (
             <ClosingSection image={media.closingImage} />
           ) : null}
-        </main>
+          </main>
+        </InviteCanvas>
       </div>
       {introDone ? null : (
         <span className="sr-only" aria-live="polite">

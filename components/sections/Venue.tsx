@@ -47,7 +47,7 @@ export function VenueSection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-parchment/80"
+      className=""
     >
       <div
         ref={ref}

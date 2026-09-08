@@ -17,8 +17,10 @@ import { useEffect, useId, useMemo, useState } from "react";
 
 export function SiteHeader({
   visibleSectionIds,
+  inviteMode = false,
 }: {
   visibleSectionIds?: ReadonlySet<string>;
+  inviteMode?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -109,30 +111,49 @@ export function SiteHeader({
 
   const solidChrome = scrolled || open;
 
-  const linkTone = (active: boolean) =>
-    solidChrome
+  const linkTone = (active: boolean) => {
+    if (inviteMode) {
+      return active
+        ? "text-invite-gold"
+        : "text-invite-navy/75 hover:text-invite-navy";
+    }
+    return solidChrome
       ? active
         ? "text-gold-soft"
         : "text-ivory/75 hover:text-ivory"
       : active
         ? "text-ivory"
         : "text-ivory/75 hover:text-ivory";
+  };
+
+  const headerChrome = inviteMode
+    ? solidChrome
+      ? "border-b border-invite-gold/25 bg-invite-cream/92 backdrop-blur-md"
+      : "border-b border-transparent bg-invite-cream/78 backdrop-blur-sm"
+    : solidChrome
+      ? "border-b border-gold/25 bg-forest/94 backdrop-blur-md"
+      : "border-b border-transparent bg-transparent";
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-500",
-        solidChrome
-          ? "border-b border-gold/25 bg-forest/94 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent",
+        headerChrome,
+        inviteMode && "left-1/2 max-w-[30rem] -translate-x-1/2",
       )}
     >
-      <div className="mx-auto grid min-h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-3 px-4 sm:min-h-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4 lg:px-8">
+      <div
+        className={cn(
+          "mx-auto grid min-h-14 grid-cols-[1fr_auto] items-center gap-3 px-4 sm:min-h-16 sm:px-6",
+          !inviteMode &&
+            "max-w-6xl lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4 lg:px-8",
+        )}
+      >
         <a
           href="#home"
           className={cn(
             "justify-self-start font-display text-lg tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:text-xl",
-            "text-ivory",
+            inviteMode ? "text-invite-navy" : "text-ivory",
           )}
         >
           {wedding.couple.displayName}
@@ -140,7 +161,7 @@ export function SiteHeader({
 
         <nav
           aria-label="Primary"
-          className="hidden items-center justify-center gap-x-0.5 lg:flex"
+          className={cn("hidden items-center justify-center gap-x-0.5", !inviteMode && "lg:flex")}
         >
           {visiblePrimaryNav.map((item) => (
             <a

@@ -23,7 +23,7 @@ export function TravelSection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-parchment/50"
+      className=""
     >
       <div className="space-y-12">
         {travel.airports.length > 0 ? (

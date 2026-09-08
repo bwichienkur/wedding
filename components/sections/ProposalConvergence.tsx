@@ -180,7 +180,7 @@ export function ProposalConvergenceSection({
     <Section
       id="proposal"
       contained
-      className="bg-parchment/80"
+      className=""
       aria-labelledby={headingId}
     >
       <header className="mb-10 max-w-2xl md:mb-14">

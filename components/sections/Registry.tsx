@@ -18,7 +18,7 @@ export function RegistrySection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-parchment/40"
+      className=""
     >
       <p
         className={cn(

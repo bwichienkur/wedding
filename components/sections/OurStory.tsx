@@ -167,7 +167,7 @@ export function OurStory({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className="bg-parchment/80"
+      className=""
     >
       <div className="relative">
         {/* Mobile: single left-rail filament */}
