@@ -38,8 +38,8 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
       )}
       style={
         {
-          ["--intro-seal-x" as string]: "49.78%",
-          ["--intro-seal-y" as string]: "42.34%",
+          ["--intro-seal-x" as string]: "47.73%",
+          ["--intro-seal-y" as string]: "47.5%",
         } as CSSProperties
       }
     >
@@ -64,6 +64,10 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             className="h-full w-full object-fill"
             draggable={false}
           />
+          <div className="intro-envelope-copy pointer-events-none absolute inset-0 z-[4]">
+            <p className="intro-envelope-names">For Bright and Lexi</p>
+            <p className="intro-envelope-tap">Tap to open</p>
+          </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/envelope-master-glow.webp"

@@ -257,8 +257,8 @@
     --intro-gold-soft: #f0d98a;
     --intro-gold-warm: #d4af37;
     /* Registered to seal center in envelope-master-closed.webp */
-    --intro-seal-x: 49.78%;
-    --intro-seal-y: 42.34%;
+    --intro-seal-x: 47.73%;
+    --intro-seal-y: 47.5%;
   }
 
   .intro-envelope-viewport {
@@ -280,27 +280,74 @@
 
   .intro-envelope-stage {
     position: relative;
-    /* Fill nearly all space above the skip/RSVP bar (may stretch past 2:3 on phones) */
+    /* Portrait envelope proportions from uploaded art (390×842) */
+    aspect-ratio: 390 / 842;
     height: min(
       calc(100dvh - 2.65rem - env(safe-area-inset-top, 0px)),
       calc(100svh - 2.65rem - env(safe-area-inset-top, 0px)),
       66rem
     );
-    width: min(calc(100vw - 0.25rem), 44rem);
+    width: auto;
+    max-width: min(calc(100vw - 0.25rem), 44rem);
     max-height: none;
-    aspect-ratio: auto;
   }
 
   @media (min-width: 768px) {
     .intro-envelope-stage {
-      width: min(calc(100vw - 1.25rem), 48rem);
+      max-width: min(calc(100vw - 1.25rem), 48rem);
     }
   }
 
   @media (min-width: 1280px) {
     .intro-envelope-stage {
-      width: min(50rem, 56vw);
+      max-width: min(50rem, 56vw);
     }
+  }
+
+  .intro-envelope-copy {
+    display: block;
+    pointer-events: none;
+  }
+
+  .intro-envelope-names {
+    position: absolute;
+    left: 50%;
+    top: 11.5%;
+    width: 78%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(1.2rem, 0.85rem + 2.5vw, 2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    color: #e8c872;
+    text-shadow:
+      0 1px 2px rgb(4 10 24 / 0.75),
+      0 0 18px rgb(212 175 55 / 0.25);
+  }
+
+  .intro-envelope-tap {
+    position: absolute;
+    left: 50%;
+    bottom: 8.5%;
+    width: 55%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(0.85rem, 0.65rem + 1.2vw, 1.2rem);
+    font-weight: 400;
+    color: #e0c56a;
+    opacity: 0.92;
+    text-shadow: 0 1px 2px rgb(4 10 24 / 0.7);
+  }
+
+  .intro-envelope-stage.is-floral-glow .intro-envelope-names,
+  .intro-envelope-stage.is-floral-glow .intro-envelope-tap {
+    text-shadow:
+      0 0 12px rgb(232 200 114 / 0.55),
+      0 0 28px rgb(212 175 55 / 0.35),
+      0 1px 2px rgb(4 10 24 / 0.65);
+    transition: text-shadow calc(var(--intro-glow, 4500ms) * 0.35) ease;
   }
 
   .intro-envelope {

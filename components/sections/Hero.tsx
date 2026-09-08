@@ -24,7 +24,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
   return (
     <section
       id="home"
-      className="relative flex min-h-[100svh] items-end overflow-hidden bg-forest"
+      className="relative flex min-h-[100svh] items-end overflow-hidden bg-forest/55 backdrop-blur-[2px]"
       aria-labelledby="hero-title"
     >
       <HeroCarousel

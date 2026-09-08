@@ -1,5 +1,6 @@
 "use client";
 
+import { AmbientBackground } from "@/components/ambient/AmbientBackground";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { CinematicEntry } from "@/components/sections/CinematicEntry";
 import { ClosingSection } from "@/components/sections/Closing";
@@ -77,9 +78,10 @@ export function HomeExperience({
         onComplete={completeIntro}
         onRevealStart={beginReveal}
       />
+      <AmbientBackground active={siteRevealed} />
       <div
         className={cn(
-          "transition-opacity duration-500 ease-out",
+          "relative z-[1] transition-opacity duration-500 ease-out",
           siteRevealed ? "opacity-100" : "opacity-0",
         )}
       >
