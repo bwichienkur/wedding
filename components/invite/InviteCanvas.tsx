@@ -3,10 +3,7 @@
 import { cn } from "@/lib/cn";
 import type { ReactNode } from "react";
 
-/**
- * Centered invitation scroll column — wooowinvites-style continuous card
- * on top of the ambient video background.
- */
+/** Single centered invitation card — wooowinvites continuous scroll */
 export function InviteCanvas({
   children,
   className,
@@ -15,8 +12,8 @@ export function InviteCanvas({
   className?: string;
 }) {
   return (
-    <div className={cn("invite-canvas-outer", className)}>
-      <div className="invite-canvas-column">{children}</div>
+    <div className={cn("invite-page", className)}>
+      <div className="invite-card">{children}</div>
     </div>
   );
 }

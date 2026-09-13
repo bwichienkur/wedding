@@ -10,7 +10,7 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
   return (
     <section
       id="closing"
-      className="relative overflow-hidden border-t border-invite-gold/15 px-6 py-20 sm:px-8 sm:py-24"
+      className="invite-section"
       aria-labelledby="closing-title"
     >
       {image?.src ? (

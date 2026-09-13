@@ -25,10 +25,10 @@ export function Section({
   const body = (
     <>
       {(eyebrow || title || description) && (
-        <RevealGroup className="mb-10 max-w-2xl text-center md:mb-12">
+        <RevealGroup className="mb-8 text-center">
           {eyebrow ? (
             <RevealItem compact>
-              <p className="mb-3 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-invite-gold">
+              <p className="mb-2 font-sans text-[0.58rem] uppercase tracking-[0.28em] text-invite-gold">
                 {eyebrow}
               </p>
             </RevealItem>
@@ -40,12 +40,12 @@ export function Section({
           ) : null}
           {title ? (
             <RevealItem compact>
-              <RevealLine className="mx-auto mt-5 w-16 bg-invite-gold/70" />
+              <RevealLine className="mx-auto mt-4 w-14 bg-invite-gold/60" />
             </RevealItem>
           ) : null}
           {description ? (
             <RevealItem compact>
-              <p className="mx-auto mt-5 max-w-prose text-base leading-relaxed text-invite-body/85 sm:text-lg">
+              <p className="invite-section-subline mx-auto mt-4 max-w-sm text-balance">
                 {description}
               </p>
             </RevealItem>
@@ -59,17 +59,10 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn(
-        "relative scroll-mt-28 border-t border-invite-gold/15 px-6 py-16 first:border-t-0 md:px-8 md:py-24",
-        className,
-      )}
+      className={cn("invite-section", className)}
       {...props}
     >
-      {contained ? (
-        <div className="mx-auto w-full max-w-lg">{body}</div>
-      ) : (
-        body
-      )}
+      {contained ? <div className="mx-auto w-full">{body}</div> : body}
     </section>
   );
 }

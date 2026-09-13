@@ -1,6 +1,5 @@
 "use client";
 
-import { GoldenThread } from "@/components/story/GoldenThread";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
@@ -14,7 +13,7 @@ import { cn } from "@/lib/cn";
 
 export function WeddingDaySection({
   eyebrow = weddingDayTransition.eyebrow,
-  title = weddingDayTransition.title,
+  title = "What we have planned for you",
   description = weddingDayTransition.body,
 }: {
   eyebrow?: string;
@@ -27,98 +26,62 @@ export function WeddingDaySection({
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className=""
     >
-      <div className="relative mb-12">
-        <GoldenThread chapter="wedding" className="h-20 w-full text-gold opacity-55 sm:h-24" />
-        <p className="mt-4 font-sans text-xs uppercase tracking-[0.22em] text-ivory/70">
-          The golden thread becomes the day’s route
-        </p>
-      </div>
-
-      <RevealGroup className="relative space-y-0" fast>
+      <RevealGroup className="relative mt-2" fast>
         {scheduleItems.map((item, index) => {
           const googleUrl = buildGoogleCalendarUrl(item);
+          const isLast = index === scheduleItems.length - 1;
           return (
             <RevealItem key={item.id}>
-              <div className="relative grid gap-4 py-8 md:grid-cols-[7rem_1fr]">
-                {index < scheduleItems.length - 1 ? (
-                  <span
-                    aria-hidden
-                    className="absolute left-[0.35rem] top-14 hidden h-[calc(100%-1.5rem)] w-px bg-rose/40 md:left-[6.4rem] md:block"
-                  />
+              <div className="invite-timeline-item">
+                {!isLast ? <span className="invite-timeline-line" aria-hidden /> : null}
+                <span className="invite-timeline-dot" aria-hidden />
+                <p className="invite-timeline-time">{item.timeLabel}</p>
+                <p className="invite-timeline-title">{item.title}</p>
+                <p
+                  className={cn(
+                    "mt-2 text-sm leading-relaxed text-invite-body/80",
+                    item.descriptionIsPlaceholder && "placeholder-copy italic",
+                  )}
+                >
+                  {item.description}
+                </p>
+                {item.locationLabel ? (
+                  <p className="mt-1 text-sm italic text-invite-body/70">
+                    {item.locationLabel}
+                  </p>
                 ) : null}
-                <div>
-                  <p className="font-sans text-xs uppercase tracking-[0.2em] text-gold">
-                    {item.timeLabel}
-                  </p>
-                </div>
-                <div className="border-l border-gold/40 pl-5 md:border-l-0 md:pl-0">
-                  <h3 className="font-display text-2xl text-gold sm:text-3xl">
-                    {item.title}
-                  </h3>
-                  <p
-                    className={cn(
-                      "mt-3 max-w-prose text-base leading-relaxed text-ivory/70",
-                      item.descriptionIsPlaceholder && "placeholder-copy",
-                    )}
-                  >
-                    {item.description}
-                  </p>
-                  {item.locationLabel ? (
-                    <p className="mt-2 text-sm text-ivory/80">
-                      {item.locationLabel}
-                    </p>
-                  ) : null}
-                  {item.arrivalGuidance ? (
-                    <p className="placeholder-copy mt-3 text-sm text-ivory/70">
-                      {item.arrivalGuidance}
-                    </p>
-                  ) : null}
-                  {item.attireNote ? (
-                    <p className="placeholder-copy mt-2 text-sm text-ivory/70">
-                      {item.attireNote}
-                    </p>
-                  ) : null}
-                  {item.accessibilityNote ? (
-                    <p className="placeholder-copy mt-2 text-sm text-ivory/70">
-                      {item.accessibilityNote}
-                    </p>
-                  ) : null}
-                  {item.includeInCalendar && item.timeLocal ? (
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      {googleUrl ? (
-                        <ButtonLink
-                          href={googleUrl}
-                          variant="secondary"
-                          size="md"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Google Calendar
-                        </ButtonLink>
-                      ) : null}
-                      <button
-                        type="button"
-                        className="inline-flex min-h-11 items-center justify-center border border-gold/40 px-5 font-sans text-sm uppercase tracking-[0.12em] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-                        onClick={() => downloadIcs(item)}
+                {item.includeInCalendar && item.timeLocal ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {googleUrl ? (
+                      <ButtonLink
+                        href={googleUrl}
+                        variant="secondary"
+                        size="md"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="invite-outline-button !text-xs"
                       >
-                        Download ICS
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
+                        Calendar
+                      </ButtonLink>
+                    ) : null}
+                    <button
+                      type="button"
+                      className="invite-venue-pill"
+                      onClick={() => downloadIcs(item)}
+                    >
+                      Download ICS
+                    </button>
+                  </div>
+                ) : null}
               </div>
             </RevealItem>
           );
         })}
       </RevealGroup>
 
-      <p className="mt-4 text-sm text-ivory/70">
-        Venue access begins {wedding.wedding.accessBegins}. Photography and
-        videography begin {wedding.wedding.photographyBegins}. Ceremony begins{" "}
-        {wedding.wedding.ceremonyBegins}. Times marked “coming soon” will be
-        updated when confirmed — nothing here is invented.
+      <p className="mt-6 text-center text-xs leading-relaxed text-invite-body/65">
+        Ceremony begins {wedding.wedding.ceremonyBegins} · {wedding.wedding.venueName}
       </p>
     </Section>
   );

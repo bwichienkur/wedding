@@ -38,8 +38,8 @@ export const wedding: WeddingConfig = {
   },
   hero: {
     statement:
-      "Add a short invitation statement that feels personal to Bright and Lexi.",
-    statementIsPlaceholder: true,
+      "Please join us as we celebrate our wedding day surrounded by the people we love most.",
+    statementIsPlaceholder: false,
   },
   entry: {
     beginLabel: "Open wedding invitation",
