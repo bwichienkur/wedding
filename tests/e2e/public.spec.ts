@@ -24,7 +24,7 @@ test.describe("public invitation", () => {
     await expect(page.getByRole("link", { name: "RSVP" }).first()).toBeVisible();
   });
 
-  test("keeps the sealed envelope until the seal is opened", async ({
+  test("keeps the sealed invitation until it is opened", async ({
     page,
   }) => {
     await page.goto("/");
@@ -38,7 +38,7 @@ test.describe("public invitation", () => {
   test("still shows the seal after a prior visit", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Open wedding invitation" }).click();
-    await expect(page.locator("#home")).toBeVisible({ timeout: 16000 });
+    await expect(page.locator("#home")).toBeVisible({ timeout: 20000 });
 
     await page.goto("/");
     await expect(
@@ -46,14 +46,14 @@ test.describe("public invitation", () => {
     ).toBeVisible();
   });
 
-  test("opens sealed invitation via wax seal", async ({ page }) => {
+  test("opens sealed invitation via tap to open", async ({ page }) => {
     await page.goto("/");
-    const seal = page.getByRole("button", { name: "Open wedding invitation" });
-    await expect(seal).toBeVisible();
-    await seal.click();
-    await expect(page.locator("#home")).toBeVisible({ timeout: 16000 });
+    const openBtn = page.getByRole("button", { name: "Open wedding invitation" });
+    await expect(openBtn).toBeVisible();
+    await openBtn.click();
+    await expect(page.locator("#home")).toBeVisible({ timeout: 20000 });
     await expect(page.locator('[data-intro="sealed"]')).toHaveCount(0, {
-      timeout: 16000,
+      timeout: 20000,
     });
   });
 

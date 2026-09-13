@@ -865,6 +865,230 @@
     }
   }
 
+  /* Video opening intro (replaces envelope) */
+  .video-opening-overlay {
+    background:
+      radial-gradient(
+        ellipse 120% 80% at 50% 0%,
+        rgb(245 228 205 / 0.98),
+        rgb(235 215 188 / 0.98) 45%,
+        rgb(228 205 175 / 1) 100%
+      );
+  }
+
+  .video-opening-overlay.bg-transparent {
+    background: transparent;
+  }
+
+  .video-opening-card {
+    aspect-ratio: 3 / 4;
+    min-height: 28rem;
+    max-height: min(44rem, 92dvh);
+    background: #faf4ea;
+  }
+
+  .video-opening-card-exit {
+    animation: video-opening-card-exit var(--intro-exit, 280ms) ease-out forwards;
+  }
+
+  @keyframes video-opening-card-exit {
+    to {
+      opacity: 0;
+      transform: scale(1.02) translateY(-8px);
+    }
+  }
+
+  .video-opening-hero-art {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    overflow: hidden;
+    background: #e8dcc8;
+  }
+
+  .video-opening-art-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        rgb(10 22 40 / 0.35) 0%,
+        rgb(10 22 40 / 0.08) 40%,
+        rgb(10 22 40 / 0.05) 55%,
+        rgb(10 22 40 / 0.25) 100%
+      );
+    pointer-events: none;
+  }
+
+  .video-opening-copy {
+    position: relative;
+    padding: 1.75rem 1.5rem 2.5rem;
+    text-align: center;
+    background:
+      linear-gradient(
+        180deg,
+        #faf4ea 0%,
+        #f5ebdc 35%,
+        #faf6ef 100%
+      );
+  }
+
+  .video-opening-eyebrow {
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 0.62rem;
+    font-style: italic;
+    letter-spacing: 0.12em;
+    color: var(--invite-muted, #5c4a3a);
+  }
+
+  .video-opening-names {
+    margin-top: 0.65rem;
+    font-family: var(--font-annotation-family), "Segoe Script", cursive;
+    font-size: clamp(2.1rem, 1.2rem + 5vw, 3rem);
+    font-weight: 500;
+    line-height: 1.12;
+    color: #1a2844;
+  }
+
+  .video-opening-amp {
+    display: block;
+    margin: 0.08em 0;
+    font-size: 0.88em;
+    color: #b8922a;
+  }
+
+  .video-opening-tagline {
+    margin-top: 0.65rem;
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgb(26 40 68 / 0.75);
+  }
+
+  .video-opening-date {
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a6b1f;
+  }
+
+  .video-opening-venue {
+    margin-top: 0.35rem;
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: rgb(26 40 68 / 0.72);
+  }
+
+  .video-opening-tap-label {
+    position: relative;
+    z-index: 2;
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #f5e6a8;
+    text-shadow: 0 1px 6px rgb(0 0 0 / 0.55);
+  }
+
+  .video-opening-tap-glow {
+    position: absolute;
+    left: 50%;
+    bottom: 2.75rem;
+    z-index: 1;
+    height: 5.5rem;
+    width: 5.5rem;
+    translate: -50% 0;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      rgb(255 215 100 / 0.55) 0%,
+      rgb(212 175 55 / 0.25) 45%,
+      transparent 70%
+    );
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 400ms ease,
+      transform 600ms ease;
+    pointer-events: none;
+  }
+
+  .video-opening-tap-glow.is-idle {
+    opacity: 0.45;
+    animation: video-opening-tap-pulse 2.4s ease-in-out infinite;
+  }
+
+  .video-opening-tap-glow.is-lit {
+    opacity: 1;
+    transform: scale(1.15);
+    animation: video-opening-tap-burst 700ms ease-out forwards;
+  }
+
+  @keyframes video-opening-tap-pulse {
+    0%,
+    100% {
+      transform: scale(0.9);
+      opacity: 0.35;
+    }
+
+    50% {
+      transform: scale(1.05);
+      opacity: 0.55;
+    }
+  }
+
+  @keyframes video-opening-tap-burst {
+    0% {
+      transform: scale(0.85);
+      opacity: 0.5;
+    }
+
+    40% {
+      transform: scale(1.25);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(1.1);
+      opacity: 0.85;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-opening-card-exit,
+    .video-opening-tap-glow.is-idle,
+    .video-opening-tap-glow.is-lit {
+      animation: none;
+    }
+  }
+
+  .video-opening-overlay .intro-bottom-nav-inner {
+    background: linear-gradient(
+      180deg,
+      rgb(245 235 215 / 0) 0%,
+      rgb(235 215 188 / 0.92) 35%,
+      rgb(228 205 175 / 0.98) 100%
+    );
+  }
+
+  .video-opening-overlay .intro-nav-link {
+    color: rgb(26 40 68 / 0.85) !important;
+  }
+
+  .video-opening-overlay .intro-nav-link:hover {
+    color: #8a6b1f !important;
+  }
+
+  .video-opening-overlay .intro-nav-divider {
+    background: rgb(138 107 31 / 0.35);
+  }
+
   /* Invitation scroll (post-envelope) — wooowinvites-style single card */
   .invite-page {
     position: relative;
@@ -934,6 +1158,16 @@
     height: 100%;
     width: 100%;
     object-fit: cover;
+  }
+
+  .invite-hero-watercolor {
+    z-index: 0;
+  }
+
+  .invite-hero-ambient {
+    z-index: 1;
+    opacity: 0.42;
+    mix-blend-mode: soft-light;
   }
 
   .invite-hero-scrim {

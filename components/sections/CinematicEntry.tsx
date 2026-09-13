@@ -1,10 +1,10 @@
 "use client";
 
 import { IntroNavigation, weddingDetailsHref } from "@/components/entry/intro/IntroNavigation";
-import { WeddingEnvelopeIntro } from "@/components/entry/intro/WeddingEnvelopeIntro";
-import { INTRO_CSS_VARS } from "@/components/entry/intro/constants";
+import { INTRO_CSS_VARS, INTRO_TIMING } from "@/components/entry/intro/constants";
 import type { IntroPhase } from "@/components/entry/intro/types";
-import { useIntroPhase } from "@/components/entry/intro/useIntroPhase";
+import { useVideoIntroPhase } from "@/components/entry/intro/useVideoIntroPhase";
+import { VideoOpeningIntro } from "@/components/entry/intro/VideoOpeningIntro";
 import { wedding } from "@/data/wedding";
 import {
   isIntroForceSkipped,
@@ -22,7 +22,7 @@ import {
 
 interface CinematicEntryProps {
   onComplete: () => void;
-  /** Fired when the seal is opened and the homepage should begin fading in */
+  /** Fired when the opening video ends and the homepage should begin fading in */
   onRevealStart?: () => void;
 }
 
@@ -43,7 +43,7 @@ function useForceSkipIntro() {
 }
 
 /**
- * Full-bleed navy envelope + gold seal. Opens onto a slowly fading homepage.
+ * Wooowinvites-style opening card + tap-to-play opening video, then fade to site.
  */
 export function CinematicEntry({
   onComplete,
@@ -56,6 +56,7 @@ export function CinematicEntry({
   const [removed, setRemoved] = useState(false);
   const completedRef = useRef(false);
   const revealedRef = useRef(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const startReveal = useCallback(() => {
     if (revealedRef.current) return;
@@ -72,13 +73,33 @@ export function CinematicEntry({
     setRemoved(true);
   }, [onComplete]);
 
-  const { activate, skip } = useIntroPhase({
+  const playOpeningVideo = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = 0;
+    void video.play().catch(() => {
+      startReveal();
+      setPhase("opening");
+      window.setTimeout(() => finish(), INTRO_TIMING.exit);
+    });
+  }, [finish, startReveal]);
+
+  const { activate, skip, onVideoEnded } = useVideoIntroPhase({
     phase,
     setPhase,
     reduceMotion: Boolean(reduceMotion),
     onRevealStart: startReveal,
     onComplete: finish,
+    onPlayVideo: playOpeningVideo,
   });
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const handleEnded = () => onVideoEnded();
+    video.addEventListener("ended", handleEnded);
+    return () => video.removeEventListener("ended", handleEnded);
+  }, [onVideoEnded, isClient]);
 
   useEffect(() => {
     if (!isClient) return;
@@ -112,20 +133,24 @@ export function CinematicEntry({
   }
 
   if (!isClient) {
-    return <div className="fixed inset-0 z-50 bg-[#0a1220]" aria-hidden />;
+    return (
+      <div
+        className="fixed inset-0 z-50 bg-[#ebe0d0]"
+        aria-hidden
+      />
+    );
   }
 
   const exiting = phase === "opened" || phase === "skipped";
   const opening = phase === "opening";
-  /* Keep overlay visible while flaps peel; only unmount fade after open completes */
   const showThrough = opening || exiting;
 
   return (
     <div
       className={[
-        "intro-overlay fixed inset-0 z-50 overflow-hidden",
+        "intro-overlay video-opening-overlay fixed inset-0 z-50 overflow-hidden",
         "transition-[opacity,background-color] duration-[480ms] ease-out",
-        showThrough ? "bg-transparent" : "bg-[#070e1a]",
+        showThrough ? "bg-transparent" : "",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
         opening ? "pointer-events-none" : "",
       ].join(" ")}
@@ -147,10 +172,11 @@ export function CinematicEntry({
         {wedding.couple.displayName} wedding invitation
       </h1>
 
-      <WeddingEnvelopeIntro
+      <VideoOpeningIntro
         phase={phase}
         reduceMotion={Boolean(reduceMotion)}
         onActivate={activate}
+        videoRef={videoRef}
       />
 
       <IntroNavigation
