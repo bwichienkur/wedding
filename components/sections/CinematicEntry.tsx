@@ -147,7 +147,7 @@ export function CinematicEntry({
   if (!isClient) {
     return (
       <div
-        className="fixed inset-0 z-50 bg-[#ebe0d0]"
+        className="fixed inset-0 z-[100] bg-[#070e1a]"
         aria-hidden
       />
     );

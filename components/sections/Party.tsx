@@ -1,11 +1,10 @@
 import { Section } from "@/components/ui/Section";
 import type { WeddingPartyMember } from "@/data/logistics-types";
-import { cn } from "@/lib/cn";
 
 function PartyPerson({ member }: { member: WeddingPartyMember }) {
   return (
     <article className="flex flex-col items-center px-3 py-5 text-center sm:px-4 sm:py-6">
-      <div className="size-20 overflow-hidden rounded-full bg-parchment sm:size-24">
+      <div className="size-20 overflow-hidden rounded-full bg-[#e8dcc8] sm:size-24">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={member.photoSrc ?? "/images/placeholders/party-portrait.svg"}
@@ -13,14 +12,14 @@ function PartyPerson({ member }: { member: WeddingPartyMember }) {
           className="h-full w-full object-cover"
         />
       </div>
-      <h4 className="mt-3 font-display text-sm uppercase tracking-[0.12em] text-gold sm:text-base">
+      <h4 className="mt-3 font-display text-sm uppercase tracking-[0.12em] text-invite-navy sm:text-base">
         {member.name}
       </h4>
-      <p className="mt-1 font-sans text-[0.7rem] uppercase tracking-[0.16em] text-ivory/70">
+      <p className="mt-1 font-sans text-[0.7rem] uppercase tracking-[0.16em] text-invite-body/70">
         {member.role}
       </p>
       {member.description && !member.descriptionIsPlaceholder ? (
-        <p className="mt-2 max-w-[16rem] text-sm leading-snug text-ivory/80">
+        <p className="mt-2 max-w-[16rem] text-sm leading-snug text-invite-body/85">
           {member.description}
         </p>
       ) : null}
@@ -37,17 +36,12 @@ function PartyColumn({
 }) {
   return (
     <div>
-      <h3 className="border-b border-gold/25 pb-3 text-center font-display text-lg text-gold sm:text-xl">
+      <h3 className="pb-3 text-center font-display text-lg text-invite-navy sm:text-xl">
         {label}
       </h3>
-      <ul>
-        {people.map((member, index) => (
-          <li
-            key={member.id}
-            className={cn(
-              index < people.length - 1 && "border-b border-stone/40",
-            )}
-          >
+      <ul className="grid gap-2 sm:grid-cols-2">
+        {people.map((member) => (
+          <li key={member.id}>
             <PartyPerson member={member} />
           </li>
         ))}
@@ -78,27 +72,20 @@ export function PartySection({
       title={title}
       description={description}
     >
-      <div className="mx-auto max-w-3xl">
-        <div className="grid grid-cols-2 divide-x divide-gold/25 border border-gold/25">
+      <div className="mx-auto max-w-3xl space-y-10">
+        <div className="grid gap-10 md:grid-cols-2">
           <PartyColumn label="Groomsmen" people={groomsmen} />
           <PartyColumn label="Bridesmaids" people={bridesmaids} />
         </div>
 
         {shared.length > 0 ? (
-          <div className="mt-10">
-            <h3 className="border-b border-gold/25 pb-3 text-center font-display text-lg text-gold sm:text-xl">
-              Standing with us
+          <div>
+            <h3 className="pb-3 text-center font-display text-lg text-invite-navy sm:text-xl">
+              Ceremony
             </h3>
-            <ul className="mx-auto grid max-w-2xl grid-cols-1 sm:grid-cols-3">
-              {shared.map((member, index) => (
-                <li
-                  key={member.id}
-                  className={cn(
-                    "border-b border-stone/40 sm:border-b-0",
-                    index < shared.length - 1 &&
-                      "sm:border-r sm:border-stone/40",
-                  )}
-                >
+            <ul className="mx-auto flex max-w-md flex-wrap justify-center gap-2">
+              {shared.map((member) => (
+                <li key={member.id} className="min-w-[10rem] flex-1">
                   <PartyPerson member={member} />
                 </li>
               ))}

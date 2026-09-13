@@ -63,11 +63,12 @@ describe("logistics defaults", () => {
     expect(travel.recommendations[0]?.imageSrc).toMatch(/bok-tower/);
   });
 
-  it("seeds thirteen wedding-party people including a ceremony pianist", () => {
-    expect(weddingParty).toHaveLength(13);
+  it("seeds eleven wedding-party people including a ceremony pianist", () => {
+    expect(weddingParty).toHaveLength(11);
     expect(weddingParty.filter((m) => m.side === "bright")).toHaveLength(5);
     expect(weddingParty.filter((m) => m.side === "lexi")).toHaveLength(5);
     expect(weddingParty.some((m) => m.id === "ceremony-pianist")).toBe(true);
+    expect(weddingParty.some((m) => m.role === "Honor attendant")).toBe(false);
   });
 
   it("covers required FAQ topics", () => {
