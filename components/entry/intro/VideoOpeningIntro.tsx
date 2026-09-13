@@ -39,7 +39,7 @@ export function VideoOpeningIntro({
         <img
           src={OPENING_POSTER}
           alt=""
-          className="absolute inset-0 z-[1] h-full w-full object-cover"
+          className="video-opening-media absolute inset-0 z-[1]"
           draggable={false}
         />
       ) : null}
@@ -47,7 +47,7 @@ export function VideoOpeningIntro({
       <video
         ref={videoRef}
         className={cn(
-          "absolute inset-0 z-[2] h-full w-full object-cover",
+          "video-opening-media absolute inset-0 z-[2]",
           playing ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         src={OPENING_VIDEO}
