@@ -30,17 +30,22 @@ export function WeddingDaySection({
       title={title}
       description={description}
     >
-      <RevealGroup className="relative mt-2" fast>
+      <RevealGroup className="invite-schedule relative mt-4" fast>
+        <span className="invite-schedule-spine" aria-hidden />
         {scheduleItems.map((item, index) => {
           const googleUrl = buildGoogleCalendarUrl(item);
-          const isLast = index === scheduleItems.length - 1;
+          const alignRight = index % 2 === 1;
           return (
             <RevealItem key={item.id}>
-              <div className="invite-timeline-item">
-                {!isLast ? <span className="invite-timeline-line" aria-hidden /> : null}
-                <span className="invite-timeline-dot" aria-hidden />
-                <p className="invite-timeline-time">{item.timeLabel}</p>
-                <p className="invite-timeline-title">{item.title}</p>
+              <article
+                className={cn(
+                  "invite-schedule-item",
+                  alignRight ? "is-right" : "is-left",
+                )}
+              >
+                <span className="invite-schedule-dot" aria-hidden />
+                <p className="invite-schedule-time">{item.timeLabel}</p>
+                <p className="invite-schedule-title">{item.title}</p>
                 <p
                   className={cn(
                     "mt-2 text-sm leading-relaxed text-invite-body/80",
@@ -55,7 +60,12 @@ export function WeddingDaySection({
                   </p>
                 ) : null}
                 {item.includeInCalendar && item.timeLocal ? (
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div
+                    className={cn(
+                      "mt-3 flex flex-wrap gap-2",
+                      alignRight && "justify-end",
+                    )}
+                  >
                     {googleUrl ? (
                       <ButtonLink
                         href={googleUrl}
@@ -77,14 +87,15 @@ export function WeddingDaySection({
                     </button>
                   </div>
                 ) : null}
-              </div>
+              </article>
             </RevealItem>
           );
         })}
       </RevealGroup>
 
-      <p className="mt-6 text-center text-xs leading-relaxed text-invite-body/65">
-        Ceremony begins {wedding.wedding.ceremonyBegins} · {wedding.wedding.venueName}
+      <p className="mt-8 text-center text-xs leading-relaxed text-invite-body/65">
+        Ceremony begins {wedding.wedding.ceremonyBegins} ·{" "}
+        {wedding.wedding.venueName}
       </p>
     </Section>
   );

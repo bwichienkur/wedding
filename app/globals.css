@@ -885,6 +885,13 @@
     }
   }
 
+  .video-opening-media {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    object-position: center center;
+  }
+
   .video-opening-float-hint {
     position: absolute;
     left: 50%;
@@ -1024,16 +1031,16 @@
 
   .invite-hero-video-wrap {
     position: relative;
-    aspect-ratio: 3 / 4;
-    min-height: 28rem;
-    max-height: 44rem;
+    aspect-ratio: 9 / 16;
+    min-height: 32rem;
+    max-height: min(52rem, 88vh);
     overflow: hidden;
     background: #0a1628;
   }
 
   @media (min-width: 480px) {
     .invite-hero-video-wrap {
-      min-height: 32rem;
+      min-height: 36rem;
     }
   }
 
@@ -1043,6 +1050,7 @@
     height: 100%;
     width: 100%;
     object-fit: cover;
+    object-position: center 35%;
   }
 
   body.intro-active {
@@ -1059,24 +1067,40 @@
     background:
       linear-gradient(
         180deg,
-        rgb(10 22 40 / 0.15) 0%,
-        rgb(10 22 40 / 0.05) 35%,
-        rgb(250 246 239 / 0.92) 72%,
-        rgb(250 246 239 / 0.98) 100%
+        rgb(10 22 40 / 0.35) 0%,
+        rgb(10 22 40 / 0.08) 28%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 90% 80% at 50% 40%,
+        transparent 45%,
+        rgb(10 22 40 / 0.12) 100%
       );
     pointer-events: none;
   }
 
   .invite-hero-content {
     position: absolute;
-    inset: auto 0 0 0;
+    inset: 0;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    padding: 1.75rem 1.5rem 2.25rem;
+    justify-content: flex-start;
+    padding: 2rem 1.25rem 1.5rem;
     text-align: center;
+    pointer-events: none;
+  }
+
+  .invite-hero-copy {
+    pointer-events: auto;
+    max-width: 19rem;
+    padding: 1.1rem 1.25rem 1.25rem;
+    border-radius: 0.2rem;
+    border: 1px solid rgb(245 230 190 / 0.22);
+    background: rgb(10 22 40 / 0.42);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 12px 40px rgb(0 0 0 / 0.25);
   }
 
   .invite-hero-eyebrow {
@@ -1085,16 +1109,17 @@
     font-weight: 600;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--invite-gold);
+    color: rgb(245 230 190 / 0.92);
   }
 
   .invite-hero-names {
     margin-top: 0.55rem;
     font-family: var(--font-display-family), Georgia, serif;
-    font-size: clamp(2rem, 1.35rem + 4vw, 2.75rem);
+    font-size: clamp(1.85rem, 1.2rem + 3.5vw, 2.5rem);
     font-weight: 500;
     line-height: 1.12;
-    color: var(--invite-navy);
+    color: #faf6ef;
+    text-shadow: 0 2px 12px rgb(0 0 0 / 0.45);
   }
 
   .invite-hero-name {
@@ -1105,7 +1130,7 @@
     display: inline;
     margin-inline: 0.2em;
     font-size: 0.92em;
-    color: var(--invite-gold);
+    color: #f5e6a8;
   }
 
   .invite-hero-tagline {
@@ -1115,7 +1140,7 @@
     font-weight: 600;
     letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--invite-navy) 72%, transparent);
+    color: rgb(245 235 210 / 0.9);
   }
 
   .invite-hero-date {
@@ -1124,7 +1149,7 @@
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--invite-navy);
+    color: #e8c872;
   }
 
   .invite-hero-venue {
@@ -1132,14 +1157,14 @@
     font-family: var(--font-body), sans-serif;
     font-size: 0.78rem;
     font-weight: 500;
-    color: color-mix(in srgb, var(--invite-body) 88%, transparent);
+    color: rgb(245 235 210 / 0.88);
   }
 
   .invite-hero-statement {
     font-family: var(--font-body), sans-serif;
-    font-size: 0.88rem;
-    line-height: 1.55;
-    color: color-mix(in srgb, var(--invite-body) 85%, transparent);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: rgb(245 235 210 / 0.85);
   }
 
   /* Corner ornaments */
@@ -1292,7 +1317,113 @@
     color: color-mix(in srgb, var(--invite-body) 88%, transparent);
   }
 
-  /* Timeline (wedding day) */
+  /* Wedding day schedule — alternating sides (wooowinvites-style) */
+  .invite-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding-inline: 0.25rem;
+  }
+
+  .invite-schedule-spine {
+    position: absolute;
+    left: 50%;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    translate: -50% 0;
+    background: linear-gradient(
+      180deg,
+      rgb(201 162 77 / 0.15),
+      rgb(201 162 77 / 0.55) 20%,
+      rgb(201 162 77 / 0.55) 80%,
+      rgb(201 162 77 / 0.15)
+    );
+    pointer-events: none;
+  }
+
+  .invite-schedule-item {
+    position: relative;
+    width: min(100%, 14.5rem);
+    padding: 0.25rem 0.5rem 0.5rem;
+  }
+
+  .invite-schedule-item.is-left {
+    align-self: flex-start;
+    margin-right: auto;
+    padding-right: 1.75rem;
+    text-align: left;
+  }
+
+  .invite-schedule-item.is-right {
+    align-self: flex-end;
+    margin-left: auto;
+    padding-left: 1.75rem;
+    text-align: right;
+  }
+
+  .invite-schedule-dot {
+    position: absolute;
+    top: 0.35rem;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 9999px;
+    border: 2px solid var(--invite-gold);
+    background: #faf6ef;
+  }
+
+  .invite-schedule-item.is-left .invite-schedule-dot {
+    right: -0.35rem;
+  }
+
+  .invite-schedule-item.is-right .invite-schedule-dot {
+    left: -0.35rem;
+  }
+
+  .invite-schedule-time {
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 1.2rem;
+    color: var(--invite-navy);
+  }
+
+  .invite-schedule-title {
+    margin-top: 0.15rem;
+    font-family: var(--font-body), sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--invite-gold);
+  }
+
+  @media (max-width: 479px) {
+    .invite-schedule-spine {
+      left: 0.65rem;
+      translate: 0 0;
+    }
+
+    .invite-schedule-item {
+      width: 100%;
+      max-width: none;
+      padding-left: 2rem !important;
+      padding-right: 0 !important;
+      margin-inline: 0 !important;
+      text-align: left !important;
+      align-self: stretch !important;
+    }
+
+    .invite-schedule-item.is-right .invite-schedule-dot,
+    .invite-schedule-item.is-left .invite-schedule-dot {
+      left: 0.15rem;
+      right: auto;
+    }
+
+    .invite-schedule-item.is-right .mt-3.flex {
+      justify-content: flex-start !important;
+    }
+  }
+
+  /* Legacy timeline (unused) */
   .invite-timeline-item {
     position: relative;
     padding-left: 3.25rem;

@@ -51,29 +51,31 @@ export function InviteVideoHero() {
         <div className="invite-hero-scrim" aria-hidden />
 
         <div className="invite-hero-content">
-          <p className="invite-hero-eyebrow">Together with their families</p>
+          <div className="invite-hero-copy">
+            <p className="invite-hero-eyebrow">Together with their families</p>
 
-          <h1 id="invite-hero-title" className="invite-hero-names">
-            {wedding.couple.partnerOne}
-            <span className="invite-hero-amp">&</span>
-            {wedding.couple.partnerTwo}
-          </h1>
+            <h1 id="invite-hero-title" className="invite-hero-names">
+              {wedding.couple.partnerOne}
+              <span className="invite-hero-amp">&</span>
+              {wedding.couple.partnerTwo}
+            </h1>
 
-          <p className="invite-hero-tagline">Our love story continues</p>
+            <p className="invite-hero-tagline">Our love story continues</p>
 
-          <InviteDivider className="my-4 max-w-[12rem]" />
+            <InviteDivider className="my-3 max-w-[10rem]" />
 
-          <p className="invite-hero-date">{dateUpper}</p>
-          <p className="invite-hero-venue">{weddingLocationLine()}</p>
+            <p className="invite-hero-date">{dateUpper}</p>
+            <p className="invite-hero-venue">{weddingLocationLine()}</p>
 
-          <p
-            className={cn(
-              "invite-hero-statement mx-auto mt-3 max-w-[20rem] text-balance",
-              wedding.hero.statementIsPlaceholder && "opacity-90 italic",
-            )}
-          >
-            {wedding.hero.statement}
-          </p>
+            <p
+              className={cn(
+                "invite-hero-statement mx-auto mt-2 max-w-[18rem] text-balance",
+                wedding.hero.statementIsPlaceholder && "opacity-90 italic",
+              )}
+            >
+              {wedding.hero.statement}
+            </p>
+          </div>
         </div>
       </div>
     </section>

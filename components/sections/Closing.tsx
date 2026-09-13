@@ -1,4 +1,3 @@
-import { MonogramSvg } from "@/components/monogram/MonogramSvg";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { rsvpNav } from "@/data/navigation";
 import type { StoryImage } from "@/data/types";
@@ -32,7 +31,6 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
         </>
       ) : null}
       <div className="relative mx-auto max-w-lg text-center">
-        <MonogramSvg className="mx-auto mb-8 h-20 w-20 text-invite-gold" />
         <p
           id="closing-title"
           className={cn(

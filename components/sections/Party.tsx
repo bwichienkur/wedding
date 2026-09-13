@@ -3,7 +3,7 @@ import type { WeddingPartyMember } from "@/data/logistics-types";
 
 function PartyPerson({ member }: { member: WeddingPartyMember }) {
   return (
-    <article className="flex flex-col items-center px-3 py-5 text-center sm:px-4 sm:py-6">
+    <article className="flex flex-col items-center px-4 py-7 text-center sm:px-6 sm:py-8">
       <div className="size-20 overflow-hidden rounded-full bg-[#e8dcc8] sm:size-24">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -12,10 +12,10 @@ function PartyPerson({ member }: { member: WeddingPartyMember }) {
           className="h-full w-full object-cover"
         />
       </div>
-      <h4 className="mt-3 font-display text-sm uppercase tracking-[0.12em] text-invite-navy sm:text-base">
+      <h4 className="mt-4 font-display text-sm uppercase tracking-[0.12em] text-invite-navy sm:text-base">
         {member.name}
       </h4>
-      <p className="mt-1 font-sans text-[0.7rem] uppercase tracking-[0.16em] text-invite-body/70">
+      <p className="mt-1.5 font-sans text-[0.7rem] uppercase tracking-[0.16em] text-invite-body/70">
         {member.role}
       </p>
       {member.description && !member.descriptionIsPlaceholder ? (
@@ -35,11 +35,11 @@ function PartyColumn({
   people: WeddingPartyMember[];
 }) {
   return (
-    <div>
-      <h3 className="pb-3 text-center font-display text-lg text-invite-navy sm:text-xl">
+    <div className="min-w-0">
+      <h3 className="mb-2 pb-4 text-center font-display text-lg text-invite-navy sm:text-xl">
         {label}
       </h3>
-      <ul className="grid gap-2 sm:grid-cols-2">
+      <ul>
         {people.map((member) => (
           <li key={member.id}>
             <PartyPerson member={member} />
@@ -72,20 +72,20 @@ export function PartySection({
       title={title}
       description={description}
     >
-      <div className="mx-auto max-w-3xl space-y-10">
-        <div className="grid gap-10 md:grid-cols-2">
+      <div className="mx-auto max-w-4xl">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-10 md:gap-14">
           <PartyColumn label="Groomsmen" people={groomsmen} />
           <PartyColumn label="Bridesmaids" people={bridesmaids} />
         </div>
 
         {shared.length > 0 ? (
-          <div>
-            <h3 className="pb-3 text-center font-display text-lg text-invite-navy sm:text-xl">
+          <div className="mt-12 border-t border-transparent pt-4 sm:mt-14">
+            <h3 className="mb-2 pb-4 text-center font-display text-lg text-invite-navy sm:text-xl">
               Ceremony
             </h3>
-            <ul className="mx-auto flex max-w-md flex-wrap justify-center gap-2">
+            <ul className="mx-auto grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-3">
               {shared.map((member) => (
-                <li key={member.id} className="min-w-[10rem] flex-1">
+                <li key={member.id}>
                   <PartyPerson member={member} />
                 </li>
               ))}
