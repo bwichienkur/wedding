@@ -50,10 +50,10 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
   },
   {
     id: "gallery",
-    label: "Memories gallery",
-    defaultVisible: false,
-    defaultEyebrow: "Memories",
-    defaultTitle: "Moments we treasure",
+    label: "Gallery",
+    defaultVisible: true,
+    defaultEyebrow: "Gallery",
+    defaultTitle: "Our moments",
     defaultDescription:
       "Selected photographs from Bright and Lexi’s story — browse at your own pace.",
     hasDescription: true,
