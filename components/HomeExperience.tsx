@@ -1,6 +1,7 @@
 "use client";
 
 import { InviteCanvas } from "@/components/invite/InviteCanvas";
+import { InviteGallerySection } from "@/components/invite/InviteGallerySection";
 import { InviteCountdownSection } from "@/components/invite/InviteCountdownSection";
 import { ScrollToRsvpFab } from "@/components/invite/ScrollToRsvpFab";
 import { InviteVideoHero } from "@/components/invite/InviteVideoHero";
@@ -118,6 +119,15 @@ export function HomeExperience({
                 eyebrow={sections.story.eyebrow}
                 title={sections.story.title}
                 description={sections.story.description}
+              />
+            ) : null}
+
+            {show("gallery") ? (
+              <InviteGallerySection
+                cards={media.memoryCards}
+                eyebrow={sections.gallery.eyebrow}
+                title={sections.gallery.title}
+                description={sections.gallery.description}
               />
             ) : null}
 
