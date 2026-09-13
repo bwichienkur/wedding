@@ -81,39 +81,6 @@ function MemoryPrint({
   );
 }
 
-function GalleryThread({ depths }: { depths: number[] }) {
-  const points = useMemo(() => {
-    return depths.map((depth, index) => {
-      const x = index % 2 === 0 ? -0.2 : 0.25;
-      const y = index % 3 === 0 ? 0.3 : -0.2;
-      return [x, y, depth] as [number, number, number];
-    });
-  }, [depths]);
-
-  return (
-    <group>
-      {points.slice(0, -1).map((start, index) => {
-        const end = points[index + 1];
-        const mid = [
-          (start[0] + end[0]) / 2,
-          (start[1] + end[1]) / 2,
-          (start[2] + end[2]) / 2,
-        ] as [number, number, number];
-        const length = Math.abs(end[2] - start[2]);
-        return (
-          <mesh key={index} position={mid} rotation={[Math.PI / 2, 0, 0.2]}>
-            <cylinderGeometry args={[0.012, 0.012, length, 6]} />
-            <meshStandardMaterial
-              color="#A6873B"
-              metalness={0.7}
-              roughness={0.35}
-            />
-          </mesh>
-        );
-      })}
-    </group>
-  );
-}
 
 export function MemoryGalleryScene({
   cards,
@@ -145,7 +112,6 @@ export function MemoryGalleryScene({
     <group ref={group}>
       <ambientLight intensity={0.7} />
       <directionalLight position={[2, 3, 4]} intensity={0.9} color="#fff8ec" />
-      <GalleryThread depths={cards.map((card) => card.depth)} />
       {cards.map((card) => (
         <MemoryPrint key={card.id} card={card} onSelect={onSelect} />
       ))}

@@ -7,7 +7,6 @@ import type { IntroPhase } from "./types";
 
 const OPENING_VIDEO = "/videos/opening-animation.mp4";
 const OPENING_POSTER = "/videos/opening-animation-poster.jpg";
-const VENUE_ART = "/images/venue/bella-cosa-watercolor.png";
 
 interface VideoOpeningIntroProps {
   phase: IntroPhase;
@@ -69,7 +68,7 @@ export function VideoOpeningIntro({
           <div className="video-opening-hero-art">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={VENUE_ART}
+              src={OPENING_POSTER}
               alt=""
               className="h-full w-full object-cover object-center"
               draggable={false}

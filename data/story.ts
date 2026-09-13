@@ -2,14 +2,13 @@ import type { StoryMilestone } from "./types";
 import { wedding } from "./wedding";
 
 /**
- * Relationship story milestones.
- * Only confirmed facts are filled; everything else is an editorial placeholder.
+ * Condensed relationship story — three milestones for the public site.
  */
 export const storyMilestones: StoryMilestone[] = [
   {
     id: "how-we-met",
     dateLabel: wedding.anniversary.dating.dateDisplay,
-    title: "How we met",
+    title: "How We Met",
     featured: true,
     locationLabel: "Sweetwater, Boynton Beach, Florida",
     image: {
@@ -32,7 +31,7 @@ export const storyMilestones: StoryMilestone[] = [
   {
     id: "proposal",
     dateLabel: wedding.proposal.dateLabel,
-    title: "The proposal",
+    title: "The Proposal",
     featured: true,
     locationLabel: wedding.proposal.locationLabel,
     image: {
@@ -47,21 +46,31 @@ export const storyMilestones: StoryMilestone[] = [
     passages: [
       {
         perspective: "shared",
-        title: wedding.proposal.transitionCopy,
-        body: "Bright proposed on December 13, 2025 at Lexi’s parents’ home — Joe & Jodi’s house in Longwood, Florida.",
+        body: "Bright proposed on December 13, 2025 at Joe & Jodi’s home in Longwood, Florida.",
         isPlaceholder: false,
       },
+    ],
+  },
+  {
+    id: "wedding",
+    dateLabel: wedding.wedding.dateDisplay,
+    title: "Wedding",
+    featured: true,
+    locationLabel: `${wedding.wedding.venueName} · ${wedding.wedding.city}, ${wedding.wedding.region}`,
+    image: {
+      src: "/images/venue/bella-cosa-watercolor.png",
+      alt: "Watercolor illustration of Bella Cosa in Lake Wales, Florida",
+      width: 1600,
+      height: 1200,
+      focalPoint: { x: 50, y: 45 },
+      placeholder: false,
+    },
+    passages: [
       {
-        perspective: "bright",
-        body: "Add Bright’s written version of the proposal.",
-        isPlaceholder: true,
-      },
-      {
-        perspective: "lexi",
-        body: "Add the moment Lexi realized what was happening.",
-        isPlaceholder: true,
+        perspective: "shared",
+        body: `We invite you to celebrate with us on ${wedding.wedding.dateDisplay} at ${wedding.wedding.venueName} in ${wedding.wedding.city}, ${wedding.wedding.region}. Ceremony begins at ${wedding.wedding.ceremonyBegins}.`,
+        isPlaceholder: false,
       },
     ],
-    perspectivesEnabled: true,
   },
 ];

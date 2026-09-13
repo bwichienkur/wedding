@@ -1160,14 +1160,12 @@
     object-fit: cover;
   }
 
-  .invite-hero-watercolor {
-    z-index: 0;
+  body.intro-active {
+    overflow: hidden;
   }
 
-  .invite-hero-ambient {
-    z-index: 1;
-    opacity: 0.42;
-    mix-blend-mode: soft-light;
+  body.intro-active .invite-experience {
+    visibility: hidden;
   }
 
   .invite-hero-scrim {

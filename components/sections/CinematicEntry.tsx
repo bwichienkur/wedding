@@ -14,6 +14,7 @@ import { useReducedMotion } from "motion/react";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -65,6 +66,7 @@ export function CinematicEntry({
   }, [onRevealStart]);
 
   const finish = useCallback(() => {
+    document.body.classList.remove("intro-active");
     markIntroSeen();
     if (!completedRef.current) {
       completedRef.current = true;
@@ -94,12 +96,20 @@ export function CinematicEntry({
   });
 
   useEffect(() => {
+    if (!isClient || removed) return;
+    document.body.classList.add("intro-active");
+    return () => {
+      if (!removed) document.body.classList.remove("intro-active");
+    };
+  }, [isClient, removed]);
+
+  useLayoutEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !isClient || removed) return;
     const handleEnded = () => onVideoEnded();
     video.addEventListener("ended", handleEnded);
     return () => video.removeEventListener("ended", handleEnded);
-  }, [onVideoEnded, isClient]);
+  }, [isClient, onVideoEnded, removed, phase]);
 
   useEffect(() => {
     if (!isClient) return;
@@ -113,6 +123,7 @@ export function CinematicEntry({
   }, [isClient, forceSkip, onComplete, startReveal]);
 
   function skipToDetails() {
+    document.body.classList.remove("intro-active");
     skip();
     setRemoved(true);
     window.requestAnimationFrame(() => {
@@ -124,6 +135,7 @@ export function CinematicEntry({
   }
 
   function handleRsvp() {
+    document.body.classList.remove("intro-active");
     skip();
     setRemoved(true);
   }
@@ -148,7 +160,7 @@ export function CinematicEntry({
   return (
     <div
       className={[
-        "intro-overlay video-opening-overlay fixed inset-0 z-50 overflow-hidden",
+        "intro-overlay video-opening-overlay fixed inset-0 z-[100] overflow-hidden",
         "transition-[opacity,background-color] duration-[480ms] ease-out",
         showThrough ? "bg-transparent" : "",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",

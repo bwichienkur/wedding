@@ -8,11 +8,9 @@ import { useEffect, useRef } from "react";
 
 const VIDEO_SRC = "/videos/ambient-atmosphere.mp4";
 const POSTER_SRC = "/videos/ambient-atmosphere-poster.jpg";
-const VENUE_ART = "/images/venue/bella-cosa-watercolor.png";
 
 /**
- * Wooowinvites-style hero — ambient video is the focal visual with
- * Bright & Lexi wedding details overlaid in gold script.
+ * Post-opening hero — drone ambient video with invitation copy overlay.
  */
 export function InviteVideoHero() {
   const reduceMotion = useReducedMotion();
@@ -33,18 +31,13 @@ export function InviteVideoHero() {
   return (
     <section id="home" className="invite-hero" aria-labelledby="invite-hero-title">
       <div className="invite-hero-video-wrap">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={VENUE_ART}
-          alt=""
-          className="invite-hero-media invite-hero-watercolor"
-          draggable={false}
-        />
-
-        {reduceMotion ? null : (
+        {reduceMotion ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={POSTER_SRC} alt="" className="invite-hero-media" />
+        ) : (
           <video
             ref={videoRef}
-            className="invite-hero-media invite-hero-ambient"
+            className="invite-hero-media"
             src={VIDEO_SRC}
             poster={POSTER_SRC}
             autoPlay
@@ -52,7 +45,6 @@ export function InviteVideoHero() {
             muted
             playsInline
             preload="auto"
-            aria-hidden
           />
         )}
 

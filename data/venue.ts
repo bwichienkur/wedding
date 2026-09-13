@@ -16,7 +16,7 @@ export const venue: VenueInfo = {
     {
       id: "architecture",
       label: "Bella Cosa",
-      src: "/images/venue/bella-cosa-watercolor.png",
+      src: "/images/venue/bella-cosa.webp",
       alt: "Bella Cosa estate in Lake Wales, framed by live oaks and Spanish moss",
     },
   ],
