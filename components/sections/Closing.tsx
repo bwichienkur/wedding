@@ -1,5 +1,4 @@
 import { MonogramSvg } from "@/components/monogram/MonogramSvg";
-import { GoldenThread } from "@/components/story/GoldenThread";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { rsvpNav } from "@/data/navigation";
 import type { StoryImage } from "@/data/types";
@@ -32,10 +31,6 @@ export function ClosingSection({ image }: { image?: StoryImage | null }) {
           <div className="absolute inset-0 bg-invite-cream/75" aria-hidden />
         </>
       ) : null}
-      <GoldenThread
-        chapter="closing"
-        className="pointer-events-none absolute inset-x-0 top-10 h-28 w-full text-invite-gold opacity-35 sm:h-32"
-      />
       <div className="relative mx-auto max-w-lg text-center">
         <MonogramSvg className="mx-auto mb-8 h-20 w-20 text-invite-gold" />
         <p

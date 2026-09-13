@@ -9,7 +9,6 @@ import { ClosingSection } from "@/components/sections/Closing";
 import { FaqSection } from "@/components/sections/Faq";
 import { OurStory } from "@/components/sections/OurStory";
 import { PartySection } from "@/components/sections/Party";
-import { ProposalConvergenceSection } from "@/components/sections/ProposalConvergence";
 import { RegistrySection } from "@/components/sections/Registry";
 import { RsvpSection } from "@/components/sections/RsvpTeaser";
 import { TravelSection } from "@/components/sections/Travel";
@@ -78,8 +77,11 @@ export function HomeExperience({
       <div
         className={cn(
           "invite-experience transition-opacity duration-700 ease-out",
-          siteRevealed ? "opacity-100" : "opacity-0",
+          siteRevealed
+            ? "opacity-100"
+            : "pointer-events-none invisible opacity-0",
         )}
+        aria-hidden={!siteRevealed}
       >
         <InviteCanvas>
           <main id={mainContentId} tabIndex={-1} className="outline-none">
@@ -128,17 +130,6 @@ export function HomeExperience({
                   eyebrow={sections.gallery.eyebrow}
                   title={sections.gallery.title}
                   description={sections.gallery.description}
-                />
-              </SectionErrorBoundary>
-            ) : null}
-
-            {show("proposal") ? (
-              <SectionErrorBoundary title="Proposal chapter couldn’t load">
-                <ProposalConvergenceSection
-                  still={media.proposalStill}
-                  eyebrow={sections.proposal.eyebrow}
-                  title={sections.proposal.title}
-                  description={sections.proposal.description}
                 />
               </SectionErrorBoundary>
             ) : null}

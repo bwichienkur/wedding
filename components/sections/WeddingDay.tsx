@@ -11,6 +11,9 @@ import {
 } from "@/lib/calendar/schedule";
 import { cn } from "@/lib/cn";
 
+const calendarActionClass =
+  "invite-outline-button inline-flex min-h-11 items-center justify-center rounded-sm border px-5 text-xs font-medium uppercase tracking-[0.12em]";
+
 export function WeddingDaySection({
   eyebrow = weddingDayTransition.eyebrow,
   title = "What we have planned for you",
@@ -60,14 +63,14 @@ export function WeddingDaySection({
                         size="md"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="invite-outline-button !text-xs"
+                        className={calendarActionClass}
                       >
                         Calendar
                       </ButtonLink>
                     ) : null}
                     <button
                       type="button"
-                      className="invite-venue-pill"
+                      className={calendarActionClass}
                       onClick={() => downloadIcs(item)}
                     >
                       Download ICS

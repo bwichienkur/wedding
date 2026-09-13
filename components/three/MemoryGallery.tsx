@@ -1,6 +1,5 @@
 "use client";
 
-import { GoldenThread } from "@/components/story/GoldenThread";
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import type { MemoryCard } from "@/data/memories";
@@ -158,7 +157,7 @@ function MemoryDialog({
 export function MemoryGallerySection({
   cards,
   eyebrow = "Memories",
-  title = "Moments along the thread",
+  title = "Moments we treasure",
   description = "Selected photographs from Bright and Lexi’s story — a calm timeline you can browse at your own pace.",
 }: {
   cards: MemoryCard[];
@@ -201,13 +200,7 @@ export function MemoryGallerySection({
       ) : null}
 
       {use3d ? (
-        <div className="relative">
-          <GoldenThread
-            chapter="gallery"
-            className="pointer-events-none absolute inset-x-0 top-6 h-20 w-full opacity-55"
-          />
-          <MemoryGalleryCanvas cards={cards} onSelect={openById} />
-        </div>
+        <MemoryGalleryCanvas cards={cards} onSelect={openById} />
       ) : (
         <MemoryTimelineFallback
           cards={cards}

@@ -12,7 +12,7 @@ describe("wedding config", () => {
   });
 
   it("marks remaining unknown content as placeholders", () => {
-    expect(wedding.hero.statementIsPlaceholder).toBe(true);
+    expect(wedding.hero.statementIsPlaceholder).toBe(false);
     expect(wedding.proposal.dateIsPlaceholder).toBe(false);
     expect(wedding.proposal.locationIsPlaceholder).toBe(false);
     expect(wedding.proposal.dateLabel).toContain("December 13");
@@ -26,10 +26,11 @@ describe("wedding config", () => {
 });
 
 describe("story milestones", () => {
-  it("includes only how we met and the proposal", () => {
+  it("includes how we met, the proposal, and wedding", () => {
     expect(storyMilestones.map((m) => m.id)).toEqual([
       "how-we-met",
       "proposal",
+      "wedding",
     ]);
   });
 
@@ -37,6 +38,6 @@ describe("story milestones", () => {
     const open = storyMilestones.filter((m) =>
       m.passages.some((p) => p.isPlaceholder),
     );
-    expect(open.length).toBeGreaterThan(0);
+    expect(open.length).toBe(0);
   });
 });

@@ -43,9 +43,9 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     label: "Our Story",
     defaultVisible: true,
     defaultEyebrow: "Our story",
-    defaultTitle: "Two paths, drawn together",
+    defaultTitle: "How we got here",
     defaultDescription:
-      "A living timeline of Bright and Lexi. Confirmed moments are marked; everything else waits for your words and photographs.",
+      "Three chapters — how we met, the proposal, and our wedding day at Bella Cosa.",
     hasDescription: true,
   },
   {
@@ -53,15 +53,15 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     label: "Memories gallery",
     defaultVisible: true,
     defaultEyebrow: "Memories",
-    defaultTitle: "Moments along the thread",
+    defaultTitle: "Moments we treasure",
     defaultDescription:
-      "Selected photographs from Bright and Lexi’s story — a calm timeline you can browse at your own pace.",
+      "Selected photographs from Bright and Lexi’s story — browse at your own pace.",
     hasDescription: true,
   },
   {
     id: "proposal",
     label: "The Proposal",
-    defaultVisible: true,
+    defaultVisible: false,
     defaultEyebrow: "Proposal",
     defaultTitle: "And then, everything changed.",
     defaultDescription: "",
