@@ -29,10 +29,7 @@ function bridesmaid(index: number): WeddingPartyMember {
   };
 }
 
-/**
- * Thirteen editable people: five groomsmen, five bridesmaids,
- * ceremony pianist, plus two flexible shared roles.
- */
+/** Eleven people: five groomsmen, five bridesmaids, ceremony pianist. */
 export const weddingParty: WeddingPartyMember[] = [
   ...[1, 2, 3, 4, 5].map(groomsman),
   ...[1, 2, 3, 4, 5].map(bridesmaid),
@@ -46,27 +43,5 @@ export const weddingParty: WeddingPartyMember[] = [
     description: "Add a short note about the ceremony pianist.",
     descriptionIsPlaceholder: true,
     photoAlt: "Photograph placeholder for the ceremony pianist",
-  },
-  {
-    id: "shared-honor-1",
-    name: "Add an honor attendant",
-    role: "Honor attendant",
-    side: "shared",
-    relationship: "Add how this person is connected to Bright and Lexi.",
-    relationshipIsPlaceholder: true,
-    description: "Add a short personal description.",
-    descriptionIsPlaceholder: true,
-    photoAlt: "Photograph placeholder for an honor attendant",
-  },
-  {
-    id: "shared-honor-2",
-    name: "Add a reader or attendant",
-    role: "Reader",
-    side: "shared",
-    relationship: "Add how this person is connected to Bright and Lexi.",
-    relationshipIsPlaceholder: true,
-    description: "Add a short personal description.",
-    descriptionIsPlaceholder: true,
-    photoAlt: "Photograph placeholder for a wedding-party member",
   },
 ];

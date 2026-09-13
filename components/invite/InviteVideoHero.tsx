@@ -1,6 +1,6 @@
 "use client";
 
-import { InviteCornerFrame, InviteDivider } from "@/components/invite/InviteDecor";
+import { InviteDivider } from "@/components/invite/InviteDecor";
 import { wedding, weddingLocationLine } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import { useReducedMotion } from "motion/react";
@@ -10,7 +10,7 @@ const VIDEO_SRC = "/videos/ambient-atmosphere.mp4";
 const POSTER_SRC = "/videos/ambient-atmosphere-poster.jpg";
 
 /**
- * Post-opening hero — drone ambient video with invitation copy overlay.
+ * Post-opening hero — full-width drone video with readable copy in a bottom panel.
  */
 export function InviteVideoHero() {
   const reduceMotion = useReducedMotion();
@@ -51,26 +51,24 @@ export function InviteVideoHero() {
         <div className="invite-hero-scrim" aria-hidden />
 
         <div className="invite-hero-content">
-          <InviteCornerFrame />
-
           <p className="invite-hero-eyebrow">Together with their families</p>
 
           <h1 id="invite-hero-title" className="invite-hero-names">
-            <span className="invite-hero-name">{wedding.couple.partnerOne}</span>
+            {wedding.couple.partnerOne}
             <span className="invite-hero-amp">&</span>
-            <span className="invite-hero-name">{wedding.couple.partnerTwo}</span>
+            {wedding.couple.partnerTwo}
           </h1>
 
           <p className="invite-hero-tagline">Our love story continues</p>
 
-          <InviteDivider />
+          <InviteDivider className="my-4 max-w-[12rem]" />
 
           <p className="invite-hero-date">{dateUpper}</p>
           <p className="invite-hero-venue">{weddingLocationLine()}</p>
 
           <p
             className={cn(
-              "invite-hero-statement mx-auto mt-4 max-w-[18rem] text-balance",
+              "invite-hero-statement mx-auto mt-3 max-w-[20rem] text-balance",
               wedding.hero.statementIsPlaceholder && "opacity-90 italic",
             )}
           >

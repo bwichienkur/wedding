@@ -14,8 +14,6 @@ import { RsvpSection } from "@/components/sections/RsvpTeaser";
 import { TravelSection } from "@/components/sections/Travel";
 import { VenueSection } from "@/components/sections/Venue";
 import { WeddingDaySection } from "@/components/sections/WeddingDay";
-import { MemoryGallerySection } from "@/components/three/MemoryGallery";
-import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import type { HeroSlide } from "@/data/hero-slides";
 import type {
   FaqItem,
@@ -121,17 +119,6 @@ export function HomeExperience({
                 title={sections.story.title}
                 description={sections.story.description}
               />
-            ) : null}
-
-            {show("gallery") ? (
-              <SectionErrorBoundary title="Memories couldn’t load">
-                <MemoryGallerySection
-                  cards={media.memoryCards}
-                  eyebrow={sections.gallery.eyebrow}
-                  title={sections.gallery.title}
-                  description={sections.gallery.description}
-                />
-              </SectionErrorBoundary>
             ) : null}
 
             {show("party") ? (
