@@ -73,8 +73,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     defaultVisible: true,
     defaultEyebrow: "Wedding day",
     defaultTitle: "May 15, 2027",
-    defaultDescription:
-      "Two paths become one road to Bella Cosa. Here is how the day unfolds — confirmed moments first, the rest as details arrive.",
+    defaultDescription: "",
     hasDescription: true,
   },
   {
@@ -92,8 +91,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     defaultVisible: true,
     defaultEyebrow: "Travel",
     defaultTitle: "Travel",
-    defaultDescription:
-      "Travel notes for Lake Wales, Florida. Confirmed details appear clearly; everything else stays labeled as a placeholder.",
+    defaultDescription: "",
     hasDescription: true,
   },
   {

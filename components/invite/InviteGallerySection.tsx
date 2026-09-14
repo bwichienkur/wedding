@@ -1,9 +1,9 @@
 "use client";
 
-import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import type { MemoryCard } from "@/data/memories";
-import { useEffect, useId, useRef, useState } from "react";
+import { useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 function GalleryDialog({
   card,
@@ -70,7 +70,7 @@ function GalleryDialog({
   );
 }
 
-/** Photo grid gallery for the invite card — scroll-reveals each image. */
+/** Horizontal carousel with scroll-linked parallax (Zola-style). */
 export function InviteGallerySection({
   cards,
   eyebrow = "Gallery",
@@ -83,41 +83,94 @@ export function InviteGallerySection({
   description?: string;
 }) {
   const [selected, setSelected] = useState<MemoryCard | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const slideRefs = useRef<(HTMLElement | null)[]>([]);
+  const reduceMotion = useReducedMotion();
+
+  const applyParallax = useCallback(() => {
+    if (reduceMotion) return;
+    const section = document.getElementById("gallery");
+    if (!section) return;
+
+    const rect = section.getBoundingClientRect();
+    const viewH = window.innerHeight || 1;
+    const centerOffset = (rect.top + rect.height * 0.35 - viewH * 0.5) / viewH;
+    const clamped = Math.max(-1, Math.min(1, centerOffset));
+
+    slideRefs.current.forEach((slide, index) => {
+      if (!slide) return;
+      const depth = (index % 3) - 1;
+      const y = clamped * (18 + depth * 10);
+      const scale = 1 + Math.abs(clamped) * 0.015;
+      slide.style.transform = `translate3d(0, ${y}px, 0) scale(${scale})`;
+    });
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    applyParallax();
+    window.addEventListener("scroll", applyParallax, { passive: true });
+    window.addEventListener("resize", applyParallax);
+    const track = trackRef.current;
+    track?.addEventListener("scroll", applyParallax, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", applyParallax);
+      window.removeEventListener("resize", applyParallax);
+      track?.removeEventListener("scroll", applyParallax);
+    };
+  }, [applyParallax, reduceMotion, cards.length]);
 
   if (cards.length === 0) {
     return null;
   }
 
   return (
-    <Section id="gallery" eyebrow={eyebrow} title={title} description={description}>
-      <ul className="invite-gallery-grid">
-        {cards.map((card) => (
-          <li key={card.id}>
-            <Reveal className="h-full">
+    <Section
+      id="gallery"
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
+      className="invite-gallery-section"
+    >
+      <div className="invite-gallery-carousel-outer">
+        <div
+          ref={trackRef}
+          className="invite-gallery-carousel"
+          role="region"
+          aria-label="Photo gallery carousel"
+          tabIndex={0}
+        >
+          {cards.map((card, index) => (
+            <article
+              key={card.id}
+              ref={(el) => {
+                slideRefs.current[index] = el;
+              }}
+              className="invite-gallery-slide"
+              style={{ zIndex: index % 2 === 0 ? 2 : 1 }}
+            >
               <button
                 type="button"
-                className="invite-gallery-tile group w-full text-left"
+                className="invite-gallery-slide-button group"
                 onClick={() => setSelected(card)}
               >
-                <span className="invite-photo-frame block overflow-hidden">
+                <span className="invite-photo-frame invite-gallery-slide-frame block overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={card.image.src}
                     alt={card.image.alt}
-                    className="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                    className="aspect-[4/5] h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    draggable={false}
                   />
                 </span>
-                <span className="mt-3 block font-display text-base text-invite-navy">
-                  {card.title}
-                </span>
-                <span className="mt-1 block font-sans text-[0.58rem] uppercase tracking-[0.18em] text-invite-body/65">
-                  {card.dateLabel}
-                </span>
               </button>
-            </Reveal>
-          </li>
-        ))}
-      </ul>
+            </article>
+          ))}
+        </div>
+        <p className="mt-4 text-center font-sans text-[0.58rem] uppercase tracking-[0.2em] text-invite-body/55">
+          Swipe to explore
+        </p>
+      </div>
 
       {selected ? (
         <GalleryDialog card={selected} onClose={() => setSelected(null)} />
