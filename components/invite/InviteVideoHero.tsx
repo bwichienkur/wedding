@@ -1,5 +1,6 @@
 "use client";
 
+import { InviteDivider } from "@/components/invite/InviteDecor";
 import { wedding } from "@/data/wedding";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
@@ -45,12 +46,20 @@ export function InviteVideoHero() {
         )}
 
         <div className="invite-hero-content">
-          <h1 id="invite-hero-title" className="invite-hero-minimal-names">
-            {wedding.couple.partnerOne}
-            <span className="invite-hero-minimal-amp">&</span>
-            {wedding.couple.partnerTwo}
-          </h1>
-          <p className="invite-hero-minimal-date">{dateUpper}</p>
+          <div className="invite-hero-stack">
+            <h1 id="invite-hero-title" className="invite-hero-stack-names">
+              <span className="invite-hero-stack-name">
+                {wedding.couple.partnerOne}
+              </span>
+              <span className="invite-hero-stack-amp">&amp;</span>
+              <span className="invite-hero-stack-name">
+                {wedding.couple.partnerTwo}
+              </span>
+            </h1>
+            <p className="invite-hero-stack-occasion">Wedding Day</p>
+            <InviteDivider className="invite-hero-stack-divider my-0 w-40" />
+            <p className="invite-hero-stack-date">{dateUpper}</p>
+          </div>
         </div>
       </div>
     </section>

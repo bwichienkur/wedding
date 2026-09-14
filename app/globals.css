@@ -1031,16 +1031,17 @@
 
   .invite-hero-video-wrap {
     position: relative;
-    aspect-ratio: 9 / 16;
-    min-height: 32rem;
-    max-height: min(52rem, 88vh);
+    width: 100%;
+    min-height: 100dvh;
+    max-height: 100dvh;
     overflow: hidden;
     background: #0a1628;
   }
 
   @media (min-width: 480px) {
     .invite-hero-video-wrap {
-      min-height: 36rem;
+      min-height: min(100dvh, 44rem);
+      max-height: min(100dvh, 44rem);
     }
   }
 
@@ -1069,34 +1070,80 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 2.25rem 1.25rem 1rem;
+    padding: clamp(2.75rem, 11vh, 4.75rem) 1.25rem 1.5rem;
     text-align: center;
     pointer-events: none;
   }
 
-  .invite-hero-minimal-names {
+  .invite-hero-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(100%, 16rem);
+    gap: clamp(0.35rem, 2vh, 0.65rem);
+  }
+
+  .invite-hero-stack-names {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.15rem, 1.2vh, 0.35rem);
+    margin: 0;
     font-family: var(--font-display-family), Georgia, serif;
-    font-size: clamp(2rem, 1.35rem + 4.5vw, 2.85rem);
     font-weight: 500;
-    line-height: 1.1;
+    line-height: 1.02;
     color: #fff;
     text-shadow:
       0 2px 18px rgb(0 0 0 / 0.75),
       0 0 32px rgb(0 0 0 / 0.45);
   }
 
-  .invite-hero-minimal-amp {
-    display: inline-block;
-    margin-inline: 0.15em;
+  .invite-hero-stack-name {
+    display: block;
+    font-size: clamp(2.35rem, 2rem + 5.5vw, 3.35rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .invite-hero-stack-amp {
+    display: block;
+    font-size: clamp(1.35rem, 1.1rem + 2vw, 1.75rem);
+    font-weight: 400;
+    letter-spacing: 0.08em;
     color: #f5e6a8;
   }
 
-  .invite-hero-minimal-date {
-    margin-top: 0.65rem;
+  .invite-hero-stack-occasion {
+    margin: clamp(0.35rem, 2vh, 0.85rem) 0 0;
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: clamp(1.35rem, 1.1rem + 2.5vw, 1.85rem);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow:
+      0 2px 16px rgb(0 0 0 / 0.72),
+      0 0 28px rgb(0 0 0 / 0.4);
+  }
+
+  .invite-hero-stack-divider {
+    margin-top: clamp(0.35rem, 1.5vh, 0.65rem);
+    opacity: 0.95;
+    filter: drop-shadow(0 1px 8px rgb(0 0 0 / 0.55));
+  }
+
+  .invite-hero-stack-divider::after {
+    background: rgb(255 255 255 / 0.92);
+    border-color: rgb(245 230 168 / 0.95);
+  }
+
+  .invite-hero-stack-date {
+    margin: 0;
     font-family: var(--font-body), sans-serif;
-    font-size: 0.62rem;
+    font-size: clamp(0.58rem, 0.5rem + 0.35vw, 0.68rem);
     font-weight: 600;
-    letter-spacing: 0.32em;
+    letter-spacing: 0.34em;
     text-transform: uppercase;
     color: #f5e6a8;
     text-shadow:
