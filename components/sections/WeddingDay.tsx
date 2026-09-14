@@ -1,19 +1,11 @@
 "use client";
 
-import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import type { ScheduleItem } from "@/data/logistics-types";
 import { scheduleItems, weddingDayTransition } from "@/data/schedule";
 import { wedding } from "@/data/wedding";
-import {
-  buildGoogleCalendarUrl,
-  downloadIcs,
-} from "@/lib/calendar/schedule";
 import { cn } from "@/lib/cn";
-
-const calendarActionClass =
-  "invite-outline-button inline-flex min-h-11 items-center justify-center rounded-sm border px-5 text-xs font-medium uppercase tracking-[0.12em]";
 
 function ScheduleCard({
   item,
@@ -22,8 +14,6 @@ function ScheduleCard({
   item: ScheduleItem;
   align: "left" | "right";
 }) {
-  const googleUrl = buildGoogleCalendarUrl(item);
-
   return (
     <div
       className={cn(
@@ -43,34 +33,6 @@ function ScheduleCard({
       </p>
       {item.locationLabel ? (
         <p className="invite-schedule-location">{item.locationLabel}</p>
-      ) : null}
-      {item.includeInCalendar && item.timeLocal ? (
-        <div
-          className={cn(
-            "mt-3 flex flex-wrap gap-2",
-            align === "right" ? "justify-start sm:justify-end" : "",
-          )}
-        >
-          {googleUrl ? (
-            <ButtonLink
-              href={googleUrl}
-              variant="secondary"
-              size="md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={calendarActionClass}
-            >
-              Calendar
-            </ButtonLink>
-          ) : null}
-          <button
-            type="button"
-            className={calendarActionClass}
-            onClick={() => downloadIcs(item)}
-          >
-            Download ICS
-          </button>
-        </div>
       ) : null}
     </div>
   );

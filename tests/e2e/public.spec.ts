@@ -57,9 +57,7 @@ test.describe("public invitation", () => {
     });
   });
 
-  test("schedule includes ceremony time and calendar actions", async ({
-    page,
-  }) => {
+  test("schedule includes ceremony and reception times", async ({ page }) => {
     await gotoHome(page, "#wedding-day");
     const schedule = page.locator("#wedding-day");
     await expect(
@@ -71,11 +69,11 @@ test.describe("public invitation", () => {
     ).toBeVisible();
     await expect(schedule.getByText("5:30 PM").first()).toBeVisible();
     await expect(
-      schedule.getByRole("link", { name: "Google Calendar" }),
-    ).toHaveCount(2);
+      schedule.getByRole("link", { name: "Calendar" }),
+    ).toHaveCount(0);
     await expect(
       schedule.getByRole("button", { name: "Download ICS" }),
-    ).toHaveCount(2);
+    ).toHaveCount(0);
   });
 
   test("FAQ search filters questions", async ({ page }) => {
