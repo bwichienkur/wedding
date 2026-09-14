@@ -5,18 +5,8 @@ const bokAddress = "1151 Tower Boulevard, Lake Wales, FL 33853";
 
 export const travel: TravelInfo = {
   intro:
-    "Fly into Orlando, stay at our hotel block in Lake Wales, and enjoy a quiet visit to Bok Tower Gardens nearby.",
-  airports: [
-    {
-      id: "mco",
-      name: "Orlando International Airport",
-      code: "MCO",
-      driveTimeLabel: "About 1 hour to Bella Cosa / Lake Wales.",
-      driveTimeIsPlaceholder: false,
-      notes: "Nearest major airport. Rental cars and rideshares are available.",
-      notesIsPlaceholder: false,
-    },
-  ],
+    "Stay at our hotel block in Lake Wales and enjoy a quiet visit to Bok Tower Gardens nearby.",
+  airports: [],
   hotels: [
     {
       id: "holiday-inn-express-lake-wales",
