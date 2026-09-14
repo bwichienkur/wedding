@@ -139,7 +139,8 @@ export function SiteHeader({
       className={cn(
         "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-500",
         headerChrome,
-        inviteMode && "left-1/2 max-w-[30rem] -translate-x-1/2",
+        inviteMode &&
+          "left-1/2 w-full max-w-[min(100%,26.5rem)] -translate-x-1/2 md:max-w-[34rem] lg:max-w-[42rem] xl:max-w-[46rem]",
       )}
     >
       <div

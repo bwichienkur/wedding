@@ -20,6 +20,7 @@
   --invite-cream: #faf4ea;
   --invite-cream-deep: #f5ebdc;
   --invite-page-bg: #e8d5bc;
+  --invite-card-max: 26.5rem;
   --invite-navy: #1a3050;
   --invite-navy-soft: #2a4468;
   --invite-body: #5c4f45;
@@ -1002,8 +1003,28 @@
     }
   }
 
+  @media (min-width: 768px) {
+    .invite-page {
+      --invite-card-max: 34rem;
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .invite-page {
+      --invite-card-max: 42rem;
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .invite-page {
+      --invite-card-max: 46rem;
+    }
+  }
+
   .invite-card {
-    width: min(100%, 26.5rem);
+    width: min(100%, var(--invite-card-max));
     margin-inline: auto;
     overflow: hidden;
     border-radius: 0.35rem;
@@ -1042,6 +1063,24 @@
     .invite-hero-video-wrap {
       min-height: min(100dvh, 44rem);
       max-height: min(100dvh, 44rem);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .invite-hero-video-wrap {
+      min-height: min(92dvh, 46rem);
+      max-height: min(92dvh, 46rem);
+    }
+
+    .invite-hero-stack {
+      width: min(100%, 22rem);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .invite-hero-video-wrap {
+      min-height: min(88dvh, 44rem);
+      max-height: min(88dvh, 44rem);
     }
   }
 
@@ -1214,6 +1253,18 @@
   .invite-section {
     padding: 2.75rem 1.5rem;
     border-top: 1px solid rgb(201 162 77 / 0.2);
+  }
+
+  @media (min-width: 768px) {
+    .invite-section {
+      padding: 3rem 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .invite-section {
+      padding: 3.25rem 2.5rem;
+    }
   }
 
   .invite-section-subline {
@@ -1451,6 +1502,12 @@
   @media (min-width: 640px) {
     .invite-gallery-grid {
       gap: 1.5rem 1.25rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .invite-gallery-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
