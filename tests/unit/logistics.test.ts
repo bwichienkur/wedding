@@ -63,25 +63,22 @@ describe("logistics defaults", () => {
     expect(travel.recommendations[0]?.imageSrc).toMatch(/bok-tower/);
   });
 
-  it("seeds eleven wedding-party people including a ceremony pianist", () => {
-    expect(weddingParty).toHaveLength(11);
+  it("lists ten wedding-party members from Zola", () => {
+    expect(weddingParty).toHaveLength(10);
     expect(weddingParty.filter((m) => m.side === "bright")).toHaveLength(5);
     expect(weddingParty.filter((m) => m.side === "lexi")).toHaveLength(5);
-    expect(weddingParty.some((m) => m.id === "ceremony-pianist")).toBe(true);
-    expect(weddingParty.some((m) => m.role === "Honor attendant")).toBe(false);
+    expect(weddingParty.some((m) => m.name === "Aakash Patel")).toBe(true);
+    expect(weddingParty.some((m) => m.role === "Bridesmaid and Officiant")).toBe(
+      true,
+    );
   });
 
-  it("covers required FAQ topics", () => {
-    const ids = faqItems.map((item) => item.id);
-    expect(ids).toEqual(
-      expect.arrayContaining([
-        "dress-code",
-        "parking",
-        "accessibility",
-        "registry",
-        "rsvp-deadline",
-      ]),
-    );
+  it("mirrors Zola FAQ questions only", () => {
+    expect(faqItems).toHaveLength(7);
+    const questions = faqItems.map((item) => item.question);
+    expect(questions).toContain("Is there parking at the venue?");
+    expect(questions).toContain("Will there be an open bar?");
+    expect(faqItems.some((item) => item.id === "registry")).toBe(false);
   });
 });
 
