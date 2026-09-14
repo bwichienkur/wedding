@@ -10,7 +10,11 @@ export function InviteCountdownSection() {
   if (!wedding.featureFlags.countdown || !countdown) return null;
 
   return (
-    <section id="countdown" className="invite-section invite-countdown" aria-live="polite">
+    <section
+      id="countdown"
+      className="invite-section invite-countdown"
+      aria-live="polite"
+    >
       <h2 className="invite-section-heading text-center">Countdown</h2>
       <p className="invite-section-subline text-center">
         We can&apos;t wait for this moment
@@ -24,7 +28,13 @@ export function InviteCountdownSection() {
       ) : (
         <div className="invite-countdown-grid">
           <CountdownUnit value={countdown.days} label="Days" />
+          <span className="invite-countdown-sep" aria-hidden>
+            ·
+          </span>
           <CountdownUnit value={countdown.hours} label="Hours" />
+          <span className="invite-countdown-sep" aria-hidden>
+            ·
+          </span>
           <CountdownUnit value={countdown.minutes} label="Minutes" />
         </div>
       )}

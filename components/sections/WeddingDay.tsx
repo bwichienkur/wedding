@@ -79,18 +79,20 @@ function ScheduleCard({
 export function WeddingDaySection({
   eyebrow = weddingDayTransition.eyebrow,
   title = "What we have planned for you",
-  description = weddingDayTransition.body,
+  description = "",
 }: {
   eyebrow?: string;
   title?: string;
   description?: string;
 } = {}) {
+  const subline = description?.trim() || undefined;
+
   return (
     <Section
       id="wedding-day"
       eyebrow={eyebrow}
       title={title}
-      description={description}
+      description={subline}
     >
       <div className="invite-schedule mt-2">
         <span className="invite-schedule-spine" aria-hidden />

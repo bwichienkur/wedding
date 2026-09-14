@@ -68,5 +68,5 @@ export const scheduleItems: ScheduleItem[] = [
 export const weddingDayTransition = {
   eyebrow: "Wedding day",
   title: wedding.wedding.dateDisplay,
-  body: "Two paths become one road to Bella Cosa. Here is how the day unfolds — confirmed moments first, the rest as details arrive.",
+  body: "",
 };

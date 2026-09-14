@@ -53,12 +53,11 @@ describe("logistics defaults", () => {
     expect("weather" in venue).toBe(false);
   });
 
-  it("lists Holiday Inn Express and Bok Tower Gardens", () => {
+  it("lists Holiday Inn Express hotel block", () => {
     expect(travel.airports).toHaveLength(0);
+    expect(travel.recommendations).toHaveLength(0);
     expect(travel.hotels[0]?.bookingCode).toBe("BLW");
     expect(travel.hotels[0]?.address).toContain("2953 Ridge Way");
-    expect(travel.recommendations[0]?.id).toBe("bok-tower-gardens");
-    expect(travel.recommendations[0]?.imageSrc).toMatch(/bok-tower/);
   });
 
   it("lists ten wedding-party members from Zola", () => {

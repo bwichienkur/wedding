@@ -4,25 +4,26 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
 import type { TravelInfo } from "@/data/logistics-types";
 import { travel as defaultTravel } from "@/data/travel";
-import { cn } from "@/lib/cn";
 
 export function TravelSection({
   travel = defaultTravel,
   eyebrow = "Travel",
   title = "Travel",
-  description = travel.intro,
+  description = "",
 }: {
   travel?: TravelInfo;
   eyebrow?: string;
   title?: string;
   description?: string;
 } = {}) {
+  const subline = description?.trim() || undefined;
+
   return (
     <Section
       id="travel"
       eyebrow={eyebrow}
       title={title}
-      description={description}
+      description={subline}
       className=""
     >
       <div className="space-y-12">
