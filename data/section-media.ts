@@ -48,6 +48,16 @@ export const sectionMediaPlacements: SectionMediaPlacement[] = [
     storyMomentId: "proposal",
   },
   {
+    key: "story.wedding",
+    sectionId: "story",
+    label: "Story · Wedding",
+    description: "Photograph for the wedding chapter in Our Story.",
+    accepts: ["image"],
+    allowMultiple: false,
+    defaultCategory: "relationship_memory",
+    storyMomentId: "wedding",
+  },
+  {
     key: "gallery",
     sectionId: "gallery",
     label: "Memories gallery",

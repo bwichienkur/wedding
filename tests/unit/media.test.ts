@@ -106,6 +106,7 @@ describe("section media placements", () => {
       expect.arrayContaining([
         "home.hero",
         "story.how-we-met",
+        "story.wedding",
         "gallery",
         "proposal.highlight",
         "proposal.still",
