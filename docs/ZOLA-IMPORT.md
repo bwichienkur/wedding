@@ -26,7 +26,7 @@ This script:
 3. Updates `wedding/media-assets.json` with `placementKey` `party` and `gallery`
 4. Updates `wedding/logistics-content.json` FAQ list on blob (so admin overrides match Zola)
 
-Party photos match members when the asset `title` / `alt` equals the member `id` in `data/party.ts` (e.g. `aakash-patel`).
+If **`BLOB_STORE_ID`** is set (private store), uploads use `access: private` and the site serves images via `/api/media/file/{id}`.
 
 ### GitHub Actions
 

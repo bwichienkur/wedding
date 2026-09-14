@@ -46,6 +46,7 @@ export function MediaAdminPanel() {
   const [success, setSuccess] = useState<string | null>(null);
   const [storageReady, setStorageReady] = useState<boolean | null>(null);
   const [blobConfigured, setBlobConfigured] = useState(false);
+  const [blobAccess, setBlobAccess] = useState<"public" | "private">("public");
   const [storageHints, setStorageHints] = useState<string[]>([]);
 
   const placement = useMemo(
@@ -98,11 +99,13 @@ export function MediaAdminPanel() {
         const status = (await statusResponse.json()) as {
           photoUploadReady?: boolean;
           blobConfigured?: boolean;
+          blobAccess?: "public" | "private";
           hints?: string[];
         };
         if (!cancelled) {
           setStorageReady(status.photoUploadReady ?? null);
           setBlobConfigured(Boolean(status.blobConfigured));
+          setBlobAccess(status.blobAccess === "private" ? "private" : "public");
           setStorageHints(status.hints ?? []);
         }
       }
@@ -189,7 +192,7 @@ export function MediaAdminPanel() {
               setProgress(1);
             }
             return put(path, file, {
-              access: "public",
+              access: blobAccess,
               token,
               contentType: mimeType,
               multipart: false,

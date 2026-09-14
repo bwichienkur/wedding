@@ -7,6 +7,10 @@ import {
   isBlobStorageEnabled,
   requireBlobToken,
 } from "@/lib/media/blob-env";
+import {
+  imagePublicUrl,
+  resolveBlobAccess,
+} from "@/lib/media/blob-access";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "media-assets.json");
@@ -88,7 +92,7 @@ export async function writeImageFile(
   if (isBlobStorageEnabled()) {
     const pathname = `wedding/images/${filename}`;
     const blob = await put(pathname, bytes, {
-      access: "public",
+      access: resolveBlobAccess(),
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType,
@@ -96,7 +100,7 @@ export async function writeImageFile(
     });
     return {
       storagePath: blob.pathname,
-      publicUrl: blob.url,
+      publicUrl: imagePublicUrl(assetId, blob.url),
     };
   }
 
@@ -115,7 +119,7 @@ export async function readImageFile(storagePath: string): Promise<Buffer | null>
       ? storagePath
       : `wedding/images/${storagePath}`;
     const result = await get(target, {
-      access: "public",
+      access: resolveBlobAccess(),
       token: blobToken(),
     });
     if (!result || result.statusCode !== 200) return null;
