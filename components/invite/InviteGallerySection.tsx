@@ -83,9 +83,37 @@ export function InviteGallerySection({
   description?: string;
 }) {
   const [selected, setSelected] = useState<MemoryCard | null>(null);
+  const [scrollEdges, setScrollEdges] = useState({ atStart: true, atEnd: false });
   const trackRef = useRef<HTMLDivElement | null>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const reduceMotion = useReducedMotion();
+
+  const updateScrollEdges = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    const left = track.scrollLeft;
+    setScrollEdges({
+      atStart: left <= 4,
+      atEnd: maxScroll <= 4 || left >= maxScroll - 4,
+    });
+  }, []);
+
+  const scrollCarousel = useCallback(
+    (direction: -1 | 1) => {
+      const track = trackRef.current;
+      const firstSlide = slideRefs.current[0];
+      if (!track || !firstSlide) return;
+      const styles = getComputedStyle(track);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 16;
+      const step = firstSlide.offsetWidth + gap;
+      track.scrollBy({
+        left: direction * step,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    },
+    [reduceMotion],
+  );
 
   const applyParallax = useCallback(() => {
     if (reduceMotion) return;
@@ -120,6 +148,36 @@ export function InviteGallerySection({
     };
   }, [applyParallax, reduceMotion, cards.length]);
 
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    updateScrollEdges();
+
+    const onScroll = () => {
+      updateScrollEdges();
+      applyParallax();
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      if (maxScroll <= 0) return;
+      event.preventDefault();
+      track.scrollLeft += event.deltaY;
+    };
+
+    track.addEventListener("scroll", onScroll, { passive: true });
+    track.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("resize", updateScrollEdges);
+
+    return () => {
+      track.removeEventListener("scroll", onScroll);
+      track.removeEventListener("wheel", onWheel);
+      window.removeEventListener("resize", updateScrollEdges);
+    };
+  }, [applyParallax, cards.length, updateScrollEdges]);
+
   if (cards.length === 0) {
     return null;
   }
@@ -133,6 +191,24 @@ export function InviteGallerySection({
       className="invite-gallery-section"
     >
       <div className="invite-gallery-carousel-outer">
+        <button
+          type="button"
+          className="invite-gallery-nav invite-gallery-nav--prev"
+          aria-label="Previous photos"
+          disabled={scrollEdges.atStart}
+          onClick={() => scrollCarousel(-1)}
+        >
+          <span aria-hidden>‹</span>
+        </button>
+        <button
+          type="button"
+          className="invite-gallery-nav invite-gallery-nav--next"
+          aria-label="Next photos"
+          disabled={scrollEdges.atEnd}
+          onClick={() => scrollCarousel(1)}
+        >
+          <span aria-hidden>›</span>
+        </button>
         <div
           ref={trackRef}
           className="invite-gallery-carousel"
@@ -167,8 +243,11 @@ export function InviteGallerySection({
             </article>
           ))}
         </div>
-        <p className="mt-4 text-center font-sans text-[0.58rem] uppercase tracking-[0.2em] text-invite-body/55">
-          Swipe to explore
+        <p className="invite-gallery-hint mt-4 text-center font-sans text-[0.58rem] uppercase tracking-[0.2em] text-invite-body/55">
+          <span className="invite-gallery-hint-touch">Swipe to explore</span>
+          <span className="invite-gallery-hint-desktop">
+            Scroll or use arrows to explore
+          </span>
         </p>
       </div>
 
