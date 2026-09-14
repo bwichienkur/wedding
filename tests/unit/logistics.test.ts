@@ -53,10 +53,8 @@ describe("logistics defaults", () => {
     expect("weather" in venue).toBe(false);
   });
 
-  it("lists Orlando airport, Holiday Inn Express, and Bok Tower Gardens", () => {
-    expect(travel.airports).toHaveLength(1);
-    expect(travel.airports[0]?.code).toBe("MCO");
-    expect(travel.airports[0]?.name).toMatch(/Orlando International/i);
+  it("lists Holiday Inn Express and Bok Tower Gardens", () => {
+    expect(travel.airports).toHaveLength(0);
     expect(travel.hotels[0]?.bookingCode).toBe("BLW");
     expect(travel.hotels[0]?.address).toContain("2953 Ridge Way");
     expect(travel.recommendations[0]?.id).toBe("bok-tower-gardens");

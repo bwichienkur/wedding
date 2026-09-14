@@ -132,15 +132,15 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     label: "Registry",
     defaultVisible: true,
     defaultEyebrow: "Registry",
-    defaultTitle: "Gifts",
+    defaultTitle: "Registry",
     defaultDescription:
-      "Kept intentionally understated. Your presence matters most.",
+      "Your presence means the world to us. Our registry is on Zola.",
     hasDescription: true,
   },
   {
     id: "closing",
     label: "Closing",
-    defaultVisible: true,
+    defaultVisible: false,
     hasDescription: false,
   },
 ];

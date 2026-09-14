@@ -6,7 +6,6 @@ import { InviteCountdownSection } from "@/components/invite/InviteCountdownSecti
 import { ScrollToRsvpFab } from "@/components/invite/ScrollToRsvpFab";
 import { InviteVideoHero } from "@/components/invite/InviteVideoHero";
 import { CinematicEntry } from "@/components/sections/CinematicEntry";
-import { ClosingSection } from "@/components/sections/Closing";
 import { FaqSection } from "@/components/sections/Faq";
 import { OurStory } from "@/components/sections/OurStory";
 import { PartySection } from "@/components/sections/Party";
@@ -163,10 +162,6 @@ export function HomeExperience({
                 title={sections.registry.title}
                 description={sections.registry.description}
               />
-            ) : null}
-
-            {show("closing") ? (
-              <ClosingSection image={media.closingImage} />
             ) : null}
           </main>
         </InviteCanvas>

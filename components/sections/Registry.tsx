@@ -1,85 +1,40 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
 import { registry } from "@/data/registry";
-import { cn } from "@/lib/cn";
 
 export function RegistrySection({
   eyebrow = "Registry",
-  title = "Gifts",
-  description = "Kept intentionally understated. Your presence matters most.",
+  title = "Registry",
+  description = "Your presence means the world to us. If you wish to give a gift, our registry is on Zola.",
 }: {
   eyebrow?: string;
   title?: string;
   description?: string;
 } = {}) {
+  const link = registry.links[0];
+
   return (
     <Section
       id="registry"
       eyebrow={eyebrow}
       title={title}
       description={description}
-      className=""
     >
-      <p
-        className={cn(
-          "max-w-prose text-base leading-relaxed text-ivory/80",
-          registry.noteIsPlaceholder && "placeholder-copy text-ivory/70",
-        )}
-      >
-        {registry.note}
-      </p>
-      <p
-        className={cn(
-          "mt-4 max-w-prose text-base text-ivory/70",
-          registry.presenceIsPlaceholder && "placeholder-copy",
-        )}
-      >
-        {registry.presenceMessage}
-      </p>
-
-      <ul className="mt-10 space-y-4">
-        {registry.links.map((link) => (
-          <li key={link.id} className="flex flex-wrap items-center gap-3">
-            {link.urlIsPlaceholder ? (
-              <p className="placeholder-copy text-sm text-ivory/70">
-                {link.label} — add the registry URL when ready.
-              </p>
-            ) : (
-              <ButtonLink
-                href={link.url}
-                variant="secondary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {link.label}
-                <span className="sr-only"> (opens in a new tab)</span>
-              </ButtonLink>
-            )}
-            {link.description ? (
-              <span className="text-sm text-ivory/70">{link.description}</span>
-            ) : null}
-          </li>
-        ))}
-        {registry.honeymoonFund ? (
-          <li className="pt-2">
-            {registry.honeymoonFund.urlIsPlaceholder ? (
-              <p className="placeholder-copy text-sm text-ivory/70">
-                {registry.honeymoonFund.label} — add the fund link if desired.
-              </p>
-            ) : (
-              <ButtonLink
-                href={registry.honeymoonFund.url}
-                variant="ghost"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {registry.honeymoonFund.label}
-                <span className="sr-only"> (opens in a new tab)</span>
-              </ButtonLink>
-            )}
-          </li>
-        ) : null}
-      </ul>
+      {link && !link.urlIsPlaceholder ? (
+        <div className="flex justify-center pt-2">
+          <ButtonLink
+            href={link.url}
+            variant="gold"
+            size="lg"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="invite-outline-button min-w-[14rem]"
+          >
+            {link.label}
+            <span className="sr-only"> (opens in a new tab)</span>
+          </ButtonLink>
+        </div>
+      ) : null}
     </Section>
   );
 }

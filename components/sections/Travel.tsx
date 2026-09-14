@@ -26,70 +26,36 @@ export function TravelSection({
       className=""
     >
       <div className="space-y-12">
-        {travel.airports.length > 0 ? (
-          <div>
-            <h3 className="font-display text-2xl text-gold">Airport</h3>
-            <ul className="mt-6 space-y-6">
-              {travel.airports.map((airport) => (
-                <li key={airport.id} className="border-l border-gold/50 pl-4">
-                  <p className="font-display text-xl text-gold">
-                    {airport.name}{" "}
-                    <span className="font-sans text-sm tracking-[0.14em] text-gold-soft">
-                      {airport.code}
-                    </span>
-                  </p>
-                  <p
-                    className={cn(
-                      "mt-2 text-sm text-ivory/70",
-                      airport.driveTimeIsPlaceholder && "placeholder-copy",
-                    )}
-                  >
-                    {airport.driveTimeLabel}
-                  </p>
-                  <p
-                    className={cn(
-                      "mt-2 text-sm text-ivory/80",
-                      airport.notesIsPlaceholder && "placeholder-copy",
-                    )}
-                  >
-                    {airport.notes}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
         {travel.hotels.length > 0 ? (
           <div>
-            <h3 className="font-display text-2xl text-gold">Accommodations</h3>
+            <h3 className="font-display text-2xl text-invite-navy">Accommodations</h3>
             <ul className="mt-6 space-y-8">
               {travel.hotels.map((hotel) => (
                 <li
                   key={hotel.id}
-                  className="border border-gold/25 bg-parchment p-5 sm:p-6"
+                  className="rounded-sm border border-[rgb(201_162_77/0.28)] bg-[#faf6ef] p-5 sm:p-6"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <h4 className="font-display text-xl text-gold sm:text-2xl">
+                    <h4 className="font-display text-xl text-invite-navy sm:text-2xl">
                       {hotel.name}
                     </h4>
                     {hotel.status === "confirmed" ? (
-                      <span className="font-sans text-xs uppercase tracking-[0.16em] text-gold">
+                      <span className="font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
                         Confirmed
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-3 text-sm text-ivory/80">{hotel.address}</p>
+                  <p className="mt-3 text-sm text-invite-body/85">{hotel.address}</p>
                   {hotel.bookingCode ? (
-                    <p className="mt-3 font-sans text-sm text-ivory">
+                    <p className="mt-3 font-sans text-sm text-invite-body">
                       Discount code{" "}
-                      <span className="font-semibold tracking-[0.08em] text-gold">
+                      <span className="font-semibold tracking-[0.08em] text-invite-gold">
                         {hotel.bookingCode}
                       </span>
                     </p>
                   ) : null}
                   {hotel.notes ? (
-                    <p className="mt-2 text-sm text-ivory/70">{hotel.notes}</p>
+                    <p className="mt-2 text-sm text-invite-body/80">{hotel.notes}</p>
                   ) : null}
                   <div className="mt-4 flex flex-wrap gap-3">
                     {hotel.bookingUrl ? (
@@ -103,13 +69,18 @@ export function TravelSection({
                       </ButtonLink>
                     ) : null}
                     {hotel.phone ? (
-                      <ButtonLink href={`tel:${hotel.phone}`} variant="secondary">
+                      <ButtonLink
+                        href={`tel:${hotel.phone}`}
+                        variant="secondary"
+                        className="invite-outline-button"
+                      >
                         Call
                       </ButtonLink>
                     ) : null}
                     <ButtonLink
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.address)}`}
                       variant="secondary"
+                      className="invite-outline-button"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
