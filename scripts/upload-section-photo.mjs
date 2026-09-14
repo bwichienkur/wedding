@@ -101,7 +101,11 @@ async function main() {
     alt:
       placementKey === "story.proposal"
         ? "Bright proposing to Lexi under a lit arch with a drone message in the night sky"
-        : title,
+        : placementKey === "story.how-we-met"
+          ? "Bright dipping Lexi on an outdoor promenade when they met"
+          : placementKey === "story.wedding"
+            ? "Bright and Lexi smiling together in golden light before their wedding day"
+            : title,
     width: 2400,
     height: 1600,
     focalX: 50,

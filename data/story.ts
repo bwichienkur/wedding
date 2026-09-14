@@ -12,13 +12,13 @@ export const storyMilestones: StoryMilestone[] = [
     featured: true,
     locationLabel: "Sweetwater, Boynton Beach, Florida",
     image: {
-      src: "/images/placeholders/story-met.svg",
-      alt: "Placeholder for a photograph of Bright and Lexi when they met",
-      width: 1600,
-      height: 2000,
-      focalPoint: { x: 50, y: 40 },
-      placeholder: true,
-      caption: "Add a photograph from early in your story.",
+      src: "/images/story/how-we-met.jpg",
+      alt: "Bright dipping Lexi on an outdoor promenade when they met",
+      width: 2400,
+      height: 1600,
+      focalPoint: { x: 50, y: 45 },
+      placeholder: false,
+      caption: "Sweetwater, Boynton Beach, Florida.",
     },
     passages: [
       {
@@ -58,11 +58,11 @@ export const storyMilestones: StoryMilestone[] = [
     featured: true,
     locationLabel: `${wedding.wedding.venueName} · ${wedding.wedding.city}, ${wedding.wedding.region}`,
     image: {
-      src: "/images/venue/bella-cosa-watercolor.png",
-      alt: "Watercolor illustration of Bella Cosa in Lake Wales, Florida",
-      width: 1600,
-      height: 1200,
-      focalPoint: { x: 50, y: 45 },
+      src: "/images/story/wedding.jpg",
+      alt: "Bright and Lexi smiling together in golden light before their wedding day",
+      width: 2400,
+      height: 1600,
+      focalPoint: { x: 52, y: 42 },
       placeholder: false,
     },
     passages: [
