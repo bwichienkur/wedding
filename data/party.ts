@@ -1,47 +1,115 @@
 import type { WeddingPartyMember } from "./logistics-types";
-import { wedding } from "./wedding";
 
-function groomsman(index: number): WeddingPartyMember {
-  return {
-    id: `bright-groomsman-${index}`,
-    name: `Add groomsman ${index}`,
+/** Wedding party from Zola (brightandlexi/wedding_party). Portraits via blob placement `party`. */
+export const weddingParty: WeddingPartyMember[] = [
+  {
+    id: "aakash-patel",
+    name: "Aakash Patel",
+    role: "Best Man",
+    side: "bright",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Aakash Patel",
+  },
+  {
+    id: "hank-badon",
+    name: "Hank Badon",
     role: "Groomsman",
     side: "bright",
-    relationship: `Add relationship to ${wedding.couple.partnerOne}.`,
+    relationship: "",
     relationshipIsPlaceholder: true,
-    description: "Add a short personal description.",
+    description: "",
     descriptionIsPlaceholder: true,
-    photoAlt: `Photograph placeholder for Bright’s groomsman ${index}`,
-  };
-}
-
-function bridesmaid(index: number): WeddingPartyMember {
-  return {
-    id: `lexi-bridesmaid-${index}`,
-    name: `Add bridesmaid ${index}`,
+    photoAlt: "Portrait of Hank Badon",
+  },
+  {
+    id: "zach-bragg",
+    name: "Zach Bragg",
+    role: "Groomsman",
+    side: "bright",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Zach Bragg",
+  },
+  {
+    id: "trevor-ragno",
+    name: "Trevor Ragno",
+    role: "Groomsman",
+    side: "bright",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Trevor Ragno",
+  },
+  {
+    id: "ryan-knaak",
+    name: "Ryan Knaak",
+    role: "Groomsman",
+    side: "bright",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Ryan Knaak",
+  },
+  {
+    id: "samantha-badon",
+    name: "Samantha Badon",
+    role: "Maid of Honor",
+    side: "lexi",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Samantha Badon",
+  },
+  {
+    id: "nicole-dikshteyn",
+    name: "Nicole Dikshteyn",
     role: "Bridesmaid",
     side: "lexi",
-    relationship: `Add relationship to ${wedding.couple.partnerTwo}.`,
+    relationship: "",
     relationshipIsPlaceholder: true,
-    description: "Add a short personal description.",
+    description: "",
     descriptionIsPlaceholder: true,
-    photoAlt: `Photograph placeholder for Lexi’s bridesmaid ${index}`,
-  };
-}
-
-/** Eleven people: five groomsmen, five bridesmaids, ceremony pianist. */
-export const weddingParty: WeddingPartyMember[] = [
-  ...[1, 2, 3, 4, 5].map(groomsman),
-  ...[1, 2, 3, 4, 5].map(bridesmaid),
+    photoAlt: "Portrait of Nicole Dikshteyn",
+  },
   {
-    id: "ceremony-pianist",
-    name: "Add ceremony pianist",
-    role: "Ceremony pianist",
-    side: "shared",
-    relationship: "Add how this musician is connected to Bright and Lexi.",
+    id: "grace-hipskind",
+    name: "Grace Hipskind",
+    role: "Bridesmaid",
+    side: "lexi",
+    relationship: "",
     relationshipIsPlaceholder: true,
-    description: "Add a short note about the ceremony pianist.",
+    description: "",
     descriptionIsPlaceholder: true,
-    photoAlt: "Photograph placeholder for the ceremony pianist",
+    photoAlt: "Portrait of Grace Hipskind",
+  },
+  {
+    id: "valeria-ragno",
+    name: "Valeria Ragno",
+    role: "Bridesmaid",
+    side: "lexi",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Valeria Ragno",
+  },
+  {
+    id: "kaitie-knaak",
+    name: "Kaitie Knaak",
+    role: "Bridesmaid and Officiant",
+    side: "lexi",
+    relationship: "",
+    relationshipIsPlaceholder: true,
+    description: "",
+    descriptionIsPlaceholder: true,
+    photoAlt: "Portrait of Kaitie Knaak",
   },
 ];

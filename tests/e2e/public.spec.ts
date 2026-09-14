@@ -82,10 +82,13 @@ test.describe("public invitation", () => {
     await gotoHome(page, "#faq");
     await page.getByPlaceholder("Dress code, parking, RSVP…").fill("parking");
     await expect(
-      page.getByRole("button", { name: "Where do I park?", exact: true }),
+      page.getByRole("button", {
+        name: "Is there parking at the venue?",
+        exact: true,
+      }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "What is the dress code?", exact: true }),
+      page.getByRole("button", { name: "What should I wear?", exact: true }),
     ).toHaveCount(0);
   });
 

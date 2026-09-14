@@ -1,113 +1,53 @@
 import type { FaqItem } from "./logistics-types";
-import { wedding } from "./wedding";
 
+/** FAQs mirrored from https://www.zola.com/wedding/brightandlexi/faq */
 export const faqItems: FaqItem[] = [
-  {
-    id: "dress-code",
-    category: "Attire",
-    question: "What is the dress code?",
-    answer: "Add dress-code guidance.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "plus-ones",
-    category: "Guests",
-    question: "May I bring a plus-one?",
-    answer: "Add plus-one guidance. Invitations will show who is included.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "children",
-    category: "Guests",
-    question: "Are children welcome?",
-    answer: "Add children policy details.",
-    answerIsPlaceholder: true,
-  },
   {
     id: "arrival-time",
     category: "Day of",
-    question: "When should I arrive?",
-    answer: `Ceremony begins at ${wedding.wedding.ceremonyBegins}. Add guest arrival guidance.`,
-    answerIsPlaceholder: true,
+    question: "What time should I arrive?",
+    answer:
+      "We recommend arriving 20–30 minutes before the start of the ceremony. This will give you time to sign the guest book and chat with guests.",
+  },
+  {
+    id: "dress-code",
+    category: "Attire",
+    question: "What should I wear?",
+    answer:
+      "Formal attire is appreciated, but not required. See this link if you're needing more ideas!\nhttps://www.pinterest.com/agragno/guest-attire/\n\nBridesmaids will be in a warm terracotta.\nPlease no white!",
   },
   {
     id: "parking",
     category: "Venue",
-    question: "Where do I park?",
-    answer: "Add parking instructions.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "accessibility",
-    category: "Venue",
-    question: "Is the venue accessible?",
-    answer: "Add accessibility details.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "weather",
-    category: "Day of",
-    question: "What if the weather changes?",
-    answer: "Add weather and indoor/outdoor contingency details.",
-    answerIsPlaceholder: true,
+    question: "Is there parking at the venue?",
+    answer: "Yes, there is free and ample parking available.",
   },
   {
     id: "indoor-outdoor",
     category: "Venue",
-    question: "Is the wedding indoors or outdoors?",
-    answer: "Add indoor or outdoor details for ceremony and reception.",
-    answerIsPlaceholder: true,
+    question: "Is it indoors or outdoors?",
+    answer:
+      "The ceremony will be held outdoors on a paved patio with artificial turf. The reception will take place indoors. In the event of rain, the ceremony will also be moved indoors.",
+  },
+  {
+    id: "plus-ones",
+    category: "Guests",
+    question: "Can I bring a plus one?",
+    answer:
+      "Invitiations will usually specify, but contact us directly if you're unsure!",
   },
   {
     id: "photography-policy",
     category: "Day of",
-    question: "May guests take photos?",
-    answer: "Add photography policy for guests.",
-    answerIsPlaceholder: true,
+    question: "Can I take and post pictures?",
+    answer:
+      "Please refrain from taking any photos during the ceremony. As for cocktail hour and reception, snap and post away!",
   },
   {
-    id: "rsvp-deadline",
-    category: "RSVP",
-    question: "When is the RSVP deadline?",
-    answer: wedding.rsvp.deadlineLabel,
-    answerIsPlaceholder: wedding.rsvp.deadlineIsPlaceholder,
-  },
-  {
-    id: "dietary",
-    category: "RSVP",
-    question: "How do I share dietary needs?",
-    answer: "Add guidance for dietary restrictions collected during RSVP.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "transportation",
-    category: "Travel",
-    question: "Is transportation provided?",
-    answer: "Add transportation details.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "accommodations",
-    category: "Travel",
-    question: "Where should I stay?",
-    answer: "Add hotel block and accommodation guidance.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "registry",
-    category: "Gifts",
-    question: "Where are you registered?",
-    answer: "Add registry guidance, or note that presence is the greatest gift.",
-    answerIsPlaceholder: true,
-  },
-  {
-    id: "contact",
-    category: "Contact",
-    question: "Who can I contact with questions?",
-    answer: wedding.contact.emailIsPlaceholder
-      ? "Add a contact email or phone for guest questions."
-      : `Reach out at ${wedding.contact.email}.`,
-    answerIsPlaceholder: wedding.contact.emailIsPlaceholder,
+    id: "open-bar",
+    category: "Reception",
+    question: "Will there be an open bar?",
+    answer: "Is the Pope Catholic?",
   },
 ];
 
