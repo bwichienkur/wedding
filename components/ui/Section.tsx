@@ -45,7 +45,7 @@ export function Section({
           ) : null}
           {description ? (
             <RevealItem compact>
-              <p className="invite-section-subline mx-auto mt-4 max-w-sm text-balance">
+              <p className="invite-section-subline mx-auto mt-4 max-w-sm text-balance md:max-w-md lg:max-w-xl">
                 {description}
               </p>
             </RevealItem>
