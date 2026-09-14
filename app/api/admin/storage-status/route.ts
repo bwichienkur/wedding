@@ -3,6 +3,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { isAdminAuthConfigured, isAdminAuthenticated } from "@/lib/auth/admin";
 import { isBlobStorageEnabled } from "@/lib/media/blob-env";
+import { resolveBlobAccess } from "@/lib/media/blob-access";
 import { MAX_IMAGE_MB } from "@/lib/media/types";
 
 export const runtime = "nodejs";
@@ -19,6 +20,7 @@ export async function GET() {
   return NextResponse.json({
     authConfigured: isAdminAuthConfigured(),
     blobConfigured,
+    blobAccess: resolveBlobAccess(),
     production: isProduction,
     photoUploadReady: !isProduction || blobConfigured,
     maxImageMb: MAX_IMAGE_MB,

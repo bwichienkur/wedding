@@ -94,18 +94,28 @@ function baseAsset(partial) {
   };
 }
 
+function blobAccess() {
+  const explicit = process.env.BLOB_ACCESS?.toLowerCase();
+  if (explicit === "public" || explicit === "private") return explicit;
+  if (process.env.BLOB_STORE_ID?.trim()) return "private";
+  return "public";
+}
+
 async function storeImage(assetId, bytes, contentType, ext, token) {
   const filename = `${assetId}.${ext}`;
   if (token) {
     const pathname = `wedding/images/${filename}`;
+    const access = blobAccess();
     const blob = await put(pathname, bytes, {
-      access: "public",
+      access,
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType,
       token,
     });
-    return { storagePath: blob.pathname, publicUrl: blob.url };
+    const publicUrl =
+      access === "private" ? `/api/media/file/${assetId}` : blob.url;
+    return { storagePath: blob.pathname, publicUrl };
   }
 
   await fs.mkdir(LOCAL_UPLOADS, { recursive: true });
