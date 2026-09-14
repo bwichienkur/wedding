@@ -36,12 +36,12 @@ export const storyMilestones: StoryMilestone[] = [
     locationLabel: wedding.proposal.locationLabel,
     image: {
       src: "/images/placeholders/story-proposal.svg",
-      alt: "Placeholder for a proposal photograph",
-      width: 1600,
-      height: 2000,
-      focalPoint: { x: 50, y: 35 },
+      alt: "Bright proposing to Lexi under a lit arch with a drone message in the night sky",
+      width: 2400,
+      height: 1600,
+      focalPoint: { x: 50, y: 42 },
       placeholder: true,
-      caption: "Add a photograph from the proposal.",
+      caption: "Proposal at Joe & Jodi’s home in Longwood, Florida.",
     },
     passages: [
       {
