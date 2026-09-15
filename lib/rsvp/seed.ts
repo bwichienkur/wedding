@@ -97,6 +97,8 @@ export function createSeedDatabase(): RsvpDatabase {
   const householdB = randomUUID();
   const householdC = randomUUID();
   const householdD = randomUUID();
+  const householdWichienkur = randomUUID();
+  const householdCouple = randomUUID();
 
   const households = [
     {
@@ -155,6 +157,34 @@ export function createSeedDatabase(): RsvpDatabase {
       createdAt: now,
       updatedAt: now,
     },
+    {
+      id: householdWichienkur,
+      displayName: "Bright Wichienkur",
+      invitationCodeHash: hashInvitationCode("WICHIEN27"),
+      invitationCodeHint: "W27",
+      email: "bright.wichienkur.example@example.com",
+      phone: null,
+      notesAdmin: "Example household for RSVP testing (Bright).",
+      rsvpStatus: "pending" as const,
+      eventIds: [ceremonyId],
+      maxPlusOnes: 0,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: householdCouple,
+      displayName: "Bright & Lexi Wichienkur",
+      invitationCodeHash: hashInvitationCode("BRIGHTLEX27"),
+      invitationCodeHint: "BL27",
+      email: "bright.lexi.example@example.com",
+      phone: null,
+      notesAdmin: "Example couple household for multi-guest RSVP testing.",
+      rsvpStatus: "pending" as const,
+      eventIds: [ceremonyId, rehearsalId],
+      maxPlusOnes: 0,
+      createdAt: now,
+      updatedAt: now,
+    },
   ];
 
   // Second Brooks for duplicate-name handling demos
@@ -188,6 +218,9 @@ export function createSeedDatabase(): RsvpDatabase {
     guest(householdC, "Casey Nguyen", { sortOrder: 2 }),
     guest(householdD, "Taylor Brooks", { sortOrder: 1 }),
     guest(householdE, "Morgan Brooks", { sortOrder: 1 }),
+    guest(householdWichienkur, "Bright Wichienkur", { sortOrder: 1 }),
+    guest(householdCouple, "Bright Wichienkur", { sortOrder: 1 }),
+    guest(householdCouple, "Lexi Wichienkur", { sortOrder: 2 }),
   ];
 
   return {

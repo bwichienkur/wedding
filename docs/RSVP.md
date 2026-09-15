@@ -13,9 +13,13 @@
 Demo seed (fictional only):
 
 - Name: `Alex Rivera` or code `RIVERA27`
+- Name: **`Bright Wichienkur`** or code **`WICHIEN27`** (solo example)
+- Name: **`Bright Wichienkur`** / **`Lexi Wichienkur`** or code **`BRIGHTLEX27`** (couple example — two households match “Bright Wichienkur”; pick the right card)
 - Name: `Jordan Lee` or code `LEE2027` (includes unnamed plus-one)
 - Name: `Sam Nguyen` / `Casey Nguyen` or code `NGUYEN27` (ceremony + rehearsal)
 - Duplicate last name demo: `Taylor Brooks` / `Morgan Brooks`
+
+After changing seed guests locally, run `npm run reset:rsvp-seed` and restart the dev server so `.data/rsvp.json` is rebuilt.
 
 ## Security model
 
