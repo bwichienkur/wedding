@@ -5,6 +5,7 @@ import { useId, useState, type ReactNode } from "react";
 
 export function Accordion({
   items,
+  className,
 }: {
   items: Array<{
     id: string;
@@ -12,9 +13,15 @@ export function Accordion({
     content: ReactNode;
     defaultOpen?: boolean;
   }>;
+  className?: string;
 }) {
   return (
-    <div className="divide-y divide-stone/80 border-y border-stone/80">
+    <div
+      className={cn(
+        "divide-y divide-stone/80 border-y border-stone/80",
+        className,
+      )}
+    >
       {items.map((item) => (
         <AccordionItem key={item.id} {...item} />
       ))}

@@ -46,10 +46,11 @@ export function FaqSection({
       eyebrow={eyebrow}
       title={title}
       description={description}
+      className="invite-faq-section"
     >
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end">
+      <div className="invite-faq-controls mb-8 flex flex-col gap-4 sm:flex-row sm:items-end">
         <label className="block flex-1 text-sm">
-          <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-ivory/70">
+          <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em]">
             Search
           </span>
           <input
@@ -57,17 +58,17 @@ export function FaqSection({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Dress code, parking, RSVP…"
-            className="min-h-12 w-full border border-gold/30 bg-parchment px-3 text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="invite-faq-input"
           />
         </label>
         <label className="block text-sm sm:w-52">
-          <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-ivory/70">
+          <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em]">
             Category
           </span>
           <select
             value={category}
             onChange={(event) => setCategory(event.target.value)}
-            className="min-h-12 w-full border border-gold/30 bg-parchment px-3 text-ivory focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            className="invite-faq-input"
           >
             <option value="All">All</option>
             {categories.map((item) => (
@@ -80,21 +81,22 @@ export function FaqSection({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-ivory/70">No questions match that search.</p>
+        <p className="text-sm text-invite-body/75">No questions match that search.</p>
       ) : (
         <Accordion
+          className="invite-faq-accordion"
           items={filtered.map((item) => ({
             id: `faq-${item.id}`,
             title: item.question,
             content: (
               <div>
-                <p className="mb-2 font-sans text-xs uppercase tracking-[0.16em] text-gold">
+                <p className="mb-2 font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
                   {item.category}
                 </p>
                 <p
                   className={cn(
-                    "max-w-prose text-base leading-relaxed text-ivory/80",
-                    item.answerIsPlaceholder && "placeholder-copy text-ivory/70",
+                    "invite-faq-answer max-w-prose text-base leading-relaxed",
+                    item.answerIsPlaceholder && "placeholder-copy italic",
                   )}
                 >
                   {item.answer}

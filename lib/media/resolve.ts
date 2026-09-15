@@ -120,9 +120,20 @@ export async function resolvePartyMembers() {
 
   return party.map((member, index) => {
     const byId = portraits.find(
-      (asset) => asset.title === member.id || asset.alt === member.id,
+      (asset) =>
+        asset.title === member.id ||
+        asset.alt === member.id ||
+        asset.title === member.name,
     );
-    const asset = byId ?? portraits[index];
+    if (byId?.publicUrl) {
+      return {
+        ...member,
+        photoSrc: byId.publicUrl,
+        photoAlt: byId.alt || byId.title || member.photoAlt,
+      };
+    }
+    if (member.photoSrc) return member;
+    const asset = portraits[index];
     if (!asset?.publicUrl) return member;
     return {
       ...member,
