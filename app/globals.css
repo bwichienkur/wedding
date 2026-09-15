@@ -876,7 +876,7 @@
   }
 
   .video-opening-fullscreen-exit {
-    animation: video-opening-fullscreen-exit var(--intro-exit, 280ms) ease-out
+    animation: video-opening-fullscreen-exit var(--intro-open, 480ms) ease-out
       forwards;
   }
 

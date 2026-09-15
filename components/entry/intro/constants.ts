@@ -3,10 +3,10 @@ export const INTRO_TIMING = {
   activating: 220,
   /** Slow emboss + seam illumination (mask wipe + opacity) */
   glow: 4500,
-  /** Flap peel + seal lift before homepage takes over */
-  open: 1600,
+  /** Overlay fade after opening video ends */
+  open: 480,
   /** Overlay unmount after peel settles */
-  exit: 280,
+  exit: 320,
   /** Monogram starts after florals begin filling */
   monogramDelay: 900,
 } as const;

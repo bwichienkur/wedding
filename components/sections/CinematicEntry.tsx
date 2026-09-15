@@ -62,6 +62,8 @@ export function CinematicEntry({
   const startReveal = useCallback(() => {
     if (revealedRef.current) return;
     revealedRef.current = true;
+    document.body.classList.remove("intro-active");
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     onRevealStart?.();
   }, [onRevealStart]);
 
@@ -106,7 +108,10 @@ export function CinematicEntry({
   useLayoutEffect(() => {
     const video = videoRef.current;
     if (!video || !isClient || removed) return;
-    const handleEnded = () => onVideoEnded();
+    const handleEnded = () => {
+      video.pause();
+      onVideoEnded();
+    };
     video.addEventListener("ended", handleEnded);
     return () => video.removeEventListener("ended", handleEnded);
   }, [isClient, onVideoEnded, removed, phase]);
@@ -161,8 +166,8 @@ export function CinematicEntry({
     <div
       className={[
         "intro-overlay video-opening-overlay fixed inset-0 z-[100] overflow-hidden",
-        "transition-[opacity,background-color] duration-[480ms] ease-out",
-        showThrough ? "bg-transparent" : "",
+        "transition-opacity duration-[480ms] ease-out",
+        showThrough ? "bg-transparent" : "bg-[#070e1a]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
         opening ? "pointer-events-none" : "",
       ].join(" ")}
