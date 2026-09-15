@@ -24,76 +24,79 @@ export function TravelSection({
       eyebrow={eyebrow}
       title={title}
       description={subline}
-      className=""
+      className="invite-travel-section"
     >
-      <div className="space-y-12">
-        {travel.hotels.length > 0 ? (
-          <div>
-            <h3 className="font-display text-2xl text-invite-navy">Accommodations</h3>
-            <ul className="mt-6 space-y-8">
-              {travel.hotels.map((hotel) => (
-                <li
-                  key={hotel.id}
-                  className="rounded-sm border border-[rgb(201_162_77/0.28)] bg-[#faf6ef] p-5 sm:p-6"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <h4 className="font-display text-xl text-invite-navy sm:text-2xl">
-                      {hotel.name}
-                    </h4>
-                    {hotel.status === "confirmed" ? (
-                      <span className="font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
-                        Confirmed
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-3 text-sm text-invite-body/85">{hotel.address}</p>
-                  {hotel.bookingCode ? (
-                    <p className="mt-3 font-sans text-sm text-invite-body">
-                      Discount code{" "}
-                      <span className="font-semibold tracking-[0.08em] text-invite-gold">
-                        {hotel.bookingCode}
-                      </span>
-                    </p>
+      {travel.intro?.trim() ? (
+        <p className="invite-section-subline mx-auto mb-8 max-w-md text-center text-balance">
+          {travel.intro}
+        </p>
+      ) : null}
+
+      {travel.hotels.length > 0 ? (
+        <div>
+          <h3 className="text-center font-display text-xl text-invite-navy sm:text-2xl">
+            Accommodations
+          </h3>
+          <ul className="mt-6 space-y-6">
+            {travel.hotels.map((hotel) => (
+              <li key={hotel.id} className="invite-travel-card">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <h4 className="font-display text-xl sm:text-2xl">{hotel.name}</h4>
+                  {hotel.status === "confirmed" ? (
+                    <span className="invite-travel-badge">Room block</span>
                   ) : null}
-                  {hotel.notes ? (
-                    <p className="mt-2 text-sm text-invite-body/80">{hotel.notes}</p>
-                  ) : null}
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    {hotel.bookingUrl ? (
-                      <ButtonLink
-                        href={hotel.bookingUrl}
-                        variant="gold"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Book
-                      </ButtonLink>
-                    ) : null}
-                    {hotel.phone ? (
-                      <ButtonLink
-                        href={`tel:${hotel.phone}`}
-                        variant="secondary"
-                        className="invite-outline-button"
-                      >
-                        Call
-                      </ButtonLink>
-                    ) : null}
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-invite-body/90">
+                  {hotel.address}
+                </p>
+                {hotel.bookingCode ? (
+                  <p className="mt-4 font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                    Discount code
+                    <span className="invite-travel-code ml-2">
+                      {hotel.bookingCode}
+                    </span>
+                  </p>
+                ) : null}
+                {hotel.notes ? (
+                  <p className="mt-3 text-sm leading-relaxed text-invite-body/85">
+                    {hotel.notes}
+                  </p>
+                ) : null}
+                <div className="mt-5 flex flex-wrap justify-center gap-3 sm:justify-start">
+                  {hotel.bookingUrl ? (
                     <ButtonLink
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.address)}`}
-                      variant="secondary"
-                      className="invite-outline-button"
+                      href={hotel.bookingUrl}
+                      variant="gold"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Map
+                      Book stay
                     </ButtonLink>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </div>
+                  ) : null}
+                  {hotel.phone ? (
+                    <ButtonLink
+                      href={`tel:${hotel.phone}`}
+                      variant="secondary"
+                      className="invite-outline-button"
+                    >
+                      Call hotel
+                    </ButtonLink>
+                  ) : null}
+                  <ButtonLink
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.address)}`}
+                    variant="secondary"
+                    className="invite-outline-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Open map
+                  </ButtonLink>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </Section>
   );
 }

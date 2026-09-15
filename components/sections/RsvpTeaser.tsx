@@ -18,17 +18,22 @@ export function RsvpSection({
       eyebrow={eyebrow}
       title={title}
       description={description}
+      className="invite-rsvp-section"
     >
-      <div className="invite-rsvp-card mx-auto max-w-md rounded-md bg-white px-6 py-8 shadow-[0_12px_40px_rgba(26,48,80,0.12)] sm:px-8 sm:py-10">
+      <div className="invite-rsvp-card mx-auto max-w-md">
         <p
           className={cn(
-            "mb-6 text-center text-sm text-invite-body/80",
+            "font-display text-lg text-invite-navy sm:text-xl",
             wedding.rsvp.deadlineIsPlaceholder && "placeholder-copy italic",
           )}
         >
           {wedding.rsvp.deadlineLabel}
         </p>
-        <div className="flex justify-center">
+        <p className="mt-3 text-sm leading-relaxed text-invite-body/85">
+          {description?.trim() ||
+            "Find your invitation by name or code, then respond for everyone in your household."}
+        </p>
+        <div className="mt-7 flex justify-center">
           <ButtonLink href="/rsvp" variant="gold" size="lg">
             Begin RSVP
           </ButtonLink>

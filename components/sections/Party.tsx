@@ -1,15 +1,19 @@
 import { Section } from "@/components/ui/Section";
 import type { WeddingPartyMember } from "@/data/logistics-types";
+import { cn } from "@/lib/cn";
 
 function PartyPerson({ member }: { member: WeddingPartyMember }) {
   return (
     <article className="flex flex-col items-center px-4 py-7 text-center sm:px-6 sm:py-8">
-      <div className="size-20 overflow-hidden rounded-full bg-[#e8dcc8] sm:size-24">
+      <div className="invite-party-photo mx-auto size-24 overflow-hidden rounded-full border border-[rgb(201_162_77/0.45)] bg-[#e8dcc8] shadow-[0_8px_24px_rgb(74_48_32/0.12)] sm:size-28">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={member.photoSrc ?? "/images/placeholders/party-portrait.svg"}
           alt={member.photoAlt ?? `${member.name} portrait`}
-          className="h-full w-full object-cover"
+          className={cn(
+            "h-full w-full",
+            member.id === "zach-bragg" ? "object-cover object-[center_22%]" : "object-cover",
+          )}
         />
       </div>
       <h4 className="mt-4 font-display text-sm uppercase tracking-[0.12em] text-invite-navy sm:text-base">

@@ -33,7 +33,8 @@ export const weddingParty: WeddingPartyMember[] = [
     relationshipIsPlaceholder: true,
     description: "",
     descriptionIsPlaceholder: true,
-    photoAlt: "Portrait of Zach Bragg",
+    photoSrc: "/images/party/zach-bragg.jpg",
+    photoAlt: "Zach Bragg, groomsman",
   },
   {
     id: "trevor-ragno",
