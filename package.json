@@ -14,7 +14,8 @@
     "test:e2e:ui": "playwright test --ui",
     "qa": "npm run typecheck && npm run lint && npm test && npm run build",
     "import:zola": "node scripts/import-zola-media.mjs",
-    "upload:section-photo": "node scripts/upload-section-photo.mjs"
+    "upload:section-photo": "node scripts/upload-section-photo.mjs",
+    "reset:rsvp-seed": "node scripts/reset-rsvp-seed.mjs"
   },
   "dependencies": {
     "@mux/mux-node": "^15.0.0",

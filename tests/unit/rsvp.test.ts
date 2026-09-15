@@ -50,6 +50,17 @@ describe("rsvp service", () => {
     expect(result.candidates[0]?.displayName).toContain("Jordan Lee");
   });
 
+  it("finds Bright Wichienkur example households", async () => {
+    const byCode = await lookupHouseholds("WICHIEN27");
+    expect(byCode.candidates.length).toBe(1);
+    expect(byCode.candidates[0]?.displayName).toBe("Bright Wichienkur");
+    expect(byCode.candidates[0]?.guestPreview).toContain("Bright Wichienkur");
+
+    const byName = await lookupHouseholds("Bright Wichienkur");
+    expect(byName.candidates.length).toBe(2);
+    expect(byName.ambiguous).toBe(true);
+  });
+
   it("handles duplicate last names as ambiguous candidates", async () => {
     const result = await lookupHouseholds("Brooks");
     // exact full-name match required — last name alone should not match

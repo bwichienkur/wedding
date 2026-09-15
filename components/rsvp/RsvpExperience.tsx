@@ -250,7 +250,8 @@ export function RsvpExperience() {
           </label>
           {showDemoHint ? (
             <p className="text-sm text-invite-body/75">
-              Demo: try <strong>Alex Rivera</strong> or code{" "}
+              Demo: try <strong>Bright Wichienkur</strong> (code{" "}
+              <strong>WICHIEN27</strong>), <strong>Alex Rivera</strong>, or{" "}
               <strong>RIVERA27</strong>.
             </p>
           ) : (
