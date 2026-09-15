@@ -98,7 +98,7 @@ export function useVideoIntroPhase({
     ) {
       onRevealStart();
       setPhase("opening");
-      schedule(() => finish(), 480);
+      schedule(() => finish(), INTRO_TIMING.open);
     }
   }, [finish, onRevealStart, schedule, setPhase]);
 

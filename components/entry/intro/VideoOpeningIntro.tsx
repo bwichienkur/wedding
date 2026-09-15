@@ -23,8 +23,10 @@ export function VideoOpeningIntro({
 }: VideoOpeningIntroProps) {
   const interactive = phase === "closed";
   const glowing = phase === "activating" || phase === "glowing";
-  const playing = phase === "glowing";
+  const playbackStarted =
+    phase === "glowing" || phase === "opening" || phase === "opened";
   const exiting = phase === "opening" || phase === "opened";
+  const showPoster = phase === "closed" || phase === "activating";
 
   return (
     <div
@@ -33,8 +35,7 @@ export function VideoOpeningIntro({
         exiting && !reduceMotion && "video-opening-fullscreen-exit",
       )}
     >
-      {/* Poster frame before playback */}
-      {!playing ? (
+      {showPoster ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={OPENING_POSTER}
@@ -48,7 +49,9 @@ export function VideoOpeningIntro({
         ref={videoRef}
         className={cn(
           "video-opening-media absolute inset-0 z-[2]",
-          playing ? "opacity-100" : "pointer-events-none opacity-0",
+          playbackStarted
+            ? "opacity-100"
+            : "pointer-events-none opacity-0",
         )}
         src={OPENING_VIDEO}
         poster={OPENING_POSTER}
@@ -74,8 +77,8 @@ export function VideoOpeningIntro({
           className={cn(
             "video-opening-float-hint",
             glowing && "is-lit",
-            interactive && !playing && "is-visible",
-            playing && "opacity-0",
+            interactive && showPoster && "is-visible",
+            playbackStarted && "opacity-0",
           )}
         >
           {wedding.entry.tapHint}
