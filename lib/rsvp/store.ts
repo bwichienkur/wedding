@@ -3,6 +3,13 @@ import "server-only";
 import { promises as fs } from "fs";
 import path from "path";
 import { createSeedDatabase } from "@/lib/rsvp/seed";
+import { isSupabaseRsvpConfigured } from "@/lib/rsvp/supabase-env";
+import {
+  appendAuditSupabase,
+  readRsvpDbSupabase,
+  saveHouseholdResponsesSupabase,
+  updateHouseholdAdminSupabase,
+} from "@/lib/rsvp/store-supabase";
 import type {
   AuditLog,
   Guest,
@@ -31,17 +38,26 @@ async function ensureStore(): Promise<void> {
 }
 
 export async function readRsvpDb(): Promise<RsvpDatabase> {
+  if (isSupabaseRsvpConfigured()) {
+    return readRsvpDbSupabase();
+  }
   await ensureStore();
   const raw = await fs.readFile(DATA_FILE, "utf8");
   return JSON.parse(raw) as RsvpDatabase;
 }
 
 async function writeRsvpDb(db: RsvpDatabase): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    throw new Error("writeRsvpDb is not supported when Supabase RSVP is enabled.");
+  }
   await ensureStore();
   await fs.writeFile(DATA_FILE, JSON.stringify(db, null, 2), "utf8");
 }
 
 export async function resetRsvpDbForTests(): Promise<RsvpDatabase> {
+  if (isSupabaseRsvpConfigured()) {
+    throw new Error("resetRsvpDbForTests cannot run against Supabase.");
+  }
   const db = createSeedDatabase();
   await writeRsvpDb(db);
   return db;
@@ -83,6 +99,10 @@ export async function saveHouseholdResponses(options: {
   householdStatus: Household["rsvpStatus"];
   guestNameUpdates?: Array<{ guestId: string; fullName: string; normalizedName: string }>;
 }): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await saveHouseholdResponsesSupabase(options);
+    return;
+  }
   const db = await readRsvpDb();
   const household = db.households.find((item) => item.id === options.householdId);
   if (!household) throw new Error("Household not found");
@@ -115,6 +135,10 @@ export async function saveHouseholdResponses(options: {
 }
 
 export async function appendAudit(entry: Omit<AuditLog, "id">): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await appendAuditSupabase(entry);
+    return;
+  }
   const db = await readRsvpDb();
   db.auditLogs.push({ id: randomUUID(), ...entry });
   await writeRsvpDb(db);
@@ -124,6 +148,9 @@ export async function updateHouseholdAdmin(
   householdId: string,
   patch: Partial<Pick<Household, "notesAdmin" | "rsvpStatus" | "email">>,
 ): Promise<Household | null> {
+  if (isSupabaseRsvpConfigured()) {
+    return updateHouseholdAdminSupabase(householdId, patch);
+  }
   const db = await readRsvpDb();
   const household = db.households.find((item) => item.id === householdId);
   if (!household) return null;
