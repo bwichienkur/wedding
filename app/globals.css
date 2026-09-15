@@ -1508,6 +1508,179 @@
     );
   }
 
+  .invite-rsvp-page.invite-page {
+    min-height: 100svh;
+    padding-bottom: 3rem;
+  }
+
+  .invite-rsvp-flow {
+    color: var(--invite-body);
+  }
+
+  .invite-rsvp-stepper {
+    margin-top: 1.5rem;
+  }
+
+  .invite-rsvp-stepper-list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .invite-rsvp-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+    color: color-mix(in srgb, var(--invite-body) 45%, transparent);
+    font-family: var(--font-body), sans-serif;
+    font-size: 0.52rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .invite-rsvp-step.is-active {
+    color: var(--invite-navy);
+  }
+
+  .invite-rsvp-step.is-complete {
+    color: var(--invite-gold);
+  }
+
+  .invite-rsvp-step-marker {
+    display: grid;
+    place-items: center;
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 999px;
+    border: 1px solid rgb(201 162 77 / 0.35);
+    background: rgb(255 252 247 / 0.9);
+    font-size: 0.65rem;
+  }
+
+  .invite-rsvp-step.is-active .invite-rsvp-step-marker {
+    border-color: rgb(201 162 77 / 0.65);
+    background: rgb(201 162 77 / 0.15);
+    color: var(--invite-navy);
+  }
+
+  .invite-rsvp-step.is-complete .invite-rsvp-step-marker {
+    border-color: rgb(201 162 77 / 0.55);
+    background: rgb(201 162 77 / 0.22);
+    color: var(--invite-navy);
+  }
+
+  .invite-rsvp-error {
+    padding: 0.75rem 1rem;
+    border-radius: 0.2rem;
+    border: 1px solid rgb(160 48 48 / 0.35);
+    background: rgb(255 248 248 / 0.95);
+    color: #6b1f1f;
+  }
+
+  .invite-rsvp-roster {
+    padding: 1.25rem 1.15rem;
+    border: 1px solid rgb(201 162 77 / 0.32);
+    border-radius: 0.25rem;
+    background:
+      linear-gradient(
+        165deg,
+        rgb(255 252 246 / 0.98) 0%,
+        rgb(250 244 232 / 0.94) 100%
+      );
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.45) inset;
+  }
+
+  .invite-rsvp-roster-names {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: 1.05rem;
+    color: var(--invite-navy);
+  }
+
+  .invite-rsvp-household-pick {
+    width: 100%;
+    padding: 1.15rem 1.25rem;
+    text-align: left;
+    border: 1px solid rgb(201 162 77 / 0.32);
+    border-radius: 0.25rem;
+    background:
+      linear-gradient(
+        180deg,
+        rgb(255 252 247 / 0.98) 0%,
+        rgb(250 244 234 / 0.96) 100%
+      );
+    box-shadow: 0 8px 24px rgb(74 48 32 / 0.08);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .invite-rsvp-household-pick:hover:not(:disabled) {
+    border-color: rgb(201 162 77 / 0.55);
+    box-shadow: 0 12px 32px rgb(74 48 32 / 0.12);
+  }
+
+  .invite-rsvp-household-pick:focus-visible {
+    outline: 2px solid rgb(201 162 77 / 0.65);
+    outline-offset: 2px;
+  }
+
+  .invite-rsvp-guest-card {
+    padding: 1.25rem 0 0;
+    border-top: 1px solid rgb(201 162 77 / 0.28);
+  }
+
+  .invite-rsvp-segments {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .invite-rsvp-segment {
+    min-height: 2.85rem;
+    border: 1px solid rgb(201 162 77 / 0.38);
+    border-radius: 0.2rem;
+    background: rgb(255 252 247 / 0.95);
+    font-family: var(--font-body), sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--invite-body) 80%, transparent);
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .invite-rsvp-segment.is-active {
+    border-color: rgb(201 162 77 / 0.75);
+    background: rgb(201 162 77 / 0.12);
+    color: var(--invite-navy);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.5) inset;
+  }
+
+  .invite-rsvp-segment:focus-visible {
+    outline: 2px solid rgb(201 162 77 / 0.65);
+    outline-offset: 2px;
+  }
+
+  .invite-rsvp-review-item {
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgb(201 162 77 / 0.22);
+  }
+
   .invite-faq-controls label span {
     color: color-mix(in srgb, var(--invite-body) 70%, transparent);
   }

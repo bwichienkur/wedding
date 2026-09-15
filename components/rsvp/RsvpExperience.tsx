@@ -2,6 +2,9 @@
 
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { InviteDivider } from "@/components/invite/InviteDecor";
+import { attendingLabel, guestDisplayName } from "@/components/rsvp/rsvp-copy";
+import { RsvpStepper } from "@/components/rsvp/RsvpStepper";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import type {
@@ -61,6 +64,8 @@ interface ResponseDraft {
   plusOneName?: string;
 }
 
+const showDemoHint = process.env.NODE_ENV === "development";
+
 export function RsvpExperience() {
   const [step, setStep] = useState<Step>("lookup");
   const [query, setQuery] = useState("");
@@ -71,7 +76,6 @@ export function RsvpExperience() {
   const [messageToCouple, setMessageToCouple] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -188,12 +192,11 @@ export function RsvpExperience() {
           responses: drafts,
         }),
       });
-      const data = (await response.json()) as { error?: string; status?: string };
+      const data = (await response.json()) as { error?: string };
       if (!response.ok) {
         setError(data.error ?? "Unable to save RSVP.");
         return;
       }
-      setStatus(data.status ?? "complete");
       setStep("done");
     } catch {
       setError("Unable to save RSVP.");
@@ -203,53 +206,64 @@ export function RsvpExperience() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <p className="font-sans text-xs uppercase tracking-[0.28em] text-gold">
+    <div className="invite-rsvp-flow mx-auto w-full max-w-lg">
+      <p className="font-sans text-[0.58rem] uppercase tracking-[0.28em] text-invite-gold">
         RSVP
       </p>
-      <h1 className="mt-3 font-display text-4xl font-medium text-gold sm:text-5xl">
+      <h1 className="invite-section-heading mt-2 text-balance">
         {wedding.couple.displayName}
       </h1>
       <p
         className={cn(
-          "mt-4 text-sm text-ivory/70",
-          wedding.rsvp.deadlineIsPlaceholder && "placeholder-copy",
+          "invite-section-subline mx-auto mt-3 max-w-md text-center",
+          wedding.rsvp.deadlineIsPlaceholder && "placeholder-copy italic",
         )}
       >
         {wedding.rsvp.deadlineLabel}
       </p>
+      <InviteDivider className="mx-auto my-6 w-14" />
+
+      <RsvpStepper step={step} />
 
       {error ? (
-        <p className="mt-6 text-sm text-gold-soft" role="alert">
+        <p className="invite-rsvp-error mt-6 text-sm" role="alert">
           {error}
         </p>
       ) : null}
 
       {step === "lookup" ? (
-        <form onSubmit={onLookup} className="mt-10 space-y-5">
-          <label className="block text-sm">
-            <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
+        <form onSubmit={onLookup} className="mt-8 space-y-5">
+          <label className="block text-sm" htmlFor="rsvp-lookup">
+            <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
               Full name or invitation code
             </span>
             <input
+              id="rsvp-lookup"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="field-editorial"
+              className="invite-faq-input"
               autoComplete="name"
               required
               minLength={2}
+              placeholder="Name as it appears on your invitation"
             />
           </label>
-          <p className="text-sm text-ivory/70">
-            Try a fictional demo name like <strong>Alex Rivera</strong> or code{" "}
-            <strong>RIVERA27</strong>.
-          </p>
+          {showDemoHint ? (
+            <p className="text-sm text-invite-body/75">
+              Demo: try <strong>Alex Rivera</strong> or code{" "}
+              <strong>RIVERA27</strong>.
+            </p>
+          ) : (
+            <p className="text-sm text-invite-body/75">
+              Use the name on your invitation or the code from your card.
+            </p>
+          )}
           <Button
             type="submit"
             variant="gold"
             size="lg"
             disabled={pending}
-            className="w-full shadow-md"
+            className="w-full"
           >
             {pending ? "Searching…" : "Find invitation"}
           </Button>
@@ -257,25 +271,30 @@ export function RsvpExperience() {
       ) : null}
 
       {step === "select" ? (
-        <div className="mt-10 space-y-4">
-          <p className="text-base text-ivory/80">
-            Multiple invitations matched. Choose the correct household.
+        <div className="mt-8 space-y-4">
+          <p className="text-center text-sm leading-relaxed text-invite-body/85">
+            More than one invitation matched. Choose yours below.
           </p>
           <ul className="space-y-3">
             {candidates.map((candidate) => (
               <li key={candidate.confirmationToken}>
                 <button
                   type="button"
-                  className="w-full border border-gold/25 bg-parchment px-4 py-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+                  className="invite-rsvp-household-pick"
                   onClick={() => void selectCandidate(candidate)}
                   disabled={pending}
                 >
-                  <span className="font-display text-xl text-gold">
+                  <span className="font-display text-xl text-invite-navy">
                     {candidate.displayName}
                   </span>
-                  <span className="mt-2 block text-sm text-ivory/70">
-                    {candidate.guestPreview.join(", ")}
+                  <span className="mt-2 block text-sm text-invite-body/85">
+                    {candidate.guestPreview.join(" · ")}
                   </span>
+                  {candidate.invitedEventTitles.length > 0 ? (
+                    <span className="mt-2 block font-sans text-[0.58rem] uppercase tracking-[0.18em] text-invite-gold">
+                      {candidate.invitedEventTitles.join(" · ")}
+                    </span>
+                  ) : null}
                 </button>
               </li>
             ))}
@@ -283,33 +302,27 @@ export function RsvpExperience() {
         </div>
       ) : null}
 
-      {workspace && (step === "respond" || step === "details" || step === "review") ? (
-        <div className="mt-8">
-          <p className="font-display text-2xl text-gold">
-            {workspace.household.displayName}
-          </p>
-          <p className="mt-1 text-sm text-ivory/70">
-            Invited to {workspace.events.map((event) => event.title).join(", ")}
-          </p>
-        </div>
+      {workspace &&
+      (step === "respond" || step === "details" || step === "review") ? (
+        <HouseholdSummary workspace={workspace} drafts={drafts} />
       ) : null}
 
       {workspace && step === "respond" ? (
-        <div className="mt-8 space-y-8">
+        <div className="mt-8 space-y-6">
           {workspace.guests.map((guest) => (
-            <div key={guest.id} className="border-t border-gold/25 pt-6">
-              <h2 className="font-display text-2xl text-gold">
+            <div key={guest.id} className="invite-rsvp-guest-card">
+              <h2 className="font-display text-xl text-invite-navy sm:text-2xl">
                 {guest.isPlusOne && !guest.plusOneNamed
                   ? "Plus-one"
                   : guest.fullName}
               </h2>
               {guest.isPlusOne && !guest.plusOneNamed ? (
-                <label className="mt-3 block text-sm">
-                  <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
+                <label className="mt-4 block text-sm">
+                  <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
                     Plus-one name
                   </span>
                   <input
-                    className="field-editorial"
+                    className="invite-faq-input"
                     value={
                       drafts.find((draft) => draft.guestId === guest.id)
                         ?.plusOneName ?? ""
@@ -334,21 +347,29 @@ export function RsvpExperience() {
                   (meal) => meal.eventId === eventRecord.id,
                 );
                 return (
-                  <fieldset key={eventRecord.id} className="mt-4">
-                    <legend className="font-sans text-xs uppercase tracking-[0.16em] text-gold">
+                  <fieldset key={eventRecord.id} className="mt-5">
+                    <legend className="font-sans text-xs uppercase tracking-[0.18em] text-invite-gold">
                       {eventRecord.title}
                     </legend>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    {eventRecord.location ? (
+                      <p className="mt-1 text-xs text-invite-body/70">
+                        {eventRecord.location}
+                      </p>
+                    ) : null}
+                    <div
+                      className="invite-rsvp-segments mt-3"
+                      role="group"
+                      aria-label={`Attendance for ${eventRecord.title}`}
+                    >
                       {(["yes", "no"] as Attending[]).map((value) => (
                         <button
                           key={value}
                           type="button"
                           className={cn(
-                            "min-h-11 rounded-sm border px-4 text-sm uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
-                            draft.attending === value
-                              ? "border-gold bg-gold/10 text-gold"
-                              : "border-gold/40 text-ivory/70",
+                            "invite-rsvp-segment",
+                            draft.attending === value && "is-active",
                           )}
+                          aria-pressed={draft.attending === value}
                           onClick={() =>
                             updateDraft(guest.id, eventRecord.id, {
                               attending: value,
@@ -357,7 +378,7 @@ export function RsvpExperience() {
                             })
                           }
                         >
-                          {value === "yes" ? "Attending" : "Declines"}
+                          {value === "yes" ? "Attending" : "Can't make it"}
                         </button>
                       ))}
                     </div>
@@ -365,11 +386,11 @@ export function RsvpExperience() {
                     eventRecord.collectMeals &&
                     meals.length > 0 ? (
                       <label className="mt-4 block text-sm">
-                        <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
-                          Meal
+                        <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                          Meal preference
                         </span>
                         <select
-                          className="field-editorial"
+                          className="invite-faq-input"
                           value={draft.mealOptionId ?? ""}
                           onChange={(event) =>
                             updateDraft(guest.id, eventRecord.id, {
@@ -395,9 +416,12 @@ export function RsvpExperience() {
             type="button"
             variant="gold"
             size="lg"
+            className="w-full"
             onClick={() => {
               if (drafts.some((draft) => draft.attending === "unknown")) {
-                setError("Please choose attending or declines for each guest.");
+                setError(
+                  "Please choose attending or can’t make it for each guest.",
+                );
                 return;
               }
               setError(null);
@@ -421,17 +445,18 @@ export function RsvpExperience() {
               return (
                 <div
                   key={`${guest.id}-${eventRecord.id}`}
-                  className="border-t border-gold/25 pt-5"
+                  className="invite-rsvp-guest-card"
                 >
-                  <h2 className="font-display text-xl text-gold">
-                    {guest.fullName} · {eventRecord.title}
+                  <h2 className="font-display text-lg text-invite-navy">
+                    {guestDisplayName(guest, draft.plusOneName)} ·{" "}
+                    {eventRecord.title}
                   </h2>
-                  <label className="mt-3 block text-sm">
-                    <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
+                  <label className="mt-4 block text-sm">
+                    <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
                       Dietary restrictions
                     </span>
                     <textarea
-                      className="field-editorial min-h-20"
+                      className="invite-faq-input min-h-20 resize-y"
                       value={draft.dietaryNotes}
                       onChange={(event) =>
                         updateDraft(guest.id, eventRecord.id, {
@@ -441,11 +466,11 @@ export function RsvpExperience() {
                     />
                   </label>
                   <label className="mt-3 block text-sm">
-                    <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
+                    <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
                       Accessibility needs
                     </span>
                     <textarea
-                      className="field-editorial min-h-20"
+                      className="invite-faq-input min-h-20 resize-y"
                       value={draft.accessibilityNotes}
                       onChange={(event) =>
                         updateDraft(guest.id, eventRecord.id, {
@@ -461,21 +486,21 @@ export function RsvpExperience() {
           {attendingYes ? (
             <>
               <label className="block text-sm">
-                <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
+                <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
                   Song request
                 </span>
                 <input
-                  className="field-editorial"
+                  className="invite-faq-input"
                   value={songRequest}
                   onChange={(event) => setSongRequest(event.target.value)}
                 />
               </label>
               <label className="block text-sm">
-                <span className="mb-2 block uppercase tracking-[0.14em] text-ivory/70">
+                <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
                   Message to Bright & Lexi
                 </span>
                 <textarea
-                  className="field-editorial min-h-24"
+                  className="invite-faq-input min-h-24 resize-y"
                   value={messageToCouple}
                   onChange={(event) => setMessageToCouple(event.target.value)}
                 />
@@ -483,7 +508,12 @@ export function RsvpExperience() {
             </>
           ) : null}
           <div className="flex flex-wrap gap-3">
-            <Button type="button" variant="secondary" onClick={() => setStep("respond")}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="invite-outline-button !text-invite-navy"
+              onClick={() => setStep("respond")}
+            >
               Back
             </Button>
             <Button type="button" variant="gold" onClick={() => setStep("review")}>
@@ -495,37 +525,65 @@ export function RsvpExperience() {
 
       {workspace && step === "review" ? (
         <div className="mt-8 space-y-5">
-          <h2 className="font-display text-2xl text-gold">Review</h2>
-          <ul className="space-y-3 text-sm text-ivory/80">
+          <h2 className="text-center font-display text-2xl text-invite-navy">
+            Review your RSVP
+          </h2>
+          <ul className="invite-rsvp-review-list space-y-3 text-sm text-invite-body/90">
             {drafts.map((draft) => {
-              const guest = workspace.guests.find((item) => item.id === draft.guestId);
+              const guest = workspace.guests.find(
+                (item) => item.id === draft.guestId,
+              );
               const eventRecord = workspace.events.find(
                 (item) => item.id === draft.eventId,
               );
               const meal = workspace.mealOptions.find(
                 (item) => item.id === draft.mealOptionId,
               );
+              if (!guest || !eventRecord) return null;
               return (
-                <li key={`${draft.guestId}-${draft.eventId}`} className="border-b border-gold/25 pb-3">
-                  <p className="font-display text-lg text-gold">
-                    {draft.plusOneName || guest?.fullName} · {eventRecord?.title}
+                <li
+                  key={`${draft.guestId}-${draft.eventId}`}
+                  className="invite-rsvp-review-item"
+                >
+                  <p className="font-display text-lg text-invite-navy">
+                    {guestDisplayName(guest, draft.plusOneName)} ·{" "}
+                    {eventRecord.title}
                   </p>
-                  <p>Attendance: {draft.attending}</p>
-                  {meal ? <p>Meal: {meal.label}</p> : null}
-                  {draft.dietaryNotes ? <p>Dietary: {draft.dietaryNotes}</p> : null}
+                  <p className="mt-1">
+                    {attendingLabel(draft.attending)}
+                    {meal ? ` · ${meal.label}` : ""}
+                  </p>
+                  {draft.dietaryNotes ? (
+                    <p className="mt-1 text-invite-body/80">
+                      Dietary: {draft.dietaryNotes}
+                    </p>
+                  ) : null}
                   {draft.accessibilityNotes ? (
-                    <p>Accessibility: {draft.accessibilityNotes}</p>
+                    <p className="mt-1 text-invite-body/80">
+                      Accessibility: {draft.accessibilityNotes}
+                    </p>
                   ) : null}
                 </li>
               );
             })}
           </ul>
-          {songRequest ? <p className="text-sm">Song: {songRequest}</p> : null}
-          {messageToCouple ? (
-            <p className="text-sm">Message: {messageToCouple}</p>
+          {songRequest ? (
+            <p className="text-sm text-invite-body/85">
+              Song request: {songRequest}
+            </p>
           ) : null}
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" variant="secondary" onClick={() => setStep("details")}>
+          {messageToCouple ? (
+            <p className="text-sm text-invite-body/85">
+              Message: {messageToCouple}
+            </p>
+          ) : null}
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="invite-outline-button !text-invite-navy"
+              onClick={() => setStep("details")}
+            >
               Back
             </Button>
             <Button
@@ -542,24 +600,29 @@ export function RsvpExperience() {
       ) : null}
 
       {step === "done" ? (
-        <div className="mt-14 flex flex-col items-center space-y-5 text-center">
+        <div className="mt-10 flex flex-col items-center space-y-5 text-center">
           <span
-            className="heart-pulse font-display text-4xl text-gold"
+            className="font-display text-4xl text-invite-gold"
             aria-hidden
           >
             ♥
           </span>
-          <h2 className="font-display text-3xl text-gold sm:text-4xl">
+          <h2 className="font-display text-3xl text-invite-navy sm:text-4xl">
             Thank you
           </h2>
-          <p className="max-w-md text-base text-ivory/70">
-            Your RSVP is saved{status ? ` (${status})` : ""}.
+          <p className="max-w-md text-base leading-relaxed text-invite-body/85">
+            Your RSVP is saved.
             {workspace?.household.email
               ? " A confirmation email will send when email is enabled."
-              : ""}
+              : " We’re so glad you let us know."}
           </p>
           <div className="flex flex-wrap justify-center gap-3 pt-2">
-            <Button type="button" variant="secondary" onClick={() => setStep("respond")}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="invite-outline-button !text-invite-navy"
+              onClick={() => setStep("respond")}
+            >
               Update response
             </Button>
             <ButtonLink href="/" variant="gold">
@@ -569,13 +632,53 @@ export function RsvpExperience() {
         </div>
       ) : null}
 
-      {step === "lookup" ? (
-        <div className="mt-10">
-          <ButtonLink href="/#rsvp" variant="ghost">
+      {step === "lookup" || step === "select" ? (
+        <div className="mt-10 text-center">
+          <ButtonLink
+            href="/#rsvp"
+            variant="ghost"
+            className="!text-invite-body/80 hover:!text-invite-gold"
+          >
             Return to the invitation
           </ButtonLink>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function HouseholdSummary({
+  workspace,
+  drafts,
+}: {
+  workspace: Workspace;
+  drafts: ResponseDraft[];
+}) {
+  return (
+    <div className="invite-rsvp-roster mt-8">
+      <p className="font-sans text-[0.58rem] uppercase tracking-[0.22em] text-invite-gold">
+        Your invitation
+      </p>
+      <p className="mt-2 font-display text-2xl text-invite-navy">
+        {workspace.household.displayName}
+      </p>
+      <p className="mt-2 text-sm text-invite-body/85">
+        Invited to{" "}
+        {workspace.events.map((event) => event.title).join(" · ")}
+      </p>
+      <ul className="invite-rsvp-roster-names mt-4">
+        {workspace.guests.map((guest) => {
+          const draft = drafts.find((item) => item.guestId === guest.id);
+          return (
+            <li key={guest.id}>
+              {guestDisplayName(guest, draft?.plusOneName)}
+              {guest.isChild ? (
+                <span className="text-invite-body/60"> · Child</span>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
