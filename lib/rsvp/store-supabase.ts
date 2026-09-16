@@ -432,6 +432,7 @@ export async function updateHouseholdAdminRecordSupabase(
       | "notesAdmin"
       | "invitationCodeHash"
       | "invitationCodeHint"
+      | "maxPlusOnes"
     >
   >,
 ): Promise<void> {
@@ -443,6 +444,7 @@ export async function updateHouseholdAdminRecordSupabase(
   if (patch.email !== undefined) row.email = patch.email;
   if (patch.phone !== undefined) row.phone = patch.phone;
   if (patch.notesAdmin !== undefined) row.notes_admin = patch.notesAdmin;
+  if (patch.maxPlusOnes !== undefined) row.max_plus_ones = patch.maxPlusOnes;
   if (patch.invitationCodeHash !== undefined) {
     row.invitation_code_hash = patch.invitationCodeHash;
   }

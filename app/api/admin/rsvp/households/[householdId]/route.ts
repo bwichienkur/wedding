@@ -11,6 +11,8 @@ const patchSchema = z.object({
   email: z.string().email().nullable().optional(),
   invitationCode: z.string().trim().min(4).max(40).nullable().optional(),
   notesAdmin: z.string().max(2000).optional(),
+  maxPlusOnes: z.number().int().nonnegative().optional(),
+  guestAllowance: z.number().int().nonnegative().optional(),
 });
 
 export async function PATCH(

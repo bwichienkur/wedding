@@ -24,6 +24,7 @@ export interface AdminHouseholdWithGuests {
   rsvpStatus: Household["rsvpStatus"];
   invitationCodeHint: string | null;
   notesAdmin: string;
+  maxPlusOnes: number;
   updatedAt: string;
   guests: Array<{
     id: string;
@@ -45,6 +46,7 @@ export async function listAdminGuestHouseholds(): Promise<AdminHouseholdWithGues
       rsvpStatus: household.rsvpStatus,
       invitationCodeHint: household.invitationCodeHint,
       notesAdmin: household.notesAdmin,
+      maxPlusOnes: household.maxPlusOnes,
       updatedAt: household.updatedAt,
       guests: db.guests
         .filter((guest) => guest.householdId === household.id)
@@ -166,6 +168,8 @@ export async function adminUpdateHousehold(
     email?: string | null;
     invitationCode?: string | null;
     notesAdmin?: string;
+    maxPlusOnes?: number;
+    guestAllowance?: number;
   },
 ): Promise<void> {
   const updates: Partial<Household> & { invitationCodeHash?: string | null; invitationCodeHint?: string | null } = {};
@@ -187,6 +191,14 @@ export async function adminUpdateHousehold(
       updates.invitationCodeHash = null;
       updates.invitationCodeHint = null;
     }
+  }
+  if (patch.maxPlusOnes !== undefined) {
+    updates.maxPlusOnes = Math.max(0, Math.floor(patch.maxPlusOnes));
+  }
+  if (patch.guestAllowance !== undefined) {
+    const db = await readRsvpDb();
+    const listed = db.guests.filter((g) => g.householdId === householdId).length;
+    updates.maxPlusOnes = Math.max(0, Math.floor(patch.guestAllowance) - listed);
   }
   await updateHouseholdAdminRecord(householdId, updates);
 }
