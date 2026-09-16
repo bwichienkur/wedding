@@ -15,3 +15,16 @@ export async function GET() {
   const workspace = await getHouseholdWorkspace(householdId);
   return NextResponse.json({ workspace });
 }
+
+/** Clears the guest session so they can look up a different invitation. */
+export async function DELETE() {
+  const jar = await cookies();
+  jar.set(HOUSEHOLD_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
+  return NextResponse.json({ ok: true });
+}
