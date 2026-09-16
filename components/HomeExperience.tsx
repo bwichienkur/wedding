@@ -70,12 +70,11 @@ export function HomeExperience({
 
   useEffect(() => {
     const link = document.createElement("link");
-    link.rel = "preload";
-    link.as = "video";
+    link.rel = "prefetch";
     link.href = INVITE_SCROLL_BG_VIDEO;
     document.head.appendChild(link);
     return () => {
-      document.head.removeChild(link);
+      link.remove();
     };
   }, []);
 
