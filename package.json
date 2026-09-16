@@ -15,16 +15,19 @@
     "qa": "npm run typecheck && npm run lint && npm test && npm run build",
     "import:zola": "node scripts/import-zola-media.mjs",
     "upload:section-photo": "node scripts/upload-section-photo.mjs",
-    "reset:rsvp-seed": "node scripts/reset-rsvp-seed.mjs"
+    "reset:rsvp-seed": "node scripts/reset-rsvp-seed.mjs",
+    "db:rsvp:apply": "node scripts/apply-supabase-rsvp-schema.mjs"
   },
   "dependencies": {
     "@mux/mux-node": "^15.0.0",
     "@mux/mux-player-react": "^3.13.2",
     "@react-three/fiber": "^9.7.0",
+    "@supabase/supabase-js": "^2.116.0",
     "@vercel/blob": "^2.8.0",
     "clsx": "^2.1.1",
     "motion": "^13.1.1",
     "next": "16.3.2",
+    "pg": "^8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "resend": "^6.22.0",
@@ -40,6 +43,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.6",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.185.4",

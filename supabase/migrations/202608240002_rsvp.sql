@@ -4,7 +4,7 @@
 create extension if not exists "pgcrypto";
 
 create table if not exists events (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   slug text not null unique,
   title text not null,
   starts_at timestamptz,
@@ -47,13 +47,13 @@ create index if not exists households_invitation_code_hash_idx on households (in
 
 create table if not exists household_event_invitations (
   household_id uuid not null references households(id) on delete cascade,
-  event_id uuid not null references events(id) on delete cascade,
+  event_id text not null references events(id) on delete cascade,
   primary key (household_id, event_id)
 );
 
 create table if not exists meal_options (
-  id uuid primary key default gen_random_uuid(),
-  event_id uuid not null references events(id) on delete cascade,
+  id text primary key,
+  event_id text not null references events(id) on delete cascade,
   label text not null,
   description text not null default '',
   sort_order integer not null default 0,
@@ -63,9 +63,9 @@ create table if not exists meal_options (
 create table if not exists guest_responses (
   id uuid primary key default gen_random_uuid(),
   guest_id uuid not null references guests(id) on delete cascade,
-  event_id uuid not null references events(id) on delete cascade,
+  event_id text not null references events(id) on delete cascade,
   attending text not null check (attending in ('yes', 'no', 'unknown')),
-  meal_option_id uuid references meal_options(id),
+  meal_option_id text references meal_options(id),
   dietary_notes text not null default '',
   accessibility_notes text not null default '',
   unique (guest_id, event_id)
