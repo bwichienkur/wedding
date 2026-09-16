@@ -1285,7 +1285,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    width: min(100%, 18.5rem);
+    width: min(100%, 21rem);
     margin-inline: auto;
     gap: clamp(1rem, 4.2vh, 1.85rem);
   }
@@ -1354,10 +1354,10 @@
 
   .invite-hero-stack-date {
     margin: 0;
-    font-family: var(--font-body), sans-serif;
-    font-size: clamp(0.58rem, 0.5rem + 0.35vw, 0.68rem);
-    font-weight: 600;
-    letter-spacing: 0.34em;
+    font-family: var(--font-display-family), Georgia, serif;
+    font-size: clamp(1rem, 0.85rem + 2.2vw, 1.55rem);
+    font-weight: 500;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--invite-body-soft) 95%, white);
     text-shadow:
