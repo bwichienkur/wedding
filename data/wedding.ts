@@ -51,6 +51,8 @@ export const wedding: WeddingConfig = {
     inviteNames: "Bright & Lexi",
     inviteSubline: "May 15, 2027 · Bella Cosa · Lake Wales, Florida",
     tapHint: "Tap to open",
+    /** Minimal on-screen cue on the video opening (full-screen tap still opens). */
+    openCueLabel: "Touch to open",
     openingHint: "Opening your invitation",
   },
   closing: {

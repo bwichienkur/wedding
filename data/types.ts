@@ -93,6 +93,8 @@ export interface WeddingConfig {
     inviteNames: string;
     inviteSubline: string;
     tapHint: string;
+    /** Minimal label on the video opening (full-screen tap). */
+    openCueLabel: string;
     openingHint: string;
   };
   closing: {
