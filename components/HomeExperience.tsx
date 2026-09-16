@@ -1,6 +1,7 @@
 "use client";
 
 import { InviteCanvas } from "@/components/invite/InviteCanvas";
+import { AmbientBackground } from "@/components/ambient/AmbientBackground";
 import { InviteGallerySection } from "@/components/invite/InviteGallerySection";
 import { InviteCountdownSection } from "@/components/invite/InviteCountdownSection";
 import { ScrollToRsvpFab } from "@/components/invite/ScrollToRsvpFab";
@@ -72,18 +73,19 @@ export function HomeExperience({
         onComplete={completeIntro}
         onRevealStart={beginReveal}
       />
+      <AmbientBackground active={siteRevealed} />
       <div
         className={cn(
-          "invite-experience transition-opacity duration-700 ease-out",
+          "invite-experience relative z-[1] transition-opacity duration-700 ease-out",
           siteRevealed
             ? "opacity-100"
             : "pointer-events-none invisible opacity-0",
         )}
         aria-hidden={!siteRevealed}
       >
+        <InviteVideoHero />
         <InviteCanvas>
           <main id={mainContentId} tabIndex={-1} className="outline-none">
-            <InviteVideoHero />
             <InviteCountdownSection />
 
             {show("venue") ? (

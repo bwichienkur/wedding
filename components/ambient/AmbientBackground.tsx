@@ -1,13 +1,14 @@
 "use client";
 
+import {
+  INVITE_SCROLL_BG_POSTER,
+  INVITE_SCROLL_BG_VIDEO,
+} from "@/lib/media/invite-scroll-background";
 import { cn } from "@/lib/cn";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-const VIDEO_SRC = "/videos/ambient-atmosphere.mp4";
-const POSTER_SRC = "/videos/ambient-atmosphere-poster.jpg";
-
-/** Full-bleed ambient video — clearly visible behind the invitation scroll column. */
+/** Fixed floral scroll video — wooowinvites-style layer behind the invite column. */
 export function AmbientBackground({ active }: { active: boolean }) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -45,7 +46,7 @@ export function AmbientBackground({ active }: { active: boolean }) {
       {reduceMotion ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={POSTER_SRC}
+          src={INVITE_SCROLL_BG_POSTER}
           alt=""
           className="absolute inset-0 h-full w-full scale-105 object-cover"
         />
@@ -56,9 +57,9 @@ export function AmbientBackground({ active }: { active: boolean }) {
         >
           <video
             ref={videoRef}
-            className="h-full w-full object-cover"
-            src={VIDEO_SRC}
-            poster={POSTER_SRC}
+            className="h-full w-full object-cover object-center"
+            src={INVITE_SCROLL_BG_VIDEO}
+            poster={INVITE_SCROLL_BG_POSTER}
             autoPlay
             loop
             muted
@@ -69,8 +70,7 @@ export function AmbientBackground({ active }: { active: boolean }) {
         </motion.div>
       )}
 
-      {/* Soft edge vignette — video stays prominent */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_50%_45%,transparent_20%,rgba(7,15,28,0.22)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_50%_40%,transparent_35%,rgba(5,10,20,0.35)_100%)]" />
     </div>
   );
 }
