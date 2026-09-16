@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
-/** Uploaded media must be resolved at request time, not at build time. */
-export const dynamic = "force-dynamic";
+/** Uploaded media resolved at request time; cache HTML briefly for TTFB. */
+export const revalidate = 30;
 
 export default async function HomePage() {
   const [
