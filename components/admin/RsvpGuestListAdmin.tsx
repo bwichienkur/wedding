@@ -6,8 +6,14 @@ import {
   adminFieldClass,
   adminLabelClass,
   adminMutedClass,
+  adminTableClass,
+  adminTableFootClass,
+  adminTableShellClass,
+  adminTdClass,
+  adminThClass,
 } from "@/components/admin/admin-styles";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/cn";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
 interface GuestRow {
   id: string;
@@ -29,28 +35,39 @@ interface HouseholdRow {
   guests: GuestRow[];
 }
 
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+
 function guestAllowance(household: Pick<HouseholdRow, "guests" | "maxPlusOnes">) {
   return household.guests.length + (household.maxPlusOnes ?? 0);
 }
 
-const gridHeaderClass =
-  "hidden md:grid md:grid-cols-[1.75rem_minmax(8rem,1.35fr)_3.25rem_minmax(9rem,1.65fr)_4.5rem_3.25rem_minmax(5.5rem,auto)] md:gap-x-2 md:border-b md:border-white/10 md:pb-1.5 md:text-[0.625rem] md:font-medium md:uppercase md:tracking-wide text-[var(--admin-muted,#8a9bb0)]";
-
 const compactFieldClass =
   "admin-input w-full rounded-sm px-2 py-1 text-xs leading-tight outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--admin-gold,#e8c872)]";
 
-const mobileBtnClass =
-  "!min-h-7 !px-2 !py-0.5 !text-[0.625rem] !tracking-normal !normal-case";
+const tableBtnClass =
+  "!min-h-7 !px-2 !py-0.5 !text-[0.625rem] !tracking-normal !normal-case md:!text-xs";
 
-const statusPillClass =
-  "inline-flex shrink-0 items-center rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 text-[0.625rem] capitalize leading-none text-[var(--admin-muted,#9aa8bc)]";
+function rsvpStatusClass(status: string) {
+  switch (status) {
+    case "complete":
+      return "border-emerald-400/35 bg-emerald-950/40 text-emerald-100/90";
+    case "partial":
+      return "border-amber-400/35 bg-amber-950/35 text-amber-100/90";
+    case "declined":
+      return "border-rose-400/35 bg-rose-950/40 text-rose-100/90";
+    default:
+      return "border-white/12 bg-white/5 text-[var(--admin-muted,#9aa8bc)]";
+  }
+}
 
 export function RsvpGuestListAdmin() {
   const [households, setHouseholds] = useState<HouseholdRow[]>([]);
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(15);
 
   const [newDisplayName, setNewDisplayName] = useState("");
   const [newGuestNames, setNewGuestNames] = useState("");
@@ -84,14 +101,16 @@ export function RsvpGuestListAdmin() {
     );
   }, [households, query]);
 
-  function toggleExpanded(id: string) {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const pageIndex = Math.min(page, totalPages);
+
+  const pageRows = useMemo(() => {
+    const start = (pageIndex - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, pageIndex, pageSize]);
+
+  const rangeStart = filtered.length === 0 ? 0 : (pageIndex - 1) * pageSize + 1;
+  const rangeEnd = Math.min(pageIndex * pageSize, filtered.length);
 
   async function createHousehold() {
     const guestNames = newGuestNames
@@ -141,7 +160,10 @@ export function RsvpGuestListAdmin() {
         method: "DELETE",
       });
       if (!response.ok) setError("Unable to delete household.");
-      else await load();
+      else {
+        if (expandedId === id) setExpandedId(null);
+        await load();
+      }
     } finally {
       setPending(false);
     }
@@ -280,67 +302,157 @@ export function RsvpGuestListAdmin() {
         </Button>
       </details>
 
-      <label className="block text-sm">
-        <span className={`mb-1 block md:mb-2 ${adminLabelClass}`}>Search guest list</span>
-        <input
-          className={`${adminFieldClass} !mt-1 md:!mt-2`}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Name or household"
-        />
-      </label>
-
       {error ? (
         <p className="text-sm text-red-300" role="alert">
           {error}
         </p>
       ) : null}
 
-      <p className={`text-xs md:text-sm ${adminMutedClass}`}>
-        {filtered.length} invitation{filtered.length === 1 ? "" : "s"} ·{" "}
-        {filtered.reduce((n, h) => n + h.guests.length, 0)} named guests
-      </p>
-
-      <div className="overflow-x-auto md:overflow-visible">
-        <div className={gridHeaderClass}>
-          <span />
-          <span>Household</span>
-          <span className="text-center">Allow</span>
-          <span>Guests on invite</span>
-          <span>RSVP</span>
-          <span className="text-center">Listed</span>
-          <span className="text-right">Actions</span>
+      <div className={adminTableShellClass}>
+        <div className="flex flex-col gap-3 border-b border-white/10 px-3 py-3 sm:flex-row sm:items-end sm:justify-between md:px-4">
+          <label className="block min-w-0 flex-1 text-sm">
+            <span className={`mb-1 block ${adminLabelClass}`}>Search</span>
+            <input
+              className={`${adminFieldClass} !mt-0`}
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Household or guest name"
+            />
+          </label>
+          <p className={`shrink-0 text-xs ${adminMutedClass}`}>
+            {filtered.length} invitation{filtered.length === 1 ? "" : "s"} ·{" "}
+            {filtered.reduce((n, h) => n + h.guests.length, 0)} guests
+          </p>
         </div>
 
-        <ul className="divide-y divide-white/10 md:space-y-0 md:divide-y-0">
-          {filtered.map((household) => (
-            <li
-              key={household.id}
-              className="py-1 first:pt-0 md:rounded-sm md:py-0 md:odd:bg-white/[0.02]"
-            >
-              <HouseholdGridRow
-                key={`${household.id}:${household.updatedAt}:${household.guests.map((g) => `${g.id}:${g.fullName}`).join("|")}:${household.displayName}:${household.maxPlusOnes}`}
-                household={household}
-                pending={pending}
-                expanded={expandedIds.has(household.id)}
-                onToggleExpand={() => toggleExpanded(household.id)}
-                onSaveHousehold={saveHousehold}
-                onUpdateGuestName={updateGuestName}
-                onAddGuest={addGuest}
-                onRemoveGuest={removeGuest}
-                onDelete={() =>
-                  void deleteHousehold(household.id, household.displayName)
+        <div className="overflow-x-auto">
+          <table className={adminTableClass}>
+            <thead>
+              <tr>
+                <th className={`${adminThClass} w-8`} scope="col">
+                  <span className="sr-only">Expand</span>
+                </th>
+                <th className={adminThClass} scope="col">
+                  Household
+                </th>
+                <th className={`${adminThClass} w-16 text-center`} scope="col">
+                  Max
+                </th>
+                <th className={`${adminThClass} hidden sm:table-cell`} scope="col">
+                  Guests
+                </th>
+                <th className={`${adminThClass} w-24`} scope="col">
+                  RSVP
+                </th>
+                <th className={`${adminThClass} hidden md:table-cell w-16`} scope="col">
+                  Code
+                </th>
+                <th className={`${adminThClass} w-28 text-right`} scope="col">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {pageRows.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className={`${adminTdClass} py-10 text-center ${adminMutedClass}`}
+                  >
+                    No invitations match your search.
+                  </td>
+                </tr>
+              ) : (
+                pageRows.map((household) => (
+                  <HouseholdTableBlockInner
+                    key={`${household.id}:${household.updatedAt}:${household.guests.map((g) => `${g.id}:${g.fullName}`).join("|")}:${household.displayName}:${household.maxPlusOnes}`}
+                    household={household}
+                    pending={pending}
+                    expanded={expandedId === household.id}
+                    onToggleExpand={() =>
+                      setExpandedId((id) =>
+                        id === household.id ? null : household.id,
+                      )
+                    }
+                    onSaveHousehold={saveHousehold}
+                    onUpdateGuestName={updateGuestName}
+                    onAddGuest={addGuest}
+                    onRemoveGuest={removeGuest}
+                    onDelete={() =>
+                      void deleteHousehold(household.id, household.displayName)
+                    }
+                  />
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={adminTableFootClass}>
+          <p className={`text-xs ${adminMutedClass}`}>
+            Showing{" "}
+            <span className="tabular-nums text-[var(--admin-body,#d4dce8)]">
+              {rangeStart}–{rangeEnd}
+            </span>{" "}
+            of{" "}
+            <span className="tabular-nums text-[var(--admin-body,#d4dce8)]">
+              {filtered.length}
+            </span>
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-xs text-[var(--admin-muted,#9aa8bc)]">
+              Rows
+              <select
+                className="admin-input rounded-sm px-2 py-1 text-xs outline-none"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+              >
+                {PAGE_SIZE_OPTIONS.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={pageIndex <= 1 || pending}
+                className={tableBtnClass}
+                onClick={() => setPage((p) => Math.max(1, Math.min(p, totalPages) - 1))}
+              >
+                Prev
+              </Button>
+              <span className="min-w-[4.5rem] px-1 text-center text-xs tabular-nums text-[var(--admin-body,#d4dce8)]">
+                {pageIndex} / {totalPages}
+              </span>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={pageIndex >= totalPages || pending}
+                className={tableBtnClass}
+                onClick={() =>
+                  setPage((p) => Math.min(totalPages, Math.min(p, totalPages) + 1))
                 }
-              />
-            </li>
-          ))}
-        </ul>
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function HouseholdGridRow({
+function HouseholdTableBlockInner({
   household,
   pending,
   expanded,
@@ -403,180 +515,152 @@ function HouseholdGridRow({
     }
   }
 
-  const expandButton = (
-    <button
-      type="button"
-      className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-white/10 text-[0.625rem] leading-none text-[var(--admin-muted,#8a9bb0)] hover:bg-white/5 md:h-7 md:w-7 md:text-xs"
-      aria-expanded={expanded}
-      aria-label={expanded ? "Collapse guests" : "Expand guests"}
-      onClick={onToggleExpand}
-    >
-      {expanded ? "−" : "+"}
-    </button>
-  );
-
-  const allowanceInput = (
-    <input
-      type="number"
-      min={listed}
-      aria-label="Guests allowed"
-      className={`${compactFieldClass} w-full tabular-nums md:text-center`}
-      value={allowance}
-      onChange={(e) => setAllowance(e.target.value)}
-      title="Total guests allowed (named + extra slots)"
-    />
-  );
-
-  const nameInput = (
-    <input
-      aria-label="Household name"
-      className={compactFieldClass}
-      value={displayName}
-      onChange={(e) => setDisplayName(e.target.value)}
-    />
-  );
-
-  const actionButtons = (
-    <div className="flex shrink-0 items-center gap-0.5 md:gap-1">
-      <Button
-        type="button"
-        variant="secondary"
-        disabled={pending || !dirty}
-        className={mobileBtnClass}
-        onClick={() => void saveAll()}
-      >
-        Save
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        disabled={pending}
-        className={`${mobileBtnClass} !text-red-200`}
-        onClick={onDelete}
-      >
-        <span className="md:hidden">Del</span>
-        <span className="hidden md:inline">Delete</span>
-      </Button>
-    </div>
-  );
-
   return (
-    <div>
-      {/* Mobile: two tight rows */}
-      <div className="md:hidden">
-        <div className="flex items-center gap-1.5">
-          {expandButton}
-          <div className="min-w-0 flex-1">{nameInput}</div>
-          <label className="flex w-11 shrink-0 flex-col items-center gap-0.5">
-            <span className="text-[0.5625rem] uppercase tracking-wide text-[var(--admin-muted,#9aa8bc)]">
-              Max
-            </span>
-            {allowanceInput}
-          </label>
-        </div>
-        <div className="mt-1 flex items-center gap-1.5 pl-7">
-          <span className={statusPillClass}>{household.rsvpStatus}</span>
-          <span className="text-[0.625rem] tabular-nums text-[var(--admin-muted,#9aa8bc)]">
-            {listed} named
-          </span>
-          <div className="ml-auto">{actionButtons}</div>
-        </div>
-        {!expanded && guestPreview ? (
+    <Fragment>
+      <tr className="group transition-colors hover:bg-white/[0.035]">
+        <td className={adminTdClass}>
+          <button
+            type="button"
+            className="flex h-7 w-7 items-center justify-center rounded-sm border border-white/12 bg-white/[0.03] text-xs text-[var(--admin-gold,#e8c872)] hover:bg-white/[0.08]"
+            aria-expanded={expanded}
+            aria-label={expanded ? "Collapse guests" : "Edit guests"}
+            onClick={onToggleExpand}
+          >
+            {expanded ? "▾" : "▸"}
+          </button>
+        </td>
+        <td className={adminTdClass}>
+          <input
+            aria-label="Household name"
+            className={compactFieldClass}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
           <p
-            className={`mt-0.5 truncate pl-7 text-[0.625rem] leading-snug ${adminMutedClass}`}
+            className={`mt-1 truncate text-[0.625rem] sm:hidden ${adminMutedClass}`}
             title={guestPreview}
           >
-            {guestPreview}
+            {guestPreview || "—"}
           </p>
-        ) : null}
-      </div>
-
-      {/* Desktop grid */}
-      <div className="hidden md:grid md:grid-cols-[1.75rem_minmax(8rem,1.35fr)_3.25rem_minmax(9rem,1.65fr)_4.5rem_3.25rem_minmax(5.5rem,auto)] md:items-center md:gap-x-2 md:py-1.5">
-        {expandButton}
-        {nameInput}
-        {allowanceInput}
-        <div className="min-w-0">
-          {!expanded ? (
-            <p className={`truncate text-xs ${adminMutedClass}`} title={guestPreview}>
-              {guestPreview || "—"}
-            </p>
-          ) : (
-            <p className={`text-xs ${adminMutedClass}`}>Edit below</p>
-          )}
-        </div>
-        <span className={`text-xs capitalize ${adminMutedClass}`}>
-          {household.rsvpStatus}
-        </span>
-        <span className="text-center text-xs tabular-nums text-[var(--admin-body,#d4dce8)]">
-          {listed}
-        </span>
-        <div className="flex justify-end">{actionButtons}</div>
-      </div>
-
-      {expanded ? (
-        <div className="mt-1 space-y-0.5 border-l border-white/15 pl-2 md:ml-7 md:space-y-1 md:border-l-2 md:pl-3">
-          {household.guests.map((guest) => (
-            <div
-              key={guest.id}
-              className="grid grid-cols-[1fr_auto] items-center gap-1 py-0.5"
-            >
-              <input
-                className={compactFieldClass}
-                value={guestDrafts[guest.id] ?? guest.fullName}
-                onChange={(e) =>
-                  setGuestDrafts((prev) => ({
-                    ...prev,
-                    [guest.id]: e.target.value,
-                  }))
-                }
-              />
-              <button
-                type="button"
-                disabled={pending}
-                className="shrink-0 px-1.5 py-0.5 text-[0.625rem] text-red-200/90 hover:text-red-100 disabled:opacity-40"
-                onClick={() => void onRemoveGuest(guest.id, guest.fullName)}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-          <div className="grid grid-cols-[1fr_auto] items-center gap-1 pt-0.5">
-            <input
-              className={compactFieldClass}
-              value={newGuestName}
-              onChange={(e) => setNewGuestName(e.target.value)}
-              placeholder="Add guest"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && newGuestName.trim()) {
-                  e.preventDefault();
-                  void onAddGuest(household.id, newGuestName).then(() =>
-                    setNewGuestName(""),
-                  );
-                }
-              }}
-            />
+        </td>
+        <td className={`${adminTdClass} text-center`}>
+          <input
+            type="number"
+            min={listed}
+            aria-label="Max guests allowed"
+            className={`${compactFieldClass} mx-auto max-w-[3.25rem] text-center tabular-nums`}
+            value={allowance}
+            onChange={(e) => setAllowance(e.target.value)}
+          />
+        </td>
+        <td className={`${adminTdClass} hidden max-w-[14rem] sm:table-cell`}>
+          <p className={`truncate text-xs ${adminMutedClass}`} title={guestPreview}>
+            {listed === 0 ? "—" : `${listed} · ${guestPreview}`}
+          </p>
+        </td>
+        <td className={adminTdClass}>
+          <span
+            className={cn(
+              "inline-flex rounded-full border px-2 py-0.5 text-[0.625rem] capitalize leading-tight md:text-xs",
+              rsvpStatusClass(household.rsvpStatus),
+            )}
+          >
+            {household.rsvpStatus}
+          </span>
+        </td>
+        <td className={`${adminTdClass} hidden md:table-cell`}>
+          <span className="font-mono text-[0.625rem] text-[var(--admin-muted,#9aa8bc)]">
+            {household.invitationCodeHint ? `${household.invitationCodeHint}…` : "—"}
+          </span>
+        </td>
+        <td className={`${adminTdClass} text-right`}>
+          <div className="inline-flex flex-col items-stretch gap-1 sm:flex-row sm:items-center sm:justify-end">
             <Button
               type="button"
               variant="secondary"
-              disabled={pending}
-              className={mobileBtnClass}
-              onClick={() => {
-                void onAddGuest(household.id, newGuestName).then(() =>
-                  setNewGuestName(""),
-                );
-              }}
+              disabled={pending || !dirty}
+              className={tableBtnClass}
+              onClick={() => void saveAll()}
             >
-              Add
+              Save
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={pending}
+              className={`${tableBtnClass} !text-red-200/90`}
+              onClick={onDelete}
+            >
+              Delete
             </Button>
           </div>
-          {household.invitationCodeHint ? (
-            <p className={`pt-0.5 text-[0.625rem] ${adminMutedClass}`}>
-              Code: {household.invitationCodeHint}…
+        </td>
+      </tr>
+      {expanded ? (
+        <tr className="bg-[rgb(4_10_20/0.65)]">
+          <td colSpan={7} className="border-b border-white/[0.07] px-3 py-3 md:px-4">
+            <p className={`mb-2 text-[0.625rem] uppercase tracking-wide ${adminLabelClass}`}>
+              Guest names
             </p>
-          ) : null}
-        </div>
+            <ul className="space-y-1.5">
+              {household.guests.map((guest) => (
+                <li
+                  key={guest.id}
+                  className="grid grid-cols-[1fr_auto] items-center gap-2 sm:max-w-xl"
+                >
+                  <input
+                    className={compactFieldClass}
+                    value={guestDrafts[guest.id] ?? guest.fullName}
+                    onChange={(e) =>
+                      setGuestDrafts((prev) => ({
+                        ...prev,
+                        [guest.id]: e.target.value,
+                      }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    disabled={pending}
+                    className="text-xs text-red-200/90 hover:text-red-100 disabled:opacity-40"
+                    onClick={() => void onRemoveGuest(guest.id, guest.fullName)}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-2 grid grid-cols-[1fr_auto] items-center gap-2 sm:max-w-xl">
+              <input
+                className={compactFieldClass}
+                value={newGuestName}
+                onChange={(e) => setNewGuestName(e.target.value)}
+                placeholder="Add guest name"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newGuestName.trim()) {
+                    e.preventDefault();
+                    void onAddGuest(household.id, newGuestName).then(() =>
+                      setNewGuestName(""),
+                    );
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={pending}
+                className={tableBtnClass}
+                onClick={() => {
+                  void onAddGuest(household.id, newGuestName).then(() =>
+                    setNewGuestName(""),
+                  );
+                }}
+              >
+                Add
+              </Button>
+            </div>
+          </td>
+        </tr>
       ) : null}
-    </div>
+    </Fragment>
   );
 }
