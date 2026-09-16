@@ -15,14 +15,14 @@ export function Accordion({
     defaultOpen?: boolean;
   }>;
   className?: string;
-  /** Dark ink on cream panels (home invite FAQ). */
+  /** Gold type on navy glass panels (home invite FAQ). */
   variant?: "default" | "invite";
 }) {
   return (
     <div
       className={cn(
         variant === "invite"
-          ? "divide-y divide-[rgb(26_48_80/0.12)] border-y border-[rgb(26_48_80/0.14)]"
+          ? "divide-y divide-[rgb(212_175_55/0.22)] border-y border-[rgb(212_175_55/0.25)]"
           : "divide-y divide-stone/80 border-y border-stone/80",
         className,
       )}
@@ -66,7 +66,7 @@ function AccordionItem({
             className={cn(
               "font-display text-xl sm:text-2xl",
               variant === "invite"
-                ? "text-[#0f1e33]"
+                ? "text-invite-gold-bright"
                 : "text-gold",
             )}
           >
@@ -76,7 +76,7 @@ function AccordionItem({
             aria-hidden
             className={cn(
               "transition-transform",
-              variant === "invite" ? "text-[#1a3050]" : "text-gold",
+              variant === "invite" ? "text-invite-gold" : "text-gold",
               open && "rotate-45",
             )}
           >

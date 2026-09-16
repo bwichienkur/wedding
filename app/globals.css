@@ -1427,11 +1427,42 @@
     -webkit-text-fill-color: color-mix(in srgb, var(--invite-body-soft) 95%, white);
   }
 
-  .invite-travel-card {
+  .invite-travel-card,
+  .invite-glass-card,
+  .invite-readable-panel {
     border: 1px solid rgb(212 175 55 / 0.35);
     border-radius: 0.25rem;
     background: rgb(7 14 26 / 0.38);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.28);
+    color: var(--invite-body-soft);
+  }
+
+  .invite-glass-card :where(h1, h2, h3, h4),
+  .invite-readable-panel :where(h1, h2, h3, h4),
+  .invite-travel-card :where(h3, h4) {
+    color: var(--invite-gold-bright);
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.35);
+  }
+
+  .invite-glass-card :where(p, li, label),
+  .invite-readable-panel :where(p, li, label) {
+    color: color-mix(in srgb, var(--invite-body-soft) 94%, white);
+  }
+
+  .invite-glass-card .invite-section-heading,
+  .invite-readable-panel .invite-section-heading {
+    color: var(--invite-gold-bright);
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.4);
+  }
+
+  .invite-glass-card .invite-section-subline,
+  .invite-readable-panel .invite-section-subline {
+    color: color-mix(in srgb, var(--invite-body-soft) 88%, white);
+  }
+
+  .invite-travel-card {
     padding: 1.35rem 1.25rem;
   }
 
@@ -1442,7 +1473,7 @@
   }
 
   .invite-travel-card h4 {
-    color: var(--invite-navy);
+    color: var(--invite-gold-bright);
   }
 
   .invite-travel-badge {
@@ -1473,18 +1504,9 @@
   }
 
   .invite-rsvp-card {
-    border: 1px solid rgb(212 175 55 / 0.42);
     border-radius: 0.35rem;
     padding: 2rem 1.5rem;
     text-align: center;
-  }
-
-  .invite-rsvp-card :where(p) {
-    color: #2a2218;
-  }
-
-  .invite-rsvp-card .font-display {
-    color: #0f1e33;
   }
 
   @media (min-width: 640px) {
@@ -1535,7 +1557,7 @@
     align-items: center;
     gap: 0.35rem;
     text-align: center;
-    color: #6b5a2e;
+    color: color-mix(in srgb, var(--invite-body-soft) 55%, transparent);
     font-family: var(--font-body), sans-serif;
     font-size: 0.52rem;
     font-weight: 600;
@@ -1544,11 +1566,11 @@
   }
 
   .invite-rsvp-step.is-active {
-    color: #0f1e33;
+    color: var(--invite-gold-bright);
   }
 
   .invite-rsvp-step.is-complete {
-    color: #8a7028;
+    color: var(--invite-gold);
   }
 
   .invite-rsvp-step-marker {
@@ -1557,21 +1579,22 @@
     width: 1.65rem;
     height: 1.65rem;
     border-radius: 999px;
-    border: 1px solid rgb(201 162 77 / 0.35);
-    background: rgb(255 252 247 / 0.9);
+    border: 1px solid rgb(201 162 77 / 0.4);
+    background: rgb(7 14 26 / 0.45);
+    color: var(--invite-gold);
     font-size: 0.65rem;
   }
 
   .invite-rsvp-step.is-active .invite-rsvp-step-marker {
-    border-color: rgb(201 162 77 / 0.65);
-    background: rgb(201 162 77 / 0.15);
-    color: var(--invite-navy);
+    border-color: rgb(201 162 77 / 0.75);
+    background: rgb(212 175 55 / 0.2);
+    color: var(--invite-gold-bright);
   }
 
   .invite-rsvp-step.is-complete .invite-rsvp-step-marker {
-    border-color: rgb(201 162 77 / 0.55);
-    background: rgb(201 162 77 / 0.22);
-    color: var(--invite-navy);
+    border-color: rgb(201 162 77 / 0.6);
+    background: rgb(212 175 55 / 0.15);
+    color: var(--invite-gold-bright);
   }
 
   .invite-rsvp-error {
@@ -1584,10 +1607,10 @@
 
   .invite-rsvp-roster {
     padding: 1.25rem 1.15rem;
-    border: 1px solid rgb(212 175 55 / 0.35);
+    border: 1px solid rgb(212 175 55 / 0.32);
     border-radius: 0.25rem;
-    background: rgb(255 252 246 / 0.72);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5);
+    background: rgb(7 14 26 / 0.32);
+    box-shadow: inset 0 1px 0 rgb(212 175 55 / 0.12);
   }
 
   .invite-rsvp-roster-names {
@@ -1599,17 +1622,17 @@
     gap: 0.35rem 0.75rem;
     font-family: var(--font-display-family), Georgia, serif;
     font-size: 1.05rem;
-    color: #0f1e33;
+    color: var(--invite-gold-bright);
   }
 
   .invite-rsvp-household-pick {
     width: 100%;
     padding: 1.15rem 1.25rem;
     text-align: left;
-    border: 1px solid rgb(201 162 77 / 0.45);
+    border: 1px solid rgb(201 162 77 / 0.4);
     border-radius: 0.25rem;
-    background: rgb(255 252 247 / 0.92);
-    box-shadow: 0 8px 20px rgb(0 0 0 / 0.12);
+    background: rgb(7 14 26 / 0.36);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.22);
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
@@ -1638,15 +1661,15 @@
 
   .invite-rsvp-segment {
     min-height: 2.85rem;
-    border: 1px solid rgb(201 162 77 / 0.45);
+    border: 1px solid rgb(201 162 77 / 0.4);
     border-radius: 0.2rem;
-    background: rgb(255 252 247 / 0.92);
+    background: rgb(7 14 26 / 0.35);
     font-family: var(--font-body), sans-serif;
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #1a3050;
+    color: color-mix(in srgb, var(--invite-body-soft) 90%, white);
     transition:
       background 0.15s ease,
       border-color 0.15s ease,
@@ -1655,13 +1678,9 @@
 
   .invite-rsvp-segment.is-active {
     border-color: rgb(201 162 77 / 0.85);
-    background: linear-gradient(
-      180deg,
-      rgb(212 175 55 / 0.32) 0%,
-      rgb(201 162 77 / 0.18) 100%
-    );
-    color: #0f1e33;
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.55) inset;
+    background: rgb(212 175 55 / 0.18);
+    color: var(--invite-gold-bright);
+    box-shadow: 0 0 0 1px rgb(212 175 55 / 0.25) inset;
   }
 
   .invite-rsvp-segment:focus-visible {
@@ -1678,60 +1697,25 @@
     color: color-mix(in srgb, var(--invite-body-soft) 88%, white);
   }
 
-  /* Cream panels for readable copy on the animated navy background */
-  .invite-readable-panel {
-    border: 1px solid rgb(212 175 55 / 0.42);
-    background:
-      linear-gradient(
-        165deg,
-        rgb(252 248 240 / 0.98) 0%,
-        rgb(245 238 225 / 0.96) 52%,
-        rgb(250 244 234 / 0.97) 100%
-      );
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    box-shadow:
-      0 0 0 1px rgb(255 255 255 / 0.45) inset,
-      0 14px 36px rgb(0 0 0 / 0.28);
-    color: #1f1812;
-  }
-
-  .invite-readable-panel :where(h1, h2, h3, h4) {
-    color: #0f1e33;
-  }
-
-  .invite-readable-panel :where(p, li, label, span) {
-    color: #1f1812;
-  }
-
-  .invite-readable-panel .invite-section-heading {
-    color: #0f1e33;
-    text-shadow: none;
-  }
-
-  .invite-readable-panel .invite-section-subline {
-    color: #3d3428;
-  }
-
   .invite-faq-input {
     min-height: 3rem;
     width: 100%;
-    border: 1px solid rgb(201 162 77 / 0.45);
+    border: 1px solid rgb(212 175 55 / 0.4);
     border-radius: 0.2rem;
-    background: rgb(252 248 240 / 0.96);
+    background: rgb(7 14 26 / 0.42);
     padding: 0.65rem 0.85rem;
     font-family: var(--font-body), sans-serif;
     font-size: 0.95rem;
-    color: #1a3050;
+    color: var(--invite-gold-bright);
   }
 
   .invite-faq-input option {
-    color: #1a3050;
-    background: #faf4ea;
+    color: var(--invite-gold-bright);
+    background: #0c1628;
   }
 
   .invite-faq-input::placeholder {
-    color: rgb(92 79 69 / 0.65);
+    color: color-mix(in srgb, var(--invite-body-soft) 50%, transparent);
   }
 
   .invite-faq-input:focus-visible {
@@ -1740,24 +1724,19 @@
   }
 
   .invite-faq-accordion {
-    border-block: 1px solid rgb(201 162 77 / 0.35);
-    border-radius: 0.25rem;
-    padding: 0.35rem 0.75rem;
-    background:
-      linear-gradient(
-        180deg,
-        rgb(252 248 240 / 0.98) 0%,
-        rgb(245 238 225 / 0.96) 100%
-      );
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.45) inset;
+    border-block: 1px solid rgb(212 175 55 / 0.22);
+    border-radius: 0;
+    padding: 0 0.25rem;
+    background: transparent;
+    box-shadow: none;
   }
 
   .invite-faq-accordion > div {
-    border-color: rgb(201 162 77 / 0.22);
+    border-color: rgb(212 175 55 / 0.2);
   }
 
   .invite-faq-accordion button span:first-child {
-    color: #0f1e33;
+    color: var(--invite-gold-bright);
     font-family: var(--font-display-family), Georgia, serif;
     font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
     font-weight: 500;
@@ -1765,23 +1744,23 @@
   }
 
   .invite-faq-accordion button span:last-child {
-    color: #1a3050;
+    color: var(--invite-gold);
     font-weight: 600;
   }
 
   .invite-faq-answer {
-    color: #120e0a;
+    color: color-mix(in srgb, var(--invite-body-soft) 96%, white);
     font-size: 1rem;
     line-height: 1.7;
     font-weight: 400;
   }
 
   .invite-faq-accordion [role="region"] {
-    color: #120e0a;
+    color: color-mix(in srgb, var(--invite-body-soft) 96%, white);
   }
 
   .invite-faq-accordion [role="region"] p {
-    color: #120e0a !important;
+    color: color-mix(in srgb, var(--invite-body-soft) 96%, white) !important;
   }
 
   /* Wedding day schedule — alternating grid (wooowinvites-style) */
