@@ -2,7 +2,7 @@ import "server-only";
 
 import type { RsvpDatabase } from "@/lib/rsvp/types";
 
-const TTL_MS = 30_000;
+const TTL_MS = 120_000;
 
 let snapshot: { db: RsvpDatabase; expiresAt: number } | null = null;
 let inFlight: Promise<RsvpDatabase> | null = null;

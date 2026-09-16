@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
+import { setHouseholdSessionCookie } from "@/lib/rsvp/household-session";
 import { rateLimit } from "@/lib/rsvp/rate-limit";
-import { lookupHouseholds } from "@/lib/rsvp/service";
+import {
+  getHouseholdWorkspace,
+  lookupHouseholds,
+  resolveHouseholdFromToken,
+} from "@/lib/rsvp/service";
 import { lookupRequestSchema } from "@/lib/rsvp/types";
 import { appendAudit } from "@/lib/rsvp/store";
 
@@ -16,7 +21,7 @@ export async function POST(request: Request) {
     windowMs: 10 * 60 * 1000,
   });
   if (!limited.ok) {
-    await appendAudit({
+    void appendAudit({
       actor: "system",
       action: "rsvp.lookup.rate_limited",
       entityType: "rsvp",
@@ -54,7 +59,7 @@ export async function POST(request: Request) {
     });
   }
 
-  await appendAudit({
+  void appendAudit({
     actor: "guest",
     action: "rsvp.lookup",
     entityType: "rsvp",
@@ -65,6 +70,22 @@ export async function POST(request: Request) {
     }),
     createdAt: new Date().toISOString(),
   });
+
+  if (result.candidates.length === 1) {
+    const token = result.candidates[0]!.confirmationToken;
+    const householdId = await resolveHouseholdFromToken(token);
+    if (householdId) {
+      const workspace = await getHouseholdWorkspace(householdId);
+      if (workspace) {
+        await setHouseholdSessionCookie(householdId);
+        return NextResponse.json({
+          candidates: result.candidates,
+          ambiguous: result.ambiguous,
+          workspace,
+        });
+      }
+    }
+  }
 
   return NextResponse.json({
     candidates: result.candidates,

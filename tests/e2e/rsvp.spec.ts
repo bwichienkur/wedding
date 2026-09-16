@@ -5,7 +5,7 @@ const E2E_GUEST_NAME = "Alex Example";
 const E2E_HOUSEHOLD = "The Example Family";
 
 test.describe("RSVP", () => {
-  test("looks up a fictional household and reaches response step", async ({
+  test("looks up a fictional household and reaches the RSVP form", async ({
     page,
   }) => {
     await page.goto("/rsvp");
@@ -28,7 +28,7 @@ test.describe("RSVP", () => {
     await expect(
       page.getByText(/Attending ceremony & reception/i),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Submit RSVP" })).toBeVisible();
   });
 
   test("shows a generic miss for unknown guests", async ({ page }) => {

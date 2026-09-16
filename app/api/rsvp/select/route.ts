@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
-import {
-  createHouseholdSessionValue,
-  HOUSEHOLD_COOKIE,
-  HOUSEHOLD_SESSION_MAX_AGE,
-} from "@/lib/rsvp/crypto";
+import { setHouseholdSessionCookie } from "@/lib/rsvp/household-session";
 import {
   getHouseholdWorkspace,
   resolveHouseholdFromToken,
 } from "@/lib/rsvp/service";
 import { z } from "zod";
-import { cookies } from "next/headers";
 
 const selectSchema = z.object({
   confirmationToken: z.string().min(1),
@@ -40,14 +35,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const jar = await cookies();
-  jar.set(HOUSEHOLD_COOKIE, createHouseholdSessionValue(householdId), {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: HOUSEHOLD_SESSION_MAX_AGE,
-  });
+  await setHouseholdSessionCookie(householdId);
 
   return NextResponse.json({ workspace });
 }
