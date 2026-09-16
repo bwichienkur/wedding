@@ -129,11 +129,44 @@ export function RsvpExperience() {
   const [messageToCouple, setMessageToCouple] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [householdPickerAvailable, setHouseholdPickerAvailable] = useState(false);
 
   const applyWorkspace = useCallback((next: Workspace) => {
     setWorkspace(next);
     setForm(buildInitialForm(next));
   }, []);
+
+  async function clearInvitationSession() {
+    await fetch("/api/rsvp/session", { method: "DELETE" });
+    setWorkspace(null);
+    setForm(null);
+  }
+
+  async function returnToInvitationSearch() {
+    setPending(true);
+    setError(null);
+    try {
+      await clearInvitationSession();
+      setStep(
+        householdPickerAvailable && candidates.length > 1 ? "select" : "lookup",
+      );
+    } finally {
+      setPending(false);
+    }
+  }
+
+  function goToPreviousStep() {
+    setError(null);
+    if (step === "review") {
+      const attending =
+        form?.ceremonyAttending === "yes" || form?.welcomeAttending === "yes";
+      setStep(attending ? "details" : "respond");
+      return;
+    }
+    if (step === "details") {
+      setStep("respond");
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -177,10 +210,13 @@ export function RsvpExperience() {
           data.message ??
             "We couldn’t find a matching invitation. Check the spelling or code.",
         );
+        setHouseholdPickerAvailable(false);
         setStep("lookup");
       } else if (next.length === 1) {
+        setHouseholdPickerAvailable(false);
         await selectCandidate(next[0]!);
       } else {
+        setHouseholdPickerAvailable(true);
         setStep("select");
       }
     } catch {
@@ -375,11 +411,29 @@ export function RsvpExperience() {
               </li>
             ))}
           </ul>
+          <RsvpFlowNav
+            backLabel="Back to search"
+            onBack={() => {
+              setError(null);
+              setStep("lookup");
+            }}
+            pending={pending}
+          />
         </div>
       ) : null}
 
       {workspace && form && (step === "respond" || step === "details" || step === "review") ? (
-        <HouseholdSummary workspace={workspace} form={form} />
+        <>
+          <HouseholdSummary workspace={workspace} form={form} />
+          <RsvpFlowNav
+            backLabel={step === "respond" ? undefined : "Back"}
+            onBack={step === "respond" ? undefined : goToPreviousStep}
+            changeInvitationLabel="Wrong invitation? Search again"
+            onChangeInvitation={() => void returnToInvitationSearch()}
+            pending={pending}
+            className="mt-4"
+          />
+        </>
       ) : null}
 
       {workspace && form && step === "respond" ? (
@@ -410,18 +464,15 @@ export function RsvpExperience() {
           }
           messageToCouple={messageToCouple}
           setMessageToCouple={setMessageToCouple}
-          onBack={() => setStep("respond")}
           onContinue={() => setStep("review")}
         />
       ) : null}
 
       {workspace && form && step === "review" ? (
         <ReviewStep
-          workspace={workspace}
           form={form}
           messageToCouple={messageToCouple}
           pending={pending}
-          onBack={() => setStep(attendingAny ? "details" : "respond")}
           onSubmit={() => void onSubmit()}
         />
       ) : null}
@@ -445,6 +496,14 @@ export function RsvpExperience() {
               onClick={() => setStep("respond")}
             >
               Update response
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="invite-outline-button !text-invite-navy"
+              onClick={() => void returnToInvitationSearch()}
+            >
+              Search for a different invitation
             </Button>
             <ButtonLink href="/" variant="gold">
               Return to the invitation
@@ -657,7 +716,6 @@ function DetailsStep({
   setForm,
   messageToCouple,
   setMessageToCouple,
-  onBack,
   onContinue,
 }: {
   workspace: Workspace;
@@ -665,7 +723,6 @@ function DetailsStep({
   setForm: (updater: (current: HouseholdForm) => HouseholdForm) => void;
   messageToCouple: string;
   setMessageToCouple: (value: string) => void;
-  onBack: () => void;
   onContinue: () => void;
 }) {
   const rosterNames =
@@ -743,14 +800,6 @@ function DetailsStep({
         />
       </label>
       <div className="flex flex-wrap gap-3">
-        <Button
-          type="button"
-          variant="secondary"
-          className="invite-outline-button !text-invite-navy"
-          onClick={onBack}
-        >
-          Back
-        </Button>
         <Button type="button" variant="gold" onClick={onContinue}>
           Review
         </Button>
@@ -760,18 +809,14 @@ function DetailsStep({
 }
 
 function ReviewStep({
-  workspace,
   form,
   messageToCouple,
   pending,
-  onBack,
   onSubmit,
 }: {
-  workspace: Workspace;
   form: HouseholdForm;
   messageToCouple: string;
   pending: boolean;
-  onBack: () => void;
   onSubmit: () => void;
 }) {
   const rosterSize = form.roster.filter((entry) => entry.fullName.trim()).length;
@@ -803,14 +848,6 @@ function ReviewStep({
         <p className="text-sm text-invite-body-soft/90">Message: {messageToCouple}</p>
       ) : null}
       <div className="flex flex-wrap gap-3 pt-2">
-        <Button
-          type="button"
-          variant="secondary"
-          className="invite-outline-button !text-invite-navy"
-          onClick={onBack}
-        >
-          Back
-        </Button>
         <Button
           type="button"
           variant="gold"
@@ -849,6 +886,55 @@ function HouseholdSummary({
             <li key={guest.id}>{guest.fullName}</li>
           ))}
         </ul>
+      ) : null}
+    </div>
+  );
+}
+
+function RsvpFlowNav({
+  backLabel,
+  onBack,
+  changeInvitationLabel,
+  onChangeInvitation,
+  pending,
+  className,
+}: {
+  backLabel?: string;
+  onBack?: () => void;
+  changeInvitationLabel?: string;
+  onChangeInvitation?: () => void;
+  pending?: boolean;
+  className?: string;
+}) {
+  if (!backLabel && !changeInvitationLabel) return null;
+  return (
+    <div
+      className={cn(
+        "flex flex-wrap items-center gap-3 border-t border-invite-body/10 pt-4",
+        backLabel ? "justify-between" : "justify-end",
+        className,
+      )}
+    >
+      {backLabel && onBack ? (
+        <Button
+          type="button"
+          variant="secondary"
+          className="invite-outline-button !text-invite-navy"
+          disabled={pending}
+          onClick={onBack}
+        >
+          {backLabel}
+        </Button>
+      ) : null}
+      {changeInvitationLabel && onChangeInvitation ? (
+        <button
+          type="button"
+          className="text-sm text-invite-body/80 underline decoration-invite-body/30 underline-offset-4 hover:text-invite-gold disabled:opacity-50"
+          disabled={pending}
+          onClick={onChangeInvitation}
+        >
+          {changeInvitationLabel}
+        </button>
       ) : null}
     </div>
   );
