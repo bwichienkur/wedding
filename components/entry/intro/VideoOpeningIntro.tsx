@@ -14,7 +14,7 @@ interface VideoOpeningIntroProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
-/** Full-screen opening animation with a floating tap hint near the seal. */
+/** Full-screen opening — tap anywhere; subtle seal pulse + bottom cue (no pill button). */
 export function VideoOpeningIntro({
   phase,
   reduceMotion,
@@ -27,6 +27,7 @@ export function VideoOpeningIntro({
     phase === "glowing" || phase === "opening" || phase === "opened";
   const exiting = phase === "opening" || phase === "opened";
   const showPoster = phase === "closed" || phase === "activating";
+  const showCue = interactive && showPoster && !playbackStarted;
 
   return (
     <div
@@ -42,6 +43,16 @@ export function VideoOpeningIntro({
           alt=""
           className="video-opening-media absolute inset-0 z-[1]"
           draggable={false}
+        />
+      ) : null}
+
+      {showCue && !reduceMotion ? (
+        <div
+          className={cn(
+            "video-opening-seal-pulse pointer-events-none absolute z-[2]",
+            glowing && "is-lit",
+          )}
+          aria-hidden
         />
       ) : null}
 
@@ -73,16 +84,23 @@ export function VideoOpeningIntro({
           interactive ? "cursor-pointer" : "pointer-events-none",
         )}
       >
-        <span
-          className={cn(
-            "video-opening-float-hint",
-            glowing && "is-lit",
-            interactive && showPoster && "is-visible",
-            playbackStarted && "opacity-0",
-          )}
-        >
-          {wedding.entry.tapHint}
-        </span>
+        {showCue ? (
+          <div
+            className={cn(
+              "video-opening-invite-cue",
+              glowing && "is-lit",
+            )}
+            aria-hidden
+          >
+            <span className="video-opening-invite-cue-mark">
+              <span className="video-opening-invite-cue-line" />
+              <span className="video-opening-invite-cue-dot" />
+            </span>
+            <span className="video-opening-invite-cue-text">
+              {wedding.entry.openCueLabel}
+            </span>
+          </div>
+        ) : null}
       </button>
     </div>
   );
