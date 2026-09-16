@@ -458,6 +458,72 @@ export async function updateHouseholdAdminRecordSupabase(
   if (error) throw new Error(error.message);
 }
 
+export async function replaceHouseholdGuestsSupabase(
+  householdId: string,
+  guests: Guest[],
+  removedGuestIds: string[],
+): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  if (removedGuestIds.length > 0) {
+    const { error: responseDeleteError } = await supabase
+      .from("guest_responses")
+      .delete()
+      .in("guest_id", removedGuestIds);
+    if (responseDeleteError) throw new Error(responseDeleteError.message);
+
+    const { error: guestDeleteError } = await supabase
+      .from("guests")
+      .delete()
+      .in("id", removedGuestIds);
+    if (guestDeleteError) throw new Error(guestDeleteError.message);
+  }
+
+  const { data: existingRows, error: listError } = await supabase
+    .from("guests")
+    .select("id")
+    .eq("household_id", householdId);
+  if (listError) throw new Error(listError.message);
+  const existingIds = new Set((existingRows ?? []).map((row) => String(row.id)));
+
+  for (const guest of guests) {
+    if (existingIds.has(guest.id)) {
+      const { error } = await supabase
+        .from("guests")
+        .update({
+          full_name: guest.fullName,
+          normalized_name: guest.normalizedName,
+          sort_order: guest.sortOrder,
+        })
+        .eq("id", guest.id);
+      if (error) throw new Error(error.message);
+      continue;
+    }
+    const { error } = await supabase.from("guests").insert({
+      id: guest.id,
+      household_id: householdId,
+      full_name: guest.fullName,
+      normalized_name: guest.normalizedName,
+      is_child: guest.isChild,
+      is_plus_one: guest.isPlusOne,
+      plus_one_named: guest.plusOneNamed,
+      sort_order: guest.sortOrder,
+    });
+    if (error) throw new Error(error.message);
+  }
+
+  const keepIds = new Set(guests.map((guest) => guest.id));
+  const staleIds = [...existingIds].filter((id) => !keepIds.has(id));
+  if (staleIds.length > 0) {
+    await supabase.from("guest_responses").delete().in("guest_id", staleIds);
+    await supabase.from("guests").delete().in("id", staleIds);
+  }
+
+  await supabase
+    .from("households")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", householdId);
+}
+
 export async function updateGuestAdminSupabase(
   guestId: string,
   patch: Partial<Pick<Guest, "fullName" | "normalizedName" | "isChild">>,

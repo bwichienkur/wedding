@@ -11,6 +11,7 @@ import {
   deleteGuestAdminSupabase,
   deleteHouseholdAdminSupabase,
   readRsvpDbSupabase,
+  replaceHouseholdGuestsSupabase,
   saveHouseholdResponsesSupabase,
   updateGuestAdminSupabase,
   updateHouseholdAdminRecordSupabase,
@@ -25,6 +26,7 @@ import type {
   RsvpSubmission,
   RsvpUpdateHistory,
 } from "@/lib/rsvp/types";
+import { withRsvpDbCache, invalidateRsvpDbCache } from "@/lib/rsvp/db-cache";
 import { randomUUID } from "crypto";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -44,12 +46,18 @@ async function ensureStore(): Promise<void> {
 }
 
 export async function readRsvpDb(): Promise<RsvpDatabase> {
-  if (isSupabaseRsvpConfigured()) {
-    return readRsvpDbSupabase();
-  }
-  await ensureStore();
-  const raw = await fs.readFile(DATA_FILE, "utf8");
-  return JSON.parse(raw) as RsvpDatabase;
+  return withRsvpDbCache(async () => {
+    if (isSupabaseRsvpConfigured()) {
+      return readRsvpDbSupabase();
+    }
+    await ensureStore();
+    const raw = await fs.readFile(DATA_FILE, "utf8");
+    return JSON.parse(raw) as RsvpDatabase;
+  });
+}
+
+function bumpCacheAfterWrite(): void {
+  invalidateRsvpDbCache();
 }
 
 async function writeRsvpDb(db: RsvpDatabase): Promise<void> {
@@ -66,6 +74,7 @@ export async function resetRsvpDbForTests(): Promise<RsvpDatabase> {
   }
   const db = createSeedDatabase();
   await writeRsvpDb(db);
+  bumpCacheAfterWrite();
   return db;
 }
 
@@ -107,6 +116,7 @@ export async function saveHouseholdResponses(options: {
 }): Promise<void> {
   if (isSupabaseRsvpConfigured()) {
     await saveHouseholdResponsesSupabase(options);
+    bumpCacheAfterWrite();
     return;
   }
   const db = await readRsvpDb();
@@ -138,16 +148,40 @@ export async function saveHouseholdResponses(options: {
   db.auditLogs.push({ id: randomUUID(), ...options.audit });
 
   await writeRsvpDb(db);
+  bumpCacheAfterWrite();
+}
+
+export async function replaceHouseholdGuests(
+  householdId: string,
+  guests: Guest[],
+  removedGuestIds: string[],
+): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await replaceHouseholdGuestsSupabase(householdId, guests, removedGuestIds);
+    bumpCacheAfterWrite();
+    return;
+  }
+  const db = await readRsvpDb();
+  const removed = new Set(removedGuestIds);
+  db.guests = db.guests.filter((guest) => guest.householdId !== householdId);
+  db.guests.push(...guests);
+  db.responses = db.responses.filter((response) => !removed.has(response.guestId));
+  const household = db.households.find((item) => item.id === householdId);
+  if (household) household.updatedAt = new Date().toISOString();
+  await writeRsvpDb(db);
+  bumpCacheAfterWrite();
 }
 
 export async function appendAudit(entry: Omit<AuditLog, "id">): Promise<void> {
   if (isSupabaseRsvpConfigured()) {
     await appendAuditSupabase(entry);
+    bumpCacheAfterWrite();
     return;
   }
   const db = await readRsvpDb();
   db.auditLogs.push({ id: randomUUID(), ...entry });
   await writeRsvpDb(db);
+  bumpCacheAfterWrite();
 }
 
 export async function updateHouseholdAdmin(

@@ -8,16 +8,18 @@ import {
   createConfirmationToken,
   hashInvitationCode,
   hashIp,
-  verifyConfirmationToken,
+  parseConfirmationToken,
 } from "@/lib/rsvp/crypto";
+import {
+  buildHouseholdGuestResponses,
+  guestAllowanceForHousehold,
+  syncGuestRosterInMemory,
+} from "@/lib/rsvp/household-rsvp";
 import { scoreGuestNameMatch } from "@/lib/rsvp/matching";
 import { namesMatch, normalizeGuestName, sanitizeText } from "@/lib/rsvp/normalize";
 import {
-  getGuestsForHousehold,
-  getHousehold,
-  getResponsesForHousehold,
-  listHouseholds,
   readRsvpDb,
+  replaceHouseholdGuests,
   saveHouseholdResponses,
 } from "@/lib/rsvp/store";
 import type {
@@ -27,7 +29,6 @@ import type {
 } from "@/lib/rsvp/types";
 import { submitRsvpSchema } from "@/lib/rsvp/types";
 import { wedding } from "@/data/wedding";
-import { randomUUID } from "crypto";
 import type { z } from "zod";
 
 export async function lookupHouseholds(query: string): Promise<{
@@ -63,10 +64,11 @@ export async function lookupHouseholds(query: string): Promise<{
     }
     scored.sort((a, b) => b.score - a.score);
     const householdIds: string[] = [];
+    const seen = new Set<string>();
     for (const entry of scored) {
-      if (!householdIds.includes(entry.householdId)) {
-        householdIds.push(entry.householdId);
-      }
+      if (seen.has(entry.householdId)) continue;
+      seen.add(entry.householdId);
+      householdIds.push(entry.householdId);
       if (householdIds.length >= 5) break;
     }
     matches = db.households.filter((household) =>
@@ -99,26 +101,32 @@ export async function lookupHouseholds(query: string): Promise<{
 export async function resolveHouseholdFromToken(
   token: string,
 ): Promise<string | null> {
-  const db = await readRsvpDb();
-  for (const household of db.households) {
-    if (verifyConfirmationToken(token, household.id)) {
-      return household.id;
-    }
-  }
-  return null;
+  return parseConfirmationToken(token);
 }
 
 export async function getHouseholdWorkspace(householdId: string) {
   const db = await readRsvpDb();
-  const household = await getHousehold(householdId);
+  const household = db.households.find((item) => item.id === householdId);
   if (!household) return null;
 
-  const guests = await getGuestsForHousehold(householdId);
-  const responses = await getResponsesForHousehold(householdId);
+  const guests = db.guests
+    .filter((guest) => guest.householdId === householdId)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const guestIds = new Set(guests.map((guest) => guest.id));
+  const responses = db.responses.filter((response) =>
+    guestIds.has(response.guestId),
+  );
   const events = filterStandardEvents(db.events);
   const mealOptions = db.mealOptions.filter(
-    (meal) => STANDARD_EVENT_IDS.includes(meal.eventId as (typeof STANDARD_EVENT_IDS)[number]) &&
-      meal.isActive,
+    (meal) =>
+      STANDARD_EVENT_IDS.includes(
+        meal.eventId as (typeof STANDARD_EVENT_IDS)[number],
+      ) && meal.isActive,
+  );
+
+  const guestAllowance = guestAllowanceForHousehold(
+    guests.length,
+    household.maxPlusOnes,
   );
 
   return {
@@ -128,6 +136,7 @@ export async function getHouseholdWorkspace(householdId: string) {
       email: household.email,
       rsvpStatus: household.rsvpStatus,
       maxPlusOnes: household.maxPlusOnes,
+      guestAllowance,
     },
     guests: guests.map((guest) => ({
       id: guest.id,
@@ -164,49 +173,70 @@ export async function submitHouseholdRsvp(options: {
   const household = db.households.find((item) => item.id === options.householdId);
   if (!household) throw new Error("NOT_FOUND");
 
-  const guests = db.guests.filter(
+  const existingGuests = db.guests.filter(
     (guest) => guest.householdId === options.householdId,
   );
-  const guestIds = new Set(guests.map((guest) => guest.id));
-  const eventIds = new Set<string>(STANDARD_EVENT_IDS);
+  const allowance = guestAllowanceForHousehold(
+    existingGuests.length,
+    household.maxPlusOnes,
+  );
 
-  for (const response of options.payload.responses) {
-    if (!guestIds.has(response.guestId) || !eventIds.has(response.eventId)) {
-      throw new Error("INVALID_RESPONSE");
-    }
+  const events = filterStandardEvents(db.events);
+  const ceremony = events.find((event) => event.slug === "ceremony-reception");
+  const welcome = events.find((event) => event.slug === "welcome-party");
+  if (!ceremony || !welcome) throw new Error("INVALID_RESPONSE");
+
+  const payload = options.payload;
+  const ceremonyAttending = payload.ceremonyAttending;
+  const welcomeAttending = payload.welcomeAttending;
+
+  let rosterGuests = existingGuests;
+  if (payload.guestRoster && ceremonyAttending === "yes") {
+    const synced = syncGuestRosterInMemory({
+      householdId: options.householdId,
+      allowance,
+      roster: payload.guestRoster,
+      existingGuests,
+      ceremonyAttending,
+    });
+    await replaceHouseholdGuests(
+      options.householdId,
+      synced.guests,
+      synced.removedGuestIds,
+    );
+    rosterGuests = synced.guests;
   }
 
-  const guestNameUpdates: Array<{
-    guestId: string;
-    fullName: string;
-    normalizedName: string;
-  }> = [];
+  const rosterSize = rosterGuests.length;
+  let welcomeGuestCount = payload.welcomeGuestCount ?? 0;
+  if (welcomeAttending === "yes") {
+    const welcomeMax =
+      ceremonyAttending === "yes" ? rosterSize : allowance;
+    if (welcomeGuestCount < 1) throw new Error("INVALID_RESPONSE");
+    if (welcomeGuestCount > welcomeMax) throw new Error("INVALID_RESPONSE");
+  } else {
+    welcomeGuestCount = 0;
+  }
 
-  const records: GuestResponse[] = options.payload.responses.map((response) => {
-    const guest = guests.find((item) => item.id === response.guestId)!;
-    if (
-      guest.isPlusOne &&
-      !guest.plusOneNamed &&
-      response.plusOneName &&
-      response.attending === "yes"
-    ) {
-      const fullName = sanitizeText(response.plusOneName, 120);
-      guestNameUpdates.push({
-        guestId: guest.id,
-        fullName,
-        normalizedName: normalizeGuestName(fullName),
-      });
-    }
+  const notesByGuestId = new Map<
+    string,
+    { dietaryNotes: string; accessibilityNotes: string }
+  >();
+  for (const note of payload.guestNotes ?? []) {
+    notesByGuestId.set(note.guestId, {
+      dietaryNotes: sanitizeText(note.dietaryNotes ?? "", 500),
+      accessibilityNotes: sanitizeText(note.accessibilityNotes ?? "", 500),
+    });
+  }
 
-    return {
-      id: randomUUID(),
-      guestId: response.guestId,
-      eventId: response.eventId,
-      attending: response.attending,
-      mealOptionId: response.mealOptionId ?? null,
-      dietaryNotes: sanitizeText(response.dietaryNotes ?? "", 500),
-      accessibilityNotes: sanitizeText(response.accessibilityNotes ?? "", 500),
-    };
+  const records: GuestResponse[] = buildHouseholdGuestResponses({
+    guests: rosterGuests,
+    ceremonyEventId: ceremony.id,
+    welcomeEventId: welcome.id,
+    ceremonyAttending,
+    welcomeAttending,
+    welcomeGuestCount,
+    notesByGuestId,
   });
 
   const attendingValues = records.map((record) => record.attending);
@@ -222,13 +252,13 @@ export async function submitHouseholdRsvp(options: {
       householdId: options.householdId,
       submittedAt: new Date().toISOString(),
       submittedBy: options.actor,
-      songRequest: sanitizeText(options.payload.songRequest ?? "", 200),
-      messageToCouple: sanitizeText(options.payload.messageToCouple ?? "", 1000),
+      songRequest: sanitizeText(payload.songRequest ?? "", 200),
+      messageToCouple: sanitizeText(payload.messageToCouple ?? "", 1000),
       ipHash: hashIp(options.ip),
     },
     history: {
       householdId: options.householdId,
-      payloadJson: JSON.stringify(options.payload),
+      payloadJson: JSON.stringify(payload),
       changedBy: options.actor,
       createdAt: new Date().toISOString(),
     },
@@ -241,7 +271,6 @@ export async function submitHouseholdRsvp(options: {
       createdAt: new Date().toISOString(),
     },
     householdStatus: status,
-    guestNameUpdates,
   });
 
   return {
@@ -253,7 +282,7 @@ export async function submitHouseholdRsvp(options: {
 
 export async function getAdminRsvpSummary() {
   const db = await readRsvpDb();
-  const households = await listHouseholds();
+  const households = db.households;
   const mealTotals = new Map<string, number>();
 
   for (const response of db.responses) {

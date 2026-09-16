@@ -39,16 +39,21 @@ export function verifyConfirmationToken(
   token: string,
   householdId: string,
 ): boolean {
+  return parseConfirmationToken(token) === householdId;
+}
+
+/** Returns household id when token signature is valid. */
+export function parseConfirmationToken(token: string): string | null {
   const parts = token.split(".");
-  if (parts.length !== 3) return false;
+  if (parts.length !== 3) return null;
   const [id, nonce, signature] = parts;
-  if (id !== householdId || !nonce || !signature) return false;
+  if (!id || !nonce || !signature) return null;
   const payload = `${id}.${nonce}`;
   const expected = sign(payload);
   const a = Buffer.from(signature);
   const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  return id;
 }
 
 export function createHouseholdSessionValue(householdId: string): string {
