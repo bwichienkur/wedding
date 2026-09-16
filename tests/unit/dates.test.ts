@@ -8,6 +8,7 @@ describe("getCountdownParts", () => {
     expect(parts.days).toBe(0);
     expect(parts.hours).toBe(0);
     expect(parts.minutes).toBe(0);
+    expect(parts.seconds).toBe(0);
   });
 
   it("returns remaining time before the wedding", () => {

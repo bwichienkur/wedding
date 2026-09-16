@@ -8,6 +8,18 @@ import { cn } from "@/lib/cn";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
+function useWideViewport() {
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setWide(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return wide;
+}
+
 /** Fixed floral scroll video — wooowinvites-style layer behind the invite column. */
 export function AmbientBackground({
   active,
@@ -18,11 +30,20 @@ export function AmbientBackground({
   warm?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
+  const wide = useWideViewport();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 3000], [0, -180]);
-  const scale = useTransform(scrollY, [0, 3000], [1.08, 1.18]);
+  const y = useTransform(
+    scrollY,
+    [0, 3000],
+    wide ? [0, -80] : [0, -180],
+  );
+  const scale = useTransform(
+    scrollY,
+    [0, 3000],
+    wide ? [1, 1.02] : [1.04, 1.1],
+  );
   const shouldLoad = warm || active;
 
   useEffect(() => {
@@ -52,24 +73,28 @@ export function AmbientBackground({
   if (!shouldLoad) return null;
 
   const visible = active;
+  const mediaClass = cn(
+    "invite-ambient-bg__media h-full w-full object-center",
+    wide ? "object-contain" : "object-cover",
+  );
 
   return (
     <div
       className={cn(
-        "pointer-events-none fixed inset-0 z-0 overflow-hidden",
+        "invite-ambient-bg pointer-events-none fixed inset-0 z-0 overflow-hidden",
         "transition-opacity duration-500 ease-out",
         visible ? "opacity-100" : "opacity-0",
       )}
       aria-hidden
     >
-      {/* Poster shows immediately on reveal; video crossfades when buffered. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={INVITE_SCROLL_BG_POSTER}
         alt=""
         className={cn(
-          "absolute inset-0 h-full w-full scale-105 object-cover object-center transition-opacity duration-700",
-          visible && !videoReady && !reduceMotion ? "opacity-100" : "opacity-100",
+          "invite-ambient-bg__media absolute inset-0",
+          mediaClass,
+          wide ? "scale-100" : "scale-[1.02]",
         )}
       />
 
@@ -81,7 +106,8 @@ export function AmbientBackground({
           <video
             ref={videoRef}
             className={cn(
-              "h-full w-full object-cover object-center transition-opacity duration-700 ease-out",
+              mediaClass,
+              "transition-opacity duration-700 ease-out",
               videoReady && visible ? "opacity-100" : "opacity-0",
             )}
             src={INVITE_SCROLL_BG_VIDEO}

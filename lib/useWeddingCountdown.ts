@@ -1,15 +1,15 @@
 "use client";
 
-import { getStableCountdownParts, type CountdownParts } from "@/lib/dates";
+import { getCountdownParts, type CountdownParts } from "@/lib/dates";
 import { useSyncExternalStore } from "react";
 
 function subscribe(onStoreChange: () => void) {
-  const id = window.setInterval(onStoreChange, 60_000);
+  const id = window.setInterval(onStoreChange, 1000);
   return () => window.clearInterval(id);
 }
 
 function getSnapshot(): CountdownParts {
-  return getStableCountdownParts();
+  return getCountdownParts();
 }
 
 function getServerSnapshot(): null {
