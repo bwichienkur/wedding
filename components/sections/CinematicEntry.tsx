@@ -55,6 +55,7 @@ export function CinematicEntry({
   const forceSkip = useForceSkipIntro();
   const [phase, setPhase] = useState<IntroPhase>("closed");
   const [removed, setRemoved] = useState(false);
+  const [openingVideoPlaying, setOpeningVideoPlaying] = useState(false);
   const completedRef = useRef(false);
   const revealedRef = useRef(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -80,7 +81,9 @@ export function CinematicEntry({
   const playOpeningVideo = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    video.currentTime = 0;
+    if (video.currentTime > 0.01) {
+      video.currentTime = 0;
+    }
     void video.play().catch(() => {
       startReveal();
       setPhase("opening");
@@ -108,12 +111,17 @@ export function CinematicEntry({
   useLayoutEffect(() => {
     const video = videoRef.current;
     if (!video || !isClient || removed) return;
+    const handlePlaying = () => setOpeningVideoPlaying(true);
     const handleEnded = () => {
       video.pause();
       onVideoEnded();
     };
+    video.addEventListener("playing", handlePlaying);
     video.addEventListener("ended", handleEnded);
-    return () => video.removeEventListener("ended", handleEnded);
+    return () => {
+      video.removeEventListener("playing", handlePlaying);
+      video.removeEventListener("ended", handleEnded);
+    };
   }, [isClient, onVideoEnded, removed, phase]);
 
   useEffect(() => {
@@ -161,7 +169,11 @@ export function CinematicEntry({
   const exiting = phase === "opened" || phase === "skipped";
   const videoPlaying =
     phase === "glowing" || phase === "opening" || exiting;
-  const showThrough = videoPlaying;
+  /** Keep overlay opaque until the opening video is actually painting (avoids mobile flash). */
+  const showThrough =
+    exiting ||
+    phase === "opening" ||
+    (phase === "glowing" && openingVideoPlaying);
 
   return (
     <div
@@ -195,6 +207,7 @@ export function CinematicEntry({
         reduceMotion={Boolean(reduceMotion)}
         onActivate={activate}
         videoRef={videoRef}
+        openingVideoPlaying={openingVideoPlaying}
       />
 
       <IntroNavigation
