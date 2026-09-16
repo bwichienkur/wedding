@@ -10,6 +10,7 @@ import {
   hashIp,
   verifyConfirmationToken,
 } from "@/lib/rsvp/crypto";
+import { scoreGuestNameMatch } from "@/lib/rsvp/matching";
 import { namesMatch, normalizeGuestName, sanitizeText } from "@/lib/rsvp/normalize";
 import {
   getGuestsForHousehold,
@@ -50,6 +51,31 @@ export async function lookupHouseholds(query: string): Promise<{
     );
     const householdIds = new Set(guestHits.map((guest) => guest.householdId));
     matches = db.households.filter((household) => householdIds.has(household.id));
+  }
+
+  if (matches.length === 0) {
+    const scored: Array<{ householdId: string; score: number }> = [];
+    for (const guest of db.guests) {
+      const score = scoreGuestNameMatch(trimmed, guest.normalizedName);
+      if (score > 0) {
+        scored.push({ householdId: guest.householdId, score });
+      }
+    }
+    scored.sort((a, b) => b.score - a.score);
+    const householdIds: string[] = [];
+    for (const entry of scored) {
+      if (!householdIds.includes(entry.householdId)) {
+        householdIds.push(entry.householdId);
+      }
+      if (householdIds.length >= 5) break;
+    }
+    matches = db.households.filter((household) =>
+      householdIds.includes(household.id),
+    );
+    matches.sort(
+      (a, b) =>
+        householdIds.indexOf(a.id) - householdIds.indexOf(b.id),
+    );
   }
 
   const candidates: HouseholdCandidate[] = matches.slice(0, 5).map((household) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { RsvpGuestListAdmin } from "@/components/admin/RsvpGuestListAdmin";
 import {
   adminCardClass,
   adminFieldClass,
@@ -37,6 +38,7 @@ interface Summary {
 
 export function RsvpAdminPanel() {
   const router = useRouter();
+  const [tab, setTab] = useState<"responses" | "guests">("responses");
   const [summary, setSummary] = useState<Summary | null>(null);
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
@@ -85,6 +87,35 @@ export function RsvpAdminPanel() {
   }
 
   return (
+    <div className="space-y-8">
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className={
+            tab === "responses"
+              ? "rounded-full border border-[var(--admin-gold,#e8c872)] bg-white/10 px-4 py-2 text-sm text-[var(--admin-gold-bright,#f5e6a8)]"
+              : "rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--admin-body,#d4dce8)]"
+          }
+          onClick={() => setTab("responses")}
+        >
+          RSVP responses
+        </button>
+        <button
+          type="button"
+          className={
+            tab === "guests"
+              ? "rounded-full border border-[var(--admin-gold,#e8c872)] bg-white/10 px-4 py-2 text-sm text-[var(--admin-gold-bright,#f5e6a8)]"
+              : "rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--admin-body,#d4dce8)]"
+          }
+          onClick={() => setTab("guests")}
+        >
+          Guest list
+        </button>
+      </div>
+
+      {tab === "guests" ? <RsvpGuestListAdmin /> : null}
+
+      {tab === "responses" ? (
     <div className="space-y-10">
       <div className="grid gap-4 sm:grid-cols-5">
         {(
@@ -207,6 +238,8 @@ export function RsvpAdminPanel() {
           </li>
         ))}
       </ul>
+    </div>
+      ) : null}
     </div>
   );
 }

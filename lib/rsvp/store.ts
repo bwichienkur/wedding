@@ -6,8 +6,14 @@ import { createSeedDatabase } from "@/lib/rsvp/seed";
 import { isSupabaseRsvpConfigured } from "@/lib/rsvp/supabase-env";
 import {
   appendAuditSupabase,
+  createGuestAdminSupabase,
+  createHouseholdAdminSupabase,
+  deleteGuestAdminSupabase,
+  deleteHouseholdAdminSupabase,
   readRsvpDbSupabase,
   saveHouseholdResponsesSupabase,
+  updateGuestAdminSupabase,
+  updateHouseholdAdminRecordSupabase,
   updateHouseholdAdminSupabase,
 } from "@/lib/rsvp/store-supabase";
 import type {
@@ -157,4 +163,102 @@ export async function updateHouseholdAdmin(
   Object.assign(household, patch, { updatedAt: new Date().toISOString() });
   await writeRsvpDb(db);
   return household;
+}
+
+export async function createHouseholdAdmin(options: {
+  household: Household;
+  guests: Guest[];
+}): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await createHouseholdAdminSupabase(options);
+    return;
+  }
+  const db = await readRsvpDb();
+  db.households.push(options.household);
+  db.guests.push(...options.guests);
+  await writeRsvpDb(db);
+}
+
+export async function deleteHouseholdAdmin(householdId: string): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await deleteHouseholdAdminSupabase(householdId);
+    return;
+  }
+  const db = await readRsvpDb();
+  const guestIds = new Set(
+    db.guests.filter((g) => g.householdId === householdId).map((g) => g.id),
+  );
+  db.guests = db.guests.filter((g) => g.householdId !== householdId);
+  db.households = db.households.filter((h) => h.id !== householdId);
+  db.responses = db.responses.filter((r) => !guestIds.has(r.guestId));
+  await writeRsvpDb(db);
+}
+
+export async function createGuestAdmin(
+  householdId: string,
+  guest: Guest,
+): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await createGuestAdminSupabase(guest);
+    return;
+  }
+  const db = await readRsvpDb();
+  const household = db.households.find((h) => h.id === householdId);
+  if (!household) throw new Error("NOT_FOUND");
+  const sortOrder =
+    db.guests.filter((g) => g.householdId === householdId).length + 1;
+  db.guests.push({ ...guest, householdId, sortOrder });
+  household.updatedAt = new Date().toISOString();
+  await writeRsvpDb(db);
+}
+
+export async function deleteGuestAdmin(guestId: string): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await deleteGuestAdminSupabase(guestId);
+    return;
+  }
+  const db = await readRsvpDb();
+  db.guests = db.guests.filter((g) => g.id !== guestId);
+  db.responses = db.responses.filter((r) => r.guestId !== guestId);
+  await writeRsvpDb(db);
+}
+
+export async function updateHouseholdAdminRecord(
+  householdId: string,
+  patch: Partial<
+    Pick<
+      Household,
+      | "displayName"
+      | "email"
+      | "phone"
+      | "notesAdmin"
+      | "invitationCodeHash"
+      | "invitationCodeHint"
+    >
+  >,
+): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await updateHouseholdAdminRecordSupabase(householdId, patch);
+    return;
+  }
+  const db = await readRsvpDb();
+  const household = db.households.find((h) => h.id === householdId);
+  if (!household) throw new Error("NOT_FOUND");
+  Object.assign(household, patch, { updatedAt: new Date().toISOString() });
+  await writeRsvpDb(db);
+}
+
+export async function updateGuestAdmin(
+  guestId: string,
+  patch: Partial<Pick<Guest, "fullName" | "normalizedName" | "isChild">>,
+): Promise<void> {
+  if (isSupabaseRsvpConfigured()) {
+    await updateGuestAdminSupabase(guestId, patch);
+    return;
+  }
+  const db = await readRsvpDb();
+  const guest = db.guests.find((g) => g.id === guestId);
+  if (!guest) throw new Error("NOT_FOUND");
+  Object.assign(guest, patch);
+  await writeRsvpDb(db);
 }

@@ -330,3 +330,141 @@ export async function updateHouseholdAdminSupabase(
   const refreshed = await readRsvpDbSupabase();
   return refreshed.households.find((item) => item.id === householdId) ?? null;
 }
+
+export async function createHouseholdAdminSupabase(options: {
+  household: Household;
+  guests: Guest[];
+}): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { household, guests } = options;
+  const { error: hErr } = await supabase.from("households").insert({
+    id: household.id,
+    display_name: household.displayName,
+    invitation_code_hash: household.invitationCodeHash,
+    invitation_code_hint: household.invitationCodeHint,
+    email: household.email,
+    phone: household.phone,
+    notes_admin: household.notesAdmin,
+    rsvp_status: household.rsvpStatus,
+    max_plus_ones: household.maxPlusOnes,
+    created_at: household.createdAt,
+    updated_at: household.updatedAt,
+  });
+  if (hErr) throw new Error(hErr.message);
+
+  const invitations = household.eventIds.map((eventId) => ({
+    household_id: household.id,
+    event_id: eventId,
+  }));
+  if (invitations.length > 0) {
+    const { error: invErr } = await supabase
+      .from("household_event_invitations")
+      .insert(invitations);
+    if (invErr) throw new Error(invErr.message);
+  }
+
+  if (guests.length > 0) {
+    const { error: gErr } = await supabase.from("guests").insert(
+      guests.map((guest) => ({
+        id: guest.id,
+        household_id: guest.householdId,
+        full_name: guest.fullName,
+        normalized_name: guest.normalizedName,
+        is_child: guest.isChild,
+        is_plus_one: guest.isPlusOne,
+        plus_one_named: guest.plusOneNamed,
+        sort_order: guest.sortOrder,
+      })),
+    );
+    if (gErr) throw new Error(gErr.message);
+  }
+}
+
+export async function deleteHouseholdAdminSupabase(
+  householdId: string,
+): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from("households")
+    .delete()
+    .eq("id", householdId);
+  if (error) throw new Error(error.message);
+}
+
+export async function createGuestAdminSupabase(guest: Guest): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { data: existing } = await supabase
+    .from("guests")
+    .select("sort_order")
+    .eq("household_id", guest.householdId);
+  const sortOrder = (existing?.length ?? 0) + 1;
+  const { error } = await supabase.from("guests").insert({
+    id: guest.id,
+    household_id: guest.householdId,
+    full_name: guest.fullName,
+    normalized_name: guest.normalizedName,
+    is_child: guest.isChild,
+    is_plus_one: guest.isPlusOne,
+    plus_one_named: guest.plusOneNamed,
+    sort_order: sortOrder,
+  });
+  if (error) throw new Error(error.message);
+  await supabase
+    .from("households")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", guest.householdId);
+}
+
+export async function deleteGuestAdminSupabase(guestId: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from("guests").delete().eq("id", guestId);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateHouseholdAdminRecordSupabase(
+  householdId: string,
+  patch: Partial<
+    Pick<
+      Household,
+      | "displayName"
+      | "email"
+      | "phone"
+      | "notesAdmin"
+      | "invitationCodeHash"
+      | "invitationCodeHint"
+    >
+  >,
+): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const row: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  };
+  if (patch.displayName !== undefined) row.display_name = patch.displayName;
+  if (patch.email !== undefined) row.email = patch.email;
+  if (patch.phone !== undefined) row.phone = patch.phone;
+  if (patch.notesAdmin !== undefined) row.notes_admin = patch.notesAdmin;
+  if (patch.invitationCodeHash !== undefined) {
+    row.invitation_code_hash = patch.invitationCodeHash;
+  }
+  if (patch.invitationCodeHint !== undefined) {
+    row.invitation_code_hint = patch.invitationCodeHint;
+  }
+  const { error } = await supabase
+    .from("households")
+    .update(row)
+    .eq("id", householdId);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateGuestAdminSupabase(
+  guestId: string,
+  patch: Partial<Pick<Guest, "fullName" | "normalizedName" | "isChild">>,
+): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const row: Record<string, unknown> = {};
+  if (patch.fullName !== undefined) row.full_name = patch.fullName;
+  if (patch.normalizedName !== undefined) row.normalized_name = patch.normalizedName;
+  if (patch.isChild !== undefined) row.is_child = patch.isChild;
+  const { error } = await supabase.from("guests").update(row).eq("id", guestId);
+  if (error) throw new Error(error.message);
+}

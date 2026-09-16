@@ -23,7 +23,33 @@ Invitation codes are stored **hashed** server-side (`RSVP_SESSION_SECRET` must s
 
 Use **only fictional names** in git; keep real guest data in Supabase or a private CSV, not committed.
 
-## Option B — Production (Supabase)
+### Zola export (Title, First Name, Last Name, …)
+
+If your spreadsheet matches Zola’s export columns (`Title`, `First Name`, `Last Name`, `Welcome Event`, …):
+
+```bash
+npm run reset:rsvp-seed   # optional — clears old local guests
+node scripts/import-zola-guest-export.mjs /path/to/export.csv .data/household-merges.json
+```
+
+**Automatic households**
+
+- Same **last name** → one invitation (e.g. all Boykins together).
+- **Blank last name** → grouped with the row above (e.g. “Husband”, “Fiance”, children).
+
+Couples with **different last names** (or families split in the export) need a **`household-merges.json`** file (keep it in `.data/` — gitignored). Example:
+
+```json
+[
+  {
+    "displayName": "Alex & Riley Example",
+    "members": ["Alex Example", "Riley Example"]
+  }
+]
+```
+
+After import, open **`.data/invitation-codes.txt`** for each household’s lookup code (do not commit). Use the same `RSVP_SESSION_SECRET` in production before generating codes for Supabase.
+
 
 1. Apply `supabase/migrations/202608240002_rsvp.sql` (see `docs/SUPABASE-RSVP.md`).
 2. Set `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and **`RSVP_SESSION_SECRET`** on Vercel **before** importing codes.
