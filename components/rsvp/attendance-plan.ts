@@ -1,25 +1,11 @@
-import type { Attending, EventRecord } from "@/lib/rsvp/types";
+import type { Attending } from "@/lib/rsvp/types";
 import {
   CEREMONY_EVENT_SLUG,
   WELCOME_PARTY_EVENT_SLUG,
 } from "@/lib/rsvp/event-config";
+import type { EventRecord } from "@/lib/rsvp/types";
 
-export type AttendancePlan =
-  | "both"
-  | "ceremony"
-  | "welcome"
-  | "neither"
-  | "unknown";
-
-export const ATTENDANCE_PLAN_OPTIONS: Array<{
-  value: AttendancePlan;
-  label: string;
-}> = [
-  { value: "both", label: "Ceremony & welcome party" },
-  { value: "ceremony", label: "Ceremony only" },
-  { value: "welcome", label: "Welcome party only" },
-  { value: "neither", label: "Can't attend" },
-];
+export type HouseholdYesNo = "yes" | "no" | "unknown";
 
 export function resolveCeremonyAndWelcomeEvents(events: EventRecord[]): {
   ceremony: EventRecord;
@@ -31,50 +17,78 @@ export function resolveCeremonyAndWelcomeEvents(events: EventRecord[]): {
   return { ceremony, welcome };
 }
 
-export function attendancePlanLabel(plan: AttendancePlan): string {
-  return (
-    ATTENDANCE_PLAN_OPTIONS.find((option) => option.value === plan)?.label ??
-    "Not answered yet"
-  );
-}
-
-export function attendancePlanForGuest(
+export function inferHouseholdCeremonyAttending(
   drafts: Array<{ guestId: string; eventId: string; attending: Attending }>,
-  guestId: string,
   ceremonyEventId: string,
-  welcomeEventId: string,
-): AttendancePlan {
-  const ceremony = drafts.find(
-    (draft) =>
-      draft.guestId === guestId && draft.eventId === ceremonyEventId,
-  )?.attending;
-  const welcome = drafts.find(
-    (draft) =>
-      draft.guestId === guestId && draft.eventId === welcomeEventId,
-  )?.attending;
-
-  if (ceremony === "unknown" || welcome === "unknown") return "unknown";
-  if (ceremony === "yes" && welcome === "yes") return "both";
-  if (ceremony === "yes" && welcome === "no") return "ceremony";
-  if (ceremony === "no" && welcome === "yes") return "welcome";
-  if (ceremony === "no" && welcome === "no") return "neither";
+  guestIds: string[],
+): HouseholdYesNo {
+  if (guestIds.length === 0) return "unknown";
+  const values = guestIds.map(
+    (guestId) =>
+      drafts.find(
+        (draft) =>
+          draft.guestId === guestId && draft.eventId === ceremonyEventId,
+      )?.attending ?? "unknown",
+  );
+  if (values.every((value) => value === "yes")) return "yes";
+  if (values.every((value) => value === "no")) return "no";
   return "unknown";
 }
 
-export function attendingForPlan(
-  plan: AttendancePlan,
-  which: "ceremony" | "welcome",
-): Attending {
-  switch (plan) {
-    case "both":
-      return "yes";
-    case "ceremony":
-      return which === "ceremony" ? "yes" : "no";
-    case "welcome":
-      return which === "welcome" ? "yes" : "no";
-    case "neither":
-      return "no";
-    default:
-      return "unknown";
+export function inferHouseholdWelcomeAttending(
+  drafts: Array<{ guestId: string; eventId: string; attending: Attending }>,
+  welcomeEventId: string,
+  guestIds: string[],
+): HouseholdYesNo {
+  if (guestIds.length === 0) return "unknown";
+  const values = guestIds.map(
+    (guestId) =>
+      drafts.find(
+        (draft) => draft.guestId === guestId && draft.eventId === welcomeEventId,
+      )?.attending ?? "unknown",
+  );
+  if (values.every((value) => value === "no")) return "no";
+  if (values.some((value) => value === "yes")) return "yes";
+  return "unknown";
+}
+
+export function countWelcomeGuests(
+  drafts: Array<{ guestId: string; eventId: string; attending: Attending }>,
+  welcomeEventId: string,
+  guestIds: string[],
+): number {
+  return guestIds.filter(
+    (guestId) =>
+      drafts.find(
+        (draft) =>
+          draft.guestId === guestId && draft.eventId === welcomeEventId,
+      )?.attending === "yes",
+  ).length;
+}
+
+export function householdRsvpSummary(options: {
+  ceremonyAttending: HouseholdYesNo;
+  welcomeAttending: HouseholdYesNo;
+  welcomeGuestCount: number;
+  rosterSize: number;
+}): string {
+  if (options.ceremonyAttending === "no" && options.welcomeAttending === "no") {
+    return "Not attending";
   }
+  const parts: string[] = [];
+  if (options.ceremonyAttending === "yes") {
+    parts.push(
+      `Ceremony: ${options.rosterSize} guest${options.rosterSize === 1 ? "" : "s"}`,
+    );
+  } else if (options.ceremonyAttending === "no") {
+    parts.push("Ceremony: not attending");
+  }
+  if (options.welcomeAttending === "yes") {
+    parts.push(
+      `Welcome party: ${options.welcomeGuestCount} guest${options.welcomeGuestCount === 1 ? "" : "s"}`,
+    );
+  } else if (options.welcomeAttending === "no") {
+    parts.push("Welcome party: not attending");
+  }
+  return parts.join(" · ");
 }

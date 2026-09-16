@@ -23,7 +23,10 @@ test.describe("RSVP", () => {
     ).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText(E2E_HOUSEHOLD)).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Ceremony & welcome party" }),
+      page.getByRole("button", { name: "Attending" }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Attending ceremony & reception/i),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
   });

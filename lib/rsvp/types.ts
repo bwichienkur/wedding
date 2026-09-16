@@ -84,10 +84,27 @@ export const guestResponseInputSchema = z.object({
   plusOneName: z.string().max(120).optional(),
 });
 
+export const guestNotesInputSchema = z.object({
+  guestId: z.string(),
+  dietaryNotes: z.string().max(500).optional(),
+  accessibilityNotes: z.string().max(500).optional(),
+});
+
+export const guestRosterInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  fullName: z.string().trim().min(1).max(120),
+});
+
 export const submitRsvpSchema = z.object({
+  ceremonyAttending: z.enum(["yes", "no"]),
+  welcomeAttending: z.enum(["yes", "no"]),
+  welcomeGuestCount: z.number().int().nonnegative().default(0),
+  guestRoster: z.array(guestRosterInputSchema).optional(),
+  guestNotes: z.array(guestNotesInputSchema).optional(),
   songRequest: z.string().max(200).optional(),
   messageToCouple: z.string().max(1000).optional(),
-  responses: z.array(guestResponseInputSchema).min(1),
+  /** @deprecated Legacy clients; ignored when ceremony/welcome fields are sent. */
+  responses: z.array(guestResponseInputSchema).optional(),
 });
 
 export type Attending = z.infer<typeof attendingSchema>;

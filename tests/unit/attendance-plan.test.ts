@@ -1,32 +1,40 @@
 import { describe, expect, it } from "vitest";
 import {
-  attendancePlanForGuest,
-  attendancePlanLabel,
-  attendingForPlan,
+  countWelcomeGuests,
+  householdRsvpSummary,
+  inferHouseholdCeremonyAttending,
+  inferHouseholdWelcomeAttending,
 } from "@/components/rsvp/attendance-plan";
 
-describe("attendance plan", () => {
+describe("household attendance", () => {
   const ceremonyId = "event-ceremony-reception";
   const welcomeId = "event-welcome-party";
-  const guestId = "guest-1";
+  const guestIds = ["guest-1", "guest-2"];
 
-  it("maps plan selections to per-event attending values", () => {
-    expect(attendingForPlan("both", "ceremony")).toBe("yes");
-    expect(attendingForPlan("both", "welcome")).toBe("yes");
-    expect(attendingForPlan("ceremony", "ceremony")).toBe("yes");
-    expect(attendingForPlan("ceremony", "welcome")).toBe("no");
-    expect(attendingForPlan("welcome", "welcome")).toBe("yes");
-    expect(attendingForPlan("neither", "ceremony")).toBe("no");
+  it("infers ceremony and welcome answers from drafts", () => {
+    const drafts = [
+      { guestId: "guest-1", eventId: ceremonyId, attending: "yes" as const },
+      { guestId: "guest-2", eventId: ceremonyId, attending: "yes" as const },
+      { guestId: "guest-1", eventId: welcomeId, attending: "yes" as const },
+      { guestId: "guest-2", eventId: welcomeId, attending: "no" as const },
+    ];
+    expect(inferHouseholdCeremonyAttending(drafts, ceremonyId, guestIds)).toBe(
+      "yes",
+    );
+    expect(inferHouseholdWelcomeAttending(drafts, welcomeId, guestIds)).toBe(
+      "yes",
+    );
+    expect(countWelcomeGuests(drafts, welcomeId, guestIds)).toBe(1);
   });
 
-  it("derives plan from drafts", () => {
-    const drafts = [
-      { guestId, eventId: ceremonyId, attending: "yes" as const },
-      { guestId, eventId: welcomeId, attending: "no" as const },
-    ];
-    expect(attendancePlanForGuest(drafts, guestId, ceremonyId, welcomeId)).toBe(
-      "ceremony",
-    );
-    expect(attendancePlanLabel("both")).toContain("Ceremony");
+  it("formats review summary", () => {
+    expect(
+      householdRsvpSummary({
+        ceremonyAttending: "yes",
+        welcomeAttending: "yes",
+        welcomeGuestCount: 2,
+        rosterSize: 2,
+      }),
+    ).toContain("Welcome party: 2 guests");
   });
 });

@@ -91,23 +91,18 @@ describe("rsvp service", () => {
       "ceremony-reception",
     ]);
 
-    const responses = workspace!.guests.flatMap((guest) =>
-      workspace!.events.map((event) => ({
-        guestId: guest.id,
-        eventId: event.id,
-        attending: "yes" as const,
-        mealOptionId: null,
-        dietaryNotes: "",
-        accessibilityNotes: "",
-      })),
-    );
-
     const result = await submitHouseholdRsvp({
       householdId: householdId!,
       payload: {
+        ceremonyAttending: "yes",
+        welcomeAttending: "yes",
+        welcomeGuestCount: workspace!.guests.length,
+        guestRoster: workspace!.guests.map((guest) => ({
+          id: guest.id,
+          fullName: guest.fullName,
+        })),
         songRequest: "",
         messageToCouple: "Cannot wait to celebrate.",
-        responses,
       },
       ip: "127.0.0.1",
       actor: "guest",
