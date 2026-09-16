@@ -36,7 +36,7 @@ export const adminTableShellClass =
   "admin-glass-card overflow-hidden rounded-sm";
 
 export const adminTableClass =
-  "w-full table-fixed border-collapse text-xs";
+  "w-full border-collapse text-xs max-sm:table-auto sm:table-fixed sm:max-w-xl";
 
 export const adminThClass =
   "whitespace-nowrap border-b border-[rgb(212_175_55/0.22)] bg-[rgb(4_10_20/0.85)] px-2 py-1.5 text-left font-sans text-[0.625rem] font-medium uppercase tracking-[0.12em] text-[var(--admin-gold,#e8c872)]";
