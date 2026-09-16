@@ -111,7 +111,7 @@
   }
 
   body.invite-revealed {
-    background: #e8d5bc;
+    background: #070e1a;
     color: var(--invite-body);
   }
 
@@ -986,15 +986,9 @@
   .invite-page {
     position: relative;
     z-index: 1;
-    min-height: 100vh;
-    padding: 0.75rem 0.75rem 5rem;
-    background:
-      radial-gradient(
-        ellipse 120% 80% at 50% 0%,
-        rgb(245 228 205 / 0.9),
-        rgb(235 215 188 / 0.95) 45%,
-        rgb(228 205 175 / 1) 100%
-      );
+    min-height: 0;
+    padding: 0 0.75rem 5rem;
+    background: transparent;
   }
 
   @media (min-width: 480px) {
@@ -1031,14 +1025,16 @@
     background:
       linear-gradient(
         180deg,
-        #faf4ea 0%,
-        #f5ebdc 35%,
-        #faf6ef 100%
+        rgb(250 244 234 / 0.94) 0%,
+        rgb(245 235 220 / 0.92) 35%,
+        rgb(250 246 239 / 0.94) 100%
       );
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow:
       0 0 0 1px rgb(201 162 77 / 0.22),
-      0 24px 64px rgb(74 48 32 / 0.18),
-      0 8px 24px rgb(74 48 32 / 0.1);
+      0 24px 64px rgb(0 0 0 / 0.35),
+      0 8px 24px rgb(0 0 0 / 0.2);
   }
 
   .invite-card:has(.invite-gallery-section) {
@@ -1061,7 +1057,25 @@
     min-height: 100dvh;
     max-height: 100dvh;
     overflow: hidden;
-    background: #0a1628;
+    background: transparent;
+  }
+
+  .invite-hero-scroll-bg {
+    z-index: 1;
+  }
+
+  .invite-hero-scroll-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgb(7 14 26 / 0.15) 0%,
+      transparent 35%,
+      transparent 72%,
+      rgb(7 14 26 / 0.55) 100%
+    );
   }
 
   @media (min-width: 480px) {
