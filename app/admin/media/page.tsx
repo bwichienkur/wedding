@@ -1,9 +1,10 @@
 import { MediaAdminPanel } from "@/components/admin/MediaAdminPanel";
-import { AdminSignOutButton } from "@/components/admin/AdminSignOutButton";
+import { AdminPageShell } from "@/components/admin/AdminPageShell";
+import { adminMutedClass } from "@/components/admin/admin-styles";
 import { isAdminAuthenticated } from "@/lib/auth/admin";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Media management",
@@ -16,31 +17,15 @@ export default async function AdminMediaPage() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-5 py-12 sm:py-16">
-      <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="font-sans text-xs uppercase tracking-[0.22em] text-gold">
-            Administration
-          </p>
-          <h1 className="mt-2 font-display text-4xl text-forest">Media</h1>
-          <p className="mt-2 max-w-prose text-sm text-ink-muted">
-            Upload photos and videos to each section of the wedding page.
-            Production photo uploads require{" "}
-            <code className="text-forest">BLOB_READ_WRITE_TOKEN</code> (Vercel
-            Storage → Blob).
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link
-            href="/admin"
-            className="min-h-11 inline-flex items-center font-sans text-sm uppercase tracking-[0.12em] text-ink-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            Back
-          </Link>
-          <AdminSignOutButton />
-        </div>
-      </div>
-      <MediaAdminPanel />
-    </main>
+    <AdminPageShell
+      activeNav="media"
+      wide
+      title="Media"
+      description="Assign uploads to invite sections. Bundled repo photos (for example party portraits checked into public/) appear alongside your library until replaced by an upload."
+    >
+      <Suspense fallback={<p className={adminMutedClass}>Loading…</p>}>
+        <MediaAdminPanel />
+      </Suspense>
+    </AdminPageShell>
   );
 }

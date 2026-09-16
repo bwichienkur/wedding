@@ -1,6 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import {
+  adminCardClass,
+  adminFieldClass,
+  adminLabelClass,
+  adminMutedClass,
+} from "@/components/admin/admin-styles";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -72,7 +78,7 @@ export function RsvpAdminPanel() {
 
   if (!summary) {
     return (
-      <p className="text-sm text-ink-muted" role="status">
+      <p className={adminMutedClass} role="status">
         {error ?? "Loading RSVP responses…"}
       </p>
     );
@@ -90,19 +96,21 @@ export function RsvpAdminPanel() {
             ["declined", summary.totals.declined],
           ] as const
         ).map(([label, value]) => (
-          <div key={label} className="border border-stone bg-parchment/40 px-4 py-5">
-            <p className="font-sans text-xs uppercase tracking-[0.16em] text-gold">
-              {label}
+          <div key={label} className={adminCardClass}>
+            <p className={adminLabelClass}>{label}</p>
+            <p className="mt-2 font-display text-3xl text-[var(--admin-gold-bright,#f5e6a8)]">
+              {value}
             </p>
-            <p className="mt-2 font-display text-3xl text-forest">{value}</p>
           </div>
         ))}
       </div>
 
       {summary.mealTotals.length > 0 ? (
         <div>
-          <h2 className="font-display text-2xl text-forest">Meal totals</h2>
-          <ul className="mt-4 space-y-2 text-sm text-charcoal">
+          <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">
+            Meal totals
+          </h2>
+          <ul className={`mt-4 space-y-2 ${adminMutedClass}`}>
             {summary.mealTotals.map((meal) => (
               <li key={meal.mealOptionId}>
                 {meal.label}: {meal.count}
@@ -114,23 +122,21 @@ export function RsvpAdminPanel() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <label className="block flex-1 text-sm">
-          <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
+          <span className={`mb-2 block ${adminLabelClass}`}>
             Search households
           </span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="min-h-11 w-full border border-stone bg-ivory px-3"
+            className={adminFieldClass}
           />
         </label>
         <label className="block text-sm sm:w-48">
-          <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
-            Status
-          </span>
+          <span className={`mb-2 block ${adminLabelClass}`}>Status</span>
           <select
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
-            className="min-h-11 w-full border border-stone bg-ivory px-3"
+            className={adminFieldClass}
           >
             <option value="all">All</option>
             <option value="pending">Pending</option>
@@ -165,25 +171,27 @@ export function RsvpAdminPanel() {
 
       <ul className="space-y-4">
         {filtered.map((household) => (
-          <li key={household.id} className="border border-stone bg-ivory p-4">
+          <li key={household.id} className={adminCardClass}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-display text-xl text-forest">
+                <p className="font-display text-xl text-[var(--admin-gold-bright,#f5e6a8)]">
                   {household.displayName}
                 </p>
-                <p className="mt-1 text-xs uppercase tracking-[0.14em] text-gold">
+                <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--admin-gold,#e8c872)]">
                   {household.rsvpStatus} · {household.guestCount} guests
                 </p>
                 {household.email ? (
-                  <p className="mt-2 text-sm text-ink-muted">{household.email}</p>
+                  <p className={`mt-2 ${adminMutedClass}`}>{household.email}</p>
                 ) : null}
               </div>
-              <p className="text-xs text-ink-muted">
+              <p className={`text-xs ${adminMutedClass}`}>
                 Updated {new Date(household.updatedAt).toLocaleString()}
               </p>
             </div>
             {household.dietary.length > 0 ? (
-              <p className="mt-3 text-sm">Dietary: {household.dietary.join("; ")}</p>
+              <p className={`mt-3 text-sm text-[var(--admin-body,#d4dce8)]`}>
+                Dietary: {household.dietary.join("; ")}
+              </p>
             ) : null}
             {household.accessibility.length > 0 ? (
               <p className="mt-1 text-sm">

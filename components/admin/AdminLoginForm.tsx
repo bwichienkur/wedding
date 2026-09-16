@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { adminFieldClass, adminLabelClass } from "@/components/admin/admin-styles";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export function AdminLoginForm() {
       <div>
         <label
           htmlFor="admin-password"
-          className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-ink-muted"
+          className={adminLabelClass}
         >
           Admin password
         </label>
@@ -50,11 +51,11 @@ export function AdminLoginForm() {
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="min-h-12 w-full border border-stone bg-ivory px-3 text-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+          className={adminFieldClass}
         />
       </div>
       {error ? (
-        <p className="text-sm text-forest" role="alert">
+        <p className="text-sm text-[var(--admin-gold-bright,#f5e6a8)]" role="alert">
           {error}
         </p>
       ) : null}

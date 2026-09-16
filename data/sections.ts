@@ -50,7 +50,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
   },
   {
     id: "gallery",
-    label: "Gallery",
+    label: "Memories gallery",
     defaultVisible: true,
     defaultEyebrow: "Gallery",
     defaultTitle: "Our moments",

@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { siteSectionDefinitions, type SiteSectionId } from "@/data/sections";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getAdminSectionGuide } from "@/lib/admin/section-guide";
 import {
   getResolvedSiteSections,
   updateSiteSection,
 } from "@/lib/content/store";
+import type { AdminSectionRow } from "@/lib/content/types";
 
 const sectionIds = siteSectionDefinitions.map((s) => s.id) as [
   SiteSectionId,
@@ -28,9 +30,26 @@ export async function GET() {
   }
 
   const sections = await getResolvedSiteSections();
-  return NextResponse.json({
-    sections: siteSectionDefinitions.map((def) => sections[def.id]),
+  const rows: AdminSectionRow[] = siteSectionDefinitions.map((def) => {
+    const guide = getAdminSectionGuide(def.id);
+    return {
+      ...sections[def.id],
+      mountedOnInvite: guide.mountedOnInvite,
+      inviteOrder: guide.inviteOrder,
+      adminHint: guide.hint,
+      contentTab: guide.contentTab,
+    };
   });
+  rows.sort((a, b) => {
+    if (a.mountedOnInvite !== b.mountedOnInvite) {
+      return a.mountedOnInvite ? -1 : 1;
+    }
+    const ao = a.inviteOrder ?? 999;
+    const bo = b.inviteOrder ?? 999;
+    if (ao !== bo) return ao - bo;
+    return a.label.localeCompare(b.label);
+  });
+  return NextResponse.json({ sections: rows });
 }
 
 export async function PATCH(request: Request) {
@@ -58,9 +77,28 @@ export async function PATCH(request: Request) {
   try {
     const { id, ...patch } = parsed.data;
     const sections = await updateSiteSection(id, patch);
+    const rows: AdminSectionRow[] = siteSectionDefinitions.map((def) => {
+      const guide = getAdminSectionGuide(def.id);
+      return {
+        ...sections[def.id],
+        mountedOnInvite: guide.mountedOnInvite,
+        inviteOrder: guide.inviteOrder,
+        adminHint: guide.hint,
+        contentTab: guide.contentTab,
+      };
+    });
+    rows.sort((a, b) => {
+      if (a.mountedOnInvite !== b.mountedOnInvite) {
+        return a.mountedOnInvite ? -1 : 1;
+      }
+      const ao = a.inviteOrder ?? 999;
+      const bo = b.inviteOrder ?? 999;
+      if (ao !== bo) return ao - bo;
+      return a.label.localeCompare(b.label);
+    });
     return NextResponse.json({
       section: sections[id],
-      sections: siteSectionDefinitions.map((def) => sections[def.id]),
+      sections: rows,
     });
   } catch (error) {
     const message =

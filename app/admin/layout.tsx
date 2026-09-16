@@ -9,5 +9,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="min-h-full bg-ivory">{children}</div>;
+  return <div className="admin-shell min-h-full">{children}</div>;
 }

@@ -2249,4 +2249,42 @@
     color: var(--invite-navy);
   }
 
+  /* Admin — navy / gold (matches invite glass cards) */
+  .admin-shell {
+    --admin-navy: #070e1a;
+    --admin-navy-mid: #0c1a30;
+    --admin-gold: #e8c872;
+    --admin-gold-bright: #f5e6a8;
+    --admin-body: #d4dce8;
+    --admin-muted: #9aa8bc;
+    background:
+      radial-gradient(
+        ellipse 120% 80% at 50% -20%,
+        rgb(26 48 80 / 0.45) 0%,
+        transparent 55%
+      ),
+      var(--admin-navy);
+    color: var(--admin-body);
+  }
+
+  .admin-glass-card {
+    border: 1px solid rgb(212 175 55 / 0.35);
+    border-radius: 0.25rem;
+    background: rgb(7 14 26 / 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 28px rgb(0 0 0 / 0.35);
+  }
+
+  .admin-input {
+    min-height: 2.75rem;
+    border: 1px solid rgb(212 175 55 / 0.28);
+    background: rgb(7 14 26 / 0.72);
+    color: var(--admin-body);
+  }
+
+  .admin-input::placeholder {
+    color: rgb(154 168 188 / 0.65);
+  }
+
 }
