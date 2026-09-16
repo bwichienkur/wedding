@@ -65,30 +65,9 @@ export function useVideoIntroPhase({
     if (activatedRef.current || phase !== "closed") return;
     activatedRef.current = true;
 
-    if (reduceMotion) {
-      setPhase("activating");
-      schedule(() => {
-        setPhase("glowing");
-        onPlayVideo();
-      }, 200);
-      return;
-    }
-
-    setPhase("activating");
-    schedule(() => {
-      setPhase("glowing");
-      onPlayVideo();
-    }, 400);
-  }, [
-    onComplete,
-    onPlayVideo,
-    onRevealStart,
-    phase,
-    reduceMotion,
-    schedule,
-    scrollToSiteTop,
-    setPhase,
-  ]);
+    setPhase("glowing");
+    onPlayVideo();
+  }, [onPlayVideo, phase, setPhase]);
 
   const onVideoEnded = useCallback(() => {
     const current = phaseRef.current;

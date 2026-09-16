@@ -21,6 +21,8 @@ Demo seed (fictional only):
 
 After changing seed guests locally, run `npm run reset:rsvp-seed` and restart the dev server so `.data/rsvp.json` is rebuilt.
 
+**Importing a real guest list:** see [`docs/RSVP-GUEST-IMPORT.md`](./RSVP-GUEST-IMPORT.md) (CSV → local JSON or Supabase). Admin `/admin/rsvp` is for managing responses, not bulk import.
+
 ## Security model
 
 - Guest list never ships to the browser

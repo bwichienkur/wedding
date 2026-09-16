@@ -159,8 +159,9 @@ export function CinematicEntry({
   }
 
   const exiting = phase === "opened" || phase === "skipped";
-  const opening = phase === "opening";
-  const showThrough = opening || exiting;
+  const videoPlaying =
+    phase === "glowing" || phase === "opening" || exiting;
+  const showThrough = videoPlaying;
 
   return (
     <div
@@ -169,7 +170,7 @@ export function CinematicEntry({
         "transition-opacity duration-[480ms] ease-out",
         showThrough ? "bg-transparent" : "bg-[#070e1a]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
-        opening ? "pointer-events-none" : "",
+        videoPlaying && !exiting ? "pointer-events-none" : "",
       ].join(" ")}
       role="dialog"
       aria-modal="true"
