@@ -59,6 +59,7 @@ describe("logistics defaults", () => {
     expect(travel.airports).toHaveLength(0);
     expect(travel.recommendations).toHaveLength(0);
     expect(travel.hotels[0]?.bookingCode).toBe("BLW");
+    expect(travel.hotels[0]?.bookingDeadline).toBe("April 10, 2027");
     expect(travel.hotels[0]?.address).toContain("2953 Ridge Way");
   });
 

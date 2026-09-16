@@ -43,7 +43,9 @@ export async function sendRsvpConfirmationEmail(options: {
     `${wedding.wedding.dateDisplay}`,
     `${wedding.wedding.venueName}, ${wedding.wedding.city}, ${wedding.wedding.region}`,
     "",
-    "You can return to the wedding site to review your response before the RSVP deadline.",
+    wedding.rsvp.deadlineIsPlaceholder
+      ? "You can return to the wedding site to review your response before the RSVP deadline."
+      : `You can return to the wedding site to review or update your response ${wedding.rsvp.deadlineLabel.replace(/^Please RSVP by /i, "through ")}`,
   ].join("\n");
 
   const html = `
@@ -54,7 +56,11 @@ export async function sendRsvpConfirmationEmail(options: {
       <p>${options.isUpdate ? "We received an update to your RSVP." : "Thank you for your RSVP."}</p>
       <p><strong>Status:</strong> ${options.status}</p>
       <p>${wedding.wedding.dateDisplay}<br/>${wedding.wedding.venueName}, ${wedding.wedding.city}, ${wedding.wedding.region}</p>
-      <p style="color: #5A615C; font-size: 14px;">You can return to the wedding site to review your response before the RSVP deadline.</p>
+      <p style="color: #5A615C; font-size: 14px;">${
+        wedding.rsvp.deadlineIsPlaceholder
+          ? "You can return to the wedding site to review your response before the RSVP deadline."
+          : `You can return to the wedding site to review or update your response through April 10, 2027.`
+      }</p>
     </div>
   `;
 

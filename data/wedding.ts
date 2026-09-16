@@ -74,8 +74,10 @@ export const wedding: WeddingConfig = {
     phoneIsPlaceholder: true,
   },
   rsvp: {
-    deadlineLabel: "Add the RSVP deadline.",
-    deadlineIsPlaceholder: true,
+    deadlineLabel: "Please RSVP by April 10, 2027.",
+    deadlineIsPlaceholder: false,
+    /** End of April 10, 2027 in Eastern Time (server-side enforcement). */
+    deadlineISO: "2027-04-10T23:59:59-04:00",
   },
   site: {
     mode: "public",
