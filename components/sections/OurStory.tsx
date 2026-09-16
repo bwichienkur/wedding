@@ -12,7 +12,7 @@ function CondensedMilestone({ milestone }: { milestone: StoryMilestone }) {
   return (
     <article
       id={`story-${milestone.id}`}
-      className="invite-story-card overflow-hidden rounded-sm border border-[rgb(201_162_77/0.22)] bg-[#faf6ef]"
+      className="invite-story-card invite-readable-panel overflow-hidden rounded-sm"
     >
       {milestone.image?.src ? (
         <div className="relative aspect-[16/10] overflow-hidden bg-[#e8dcc8]">
@@ -30,7 +30,7 @@ function CondensedMilestone({ milestone }: { milestone: StoryMilestone }) {
             }
           />
           {milestone.image.placeholder ? (
-            <p className="absolute inset-x-0 bottom-0 bg-[#faf6ef]/92 px-4 py-2 text-center text-xs text-invite-body/70">
+            <p className="absolute inset-x-0 bottom-0 bg-[rgb(250_244_234/0.92)] px-4 py-2 text-center text-xs text-[#5c4f45]">
               {milestone.image.caption ?? "Photograph coming soon."}
             </p>
           ) : null}
@@ -41,13 +41,13 @@ function CondensedMilestone({ milestone }: { milestone: StoryMilestone }) {
         <p className="font-sans text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-invite-gold">
           {milestone.dateLabel}
         </p>
-        <h3 className="mt-2 font-display text-2xl text-invite-navy sm:text-[1.65rem]">
+        <h3 className="mt-2 font-display text-2xl text-[#1a3050] sm:text-[1.65rem]">
           {milestone.title}
         </h3>
         {milestone.locationLabel ? (
           <p
             className={cn(
-              "mt-1 text-sm italic text-invite-body/75",
+              "mt-1 text-sm italic text-[#5c4f45]/85",
               milestone.locationLabel.startsWith("Add ") && "placeholder-copy",
             )}
           >
@@ -57,7 +57,7 @@ function CondensedMilestone({ milestone }: { milestone: StoryMilestone }) {
         {sharedPassage ? (
           <p
             className={cn(
-              "mt-4 text-sm leading-relaxed text-invite-body/85 sm:text-base",
+              "mt-4 text-sm leading-relaxed text-[#4a4038] sm:text-base",
               sharedPassage.isPlaceholder && "placeholder-copy italic",
             )}
           >
