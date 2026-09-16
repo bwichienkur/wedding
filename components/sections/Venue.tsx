@@ -1,27 +1,11 @@
 "use client";
 
+import {
+  InviteGoldIconLink,
+  MapPinIcon,
+} from "@/components/invite/InviteGoldIconLink";
 import { Section } from "@/components/ui/Section";
 import type { VenueInfo } from "@/data/logistics-types";
-
-function LocationPinIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="10" r="2.25" stroke="currentColor" strokeWidth="1.75" />
-    </svg>
-  );
-}
 
 export function VenueSection({
   venue,
@@ -62,15 +46,14 @@ export function VenueSection({
       </p>
 
       <div className="mt-6 flex justify-center">
-        <a
+        <InviteGoldIconLink
           href={venue.mapUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="invite-venue-directions-btn"
-          aria-label={`Get directions to ${venue.name}`}
+          ariaLabel={`Get directions to ${venue.name}`}
         >
-          <LocationPinIcon className="h-6 w-6" />
-        </a>
+          <MapPinIcon className="h-6 w-6" />
+        </InviteGoldIconLink>
       </div>
     </Section>
   );

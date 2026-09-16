@@ -1,6 +1,11 @@
 "use client";
 
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import {
+  InviteGoldIconLink,
+  MapPinIcon,
+  PhoneIcon,
+} from "@/components/invite/InviteGoldIconLink";
 import { Section } from "@/components/ui/Section";
 import type { TravelInfo } from "@/data/logistics-types";
 import { travel as defaultTravel } from "@/data/travel";
@@ -62,7 +67,7 @@ export function TravelSection({
                     {hotel.notes}
                   </p>
                 ) : null}
-                <div className="mt-5 flex flex-wrap justify-center gap-3 sm:justify-start">
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
                   {hotel.bookingUrl ? (
                     <ButtonLink
                       href={hotel.bookingUrl}
@@ -74,23 +79,21 @@ export function TravelSection({
                     </ButtonLink>
                   ) : null}
                   {hotel.phone ? (
-                    <ButtonLink
+                    <InviteGoldIconLink
                       href={`tel:${hotel.phone}`}
-                      variant="secondary"
-                      className="invite-outline-button"
+                      ariaLabel={`Call ${hotel.name}`}
                     >
-                      Call hotel
-                    </ButtonLink>
+                      <PhoneIcon className="h-6 w-6" />
+                    </InviteGoldIconLink>
                   ) : null}
-                  <ButtonLink
+                  <InviteGoldIconLink
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.address)}`}
-                    variant="secondary"
-                    className="invite-outline-button"
                     target="_blank"
                     rel="noopener noreferrer"
+                    ariaLabel={`Open map for ${hotel.name}`}
                   >
-                    Open map
-                  </ButtonLink>
+                    <MapPinIcon className="h-6 w-6" />
+                  </InviteGoldIconLink>
                 </div>
               </li>
             ))}

@@ -906,15 +906,27 @@
     image-rendering: auto;
   }
 
+  .invite-ambient-bg__frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   @media (min-width: 768px) {
-    .invite-ambient-bg__media {
-      max-height: 100%;
-      max-width: 100%;
-      margin: auto;
-      inset: 0;
-      position: absolute;
+    .invite-ambient-bg__frame {
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: min(96vw, 56rem);
       height: 100%;
-      width: 100%;
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .invite-ambient-bg__frame {
+      width: min(98vw, 64rem);
     }
   }
 
@@ -1127,21 +1139,29 @@
 
   @media (min-width: 768px) {
     .invite-page {
-      --invite-card-max: 34rem;
-      padding-inline: 2rem;
+      --invite-card-max: 26.5rem;
+      padding-inline: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .invite-page {
-      --invite-card-max: 42rem;
-      padding-inline: 2.5rem;
+      --invite-card-max: 28rem;
+      padding-inline: 2rem;
+    }
+
+    .invite-section-heading {
+      font-size: clamp(1.55rem, 1.1rem + 1.5vw, 1.85rem);
+    }
+
+    .invite-section {
+      padding: 2.5rem 1.75rem;
     }
   }
 
   @media (min-width: 1280px) {
     .invite-page {
-      --invite-card-max: 46rem;
+      --invite-card-max: 29rem;
     }
   }
 
@@ -1157,8 +1177,8 @@
         rgb(10 20 36 / 0.18) 40%,
         rgb(8 16 30 / 0.24) 100%
       );
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     box-shadow:
       0 0 0 1px rgb(212 175 55 / 0.22),
       0 16px 40px rgb(0 0 0 / 0.35);
@@ -1432,35 +1452,32 @@
 
   .invite-countdown-grid {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: stretch;
     justify-content: center;
-    gap: 0.65rem 0.5rem;
+    gap: 0.3rem 0.2rem;
     margin-top: 0.75rem;
-  }
-
-  @media (min-width: 480px) {
-    .invite-countdown-grid {
-      gap: 0.85rem 0.65rem;
-    }
+    width: 100%;
+    max-width: 100%;
   }
 
   .invite-countdown-unit {
-    flex: 1 1 4.75rem;
-    max-width: 6.5rem;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
     text-align: center;
-    padding: 1rem 0.65rem 0.85rem;
+    padding: 0.55rem 0.2rem 0.45rem;
     border-radius: 0.25rem;
     border: 1px solid rgb(212 175 55 / 0.45);
     background: rgb(7 14 26 / 0.35);
     box-shadow:
-      0 12px 28px rgb(0 0 0 / 0.2),
+      0 8px 20px rgb(0 0 0 / 0.18),
       inset 0 1px 0 rgb(255 255 255 / 0.08);
   }
 
   .invite-countdown-value {
     font-family: var(--font-display-family), Georgia, serif;
-    font-size: clamp(2.35rem, 1.6rem + 4vw, 3.15rem);
+    font-size: clamp(1.25rem, 3.2vw, 1.85rem);
     font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1;
@@ -1468,28 +1485,23 @@
   }
 
   .invite-countdown-label {
-    margin-top: 0.5rem;
+    margin-top: 0.35rem;
     font-family: var(--font-sans), sans-serif;
-    font-size: 0.52rem;
-    letter-spacing: 0.26em;
+    font-size: 0.42rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--invite-body-soft) 90%, white);
   }
 
   .invite-countdown-sep {
-    display: none;
+    display: block;
+    flex-shrink: 0;
     align-self: center;
     font-family: var(--font-display-family), Georgia, serif;
-    font-size: 1.75rem;
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
     line-height: 1;
     color: rgb(201 162 77 / 0.55);
-    padding-bottom: 1.25rem;
-  }
-
-  @media (min-width: 520px) {
-    .invite-countdown-sep {
-      display: block;
-    }
+    padding-bottom: 0.65rem;
   }
 
   .invite-scroll-fab {
@@ -2249,6 +2261,7 @@
     background: rgb(201 162 77 / 0.12);
   }
 
+  .invite-gold-icon-link,
   .invite-venue-directions-btn {
     display: inline-flex;
     align-items: center;
@@ -2268,12 +2281,14 @@
       transform 0.2s ease;
   }
 
+  .invite-gold-icon-link:hover,
   .invite-venue-directions-btn:hover {
     border-color: rgb(255 215 100 / 0.9);
     background: rgb(7 14 26 / 0.62);
     transform: scale(1.04);
   }
 
+  .invite-gold-icon-link:focus-visible,
   .invite-venue-directions-btn:focus-visible {
     outline: 2px solid var(--invite-gold-bright);
     outline-offset: 3px;

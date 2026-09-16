@@ -136,15 +136,24 @@ export function InviteGallerySection({
 
   useEffect(() => {
     if (reduceMotion) return;
-    applyParallax();
-    window.addEventListener("scroll", applyParallax, { passive: true });
-    window.addEventListener("resize", applyParallax);
+    let rafId = 0;
+    const scheduleParallax = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        applyParallax();
+      });
+    };
+    scheduleParallax();
+    window.addEventListener("scroll", scheduleParallax, { passive: true });
+    window.addEventListener("resize", scheduleParallax);
     const track = trackRef.current;
-    track?.addEventListener("scroll", applyParallax, { passive: true });
+    track?.addEventListener("scroll", scheduleParallax, { passive: true });
     return () => {
-      window.removeEventListener("scroll", applyParallax);
-      window.removeEventListener("resize", applyParallax);
-      track?.removeEventListener("scroll", applyParallax);
+      if (rafId) window.cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", scheduleParallax);
+      window.removeEventListener("resize", scheduleParallax);
+      track?.removeEventListener("scroll", scheduleParallax);
     };
   }, [applyParallax, reduceMotion, cards.length]);
 
@@ -154,9 +163,15 @@ export function InviteGallerySection({
 
     updateScrollEdges();
 
+    let rafScroll = 0;
     const onScroll = () => {
       updateScrollEdges();
-      applyParallax();
+      if (reduceMotion) return;
+      if (rafScroll) return;
+      rafScroll = window.requestAnimationFrame(() => {
+        rafScroll = 0;
+        applyParallax();
+      });
     };
 
     const onWheel = (event: WheelEvent) => {
@@ -176,7 +191,7 @@ export function InviteGallerySection({
       track.removeEventListener("wheel", onWheel);
       window.removeEventListener("resize", updateScrollEdges);
     };
-  }, [applyParallax, cards.length, updateScrollEdges]);
+  }, [applyParallax, cards.length, reduceMotion, updateScrollEdges]);
 
   if (cards.length === 0) {
     return null;
@@ -236,6 +251,8 @@ export function InviteGallerySection({
                     src={card.image.src}
                     alt={card.image.alt}
                     className="aspect-[4/5] h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    loading={index > 1 ? "lazy" : "eager"}
+                    decoding="async"
                     draggable={false}
                   />
                 </span>
