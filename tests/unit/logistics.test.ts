@@ -23,6 +23,8 @@ describe("schedule data", () => {
     expect(scheduleItems.some((item) => item.id === "dinner")).toBe(false);
     expect(scheduleItems.some((item) => item.id === "toasts")).toBe(false);
     expect(scheduleItems.some((item) => item.id === "dancing")).toBe(false);
+    expect(scheduleItems.some((item) => item.id === "venue-access")).toBe(false);
+    expect(scheduleItems.some((item) => item.id === "photography")).toBe(false);
   });
 });
 

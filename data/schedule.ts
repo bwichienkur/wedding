@@ -7,28 +7,6 @@ import { wedding } from "./wedding";
  */
 export const scheduleItems: ScheduleItem[] = [
   {
-    id: "venue-access",
-    timeLabel: wedding.wedding.accessBegins,
-    timeLocal: "09:00",
-    title: "Venue access begins",
-    description:
-      "Bella Cosa opens for early arrivals connected to the day’s preparations.",
-    guestGroup: "wedding-party",
-    arrivalGuidance: "Add arrival guidance for vendors and wedding party.",
-    setting: "tbd",
-    includeInCalendar: false,
-  },
-  {
-    id: "photography",
-    timeLabel: wedding.wedding.photographyBegins,
-    timeLocal: "14:00",
-    title: "Photography & videography begin",
-    description: "Portraits and films begin ahead of the ceremony.",
-    guestGroup: "wedding-party",
-    setting: "tbd",
-    includeInCalendar: false,
-  },
-  {
     id: "ceremony",
     timeLabel: wedding.wedding.ceremonyBegins,
     timeLocal: "16:00",

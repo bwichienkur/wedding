@@ -8,7 +8,7 @@ export const storyMilestones: StoryMilestone[] = [
   {
     id: "how-we-met",
     dateLabel: wedding.anniversary.dating.dateDisplay,
-    title: "How We Met",
+    title: "Hello",
     featured: true,
     locationLabel: "Sweetwater, Boynton Beach, Florida",
     image: {
@@ -31,7 +31,7 @@ export const storyMilestones: StoryMilestone[] = [
   {
     id: "proposal",
     dateLabel: wedding.proposal.dateLabel,
-    title: "The Proposal",
+    title: "Will You",
     featured: true,
     locationLabel: wedding.proposal.locationLabel,
     image: {
@@ -54,7 +54,7 @@ export const storyMilestones: StoryMilestone[] = [
   {
     id: "wedding",
     dateLabel: wedding.wedding.dateDisplay,
-    title: "Wedding",
+    title: "I Do",
     featured: true,
     locationLabel: `${wedding.wedding.venueName} · ${wedding.wedding.city}, ${wedding.wedding.region}`,
     image: {

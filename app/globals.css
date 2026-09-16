@@ -1028,15 +1028,15 @@
     background:
       linear-gradient(
         180deg,
-        rgb(12 24 42 / 0.42) 0%,
-        rgb(10 20 36 / 0.38) 40%,
-        rgb(8 16 30 / 0.44) 100%
+        rgb(12 24 42 / 0.22) 0%,
+        rgb(10 20 36 / 0.18) 40%,
+        rgb(8 16 30 / 0.24) 100%
       );
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     box-shadow:
-      0 0 0 1px rgb(212 175 55 / 0.28),
-      0 20px 48px rgb(0 0 0 / 0.45);
+      0 0 0 1px rgb(212 175 55 / 0.22),
+      0 16px 40px rgb(0 0 0 / 0.35);
   }
 
   .invite-card:has(.invite-gallery-section) {
@@ -1272,8 +1272,8 @@
   /* Sections inside card */
   .invite-section {
     padding: 2.75rem 1.5rem;
-    border-top: 1px solid rgb(212 175 55 / 0.22);
-    background: rgb(7 14 26 / 0.12);
+    border-top: 1px solid rgb(212 175 55 / 0.18);
+    background: rgb(7 14 26 / 0.06);
   }
 
   @media (min-width: 768px) {
@@ -1675,23 +1675,45 @@
   }
 
   .invite-faq-controls label span {
-    color: color-mix(in srgb, var(--invite-body) 70%, transparent);
+    color: color-mix(in srgb, var(--invite-body-soft) 88%, white);
+  }
+
+  /* Cream panels for readable copy on the animated navy background */
+  .invite-readable-panel {
+    border: 1px solid rgb(212 175 55 / 0.38);
+    background:
+      linear-gradient(
+        165deg,
+        rgb(252 248 240 / 0.94) 0%,
+        rgb(245 238 225 / 0.9) 52%,
+        rgb(250 244 234 / 0.92) 100%
+      );
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.35) inset,
+      0 12px 32px rgb(0 0 0 / 0.22);
   }
 
   .invite-faq-input {
     min-height: 3rem;
     width: 100%;
-    border: 1px solid rgb(201 162 77 / 0.35);
+    border: 1px solid rgb(201 162 77 / 0.45);
     border-radius: 0.2rem;
-    background: rgb(255 252 247 / 0.95);
+    background: rgb(252 248 240 / 0.96);
     padding: 0.65rem 0.85rem;
     font-family: var(--font-body), sans-serif;
     font-size: 0.95rem;
-    color: var(--invite-navy);
+    color: #1a3050;
+  }
+
+  .invite-faq-input option {
+    color: #1a3050;
+    background: #faf4ea;
   }
 
   .invite-faq-input::placeholder {
-    color: color-mix(in srgb, var(--invite-body) 55%, transparent);
+    color: rgb(92 79 69 / 0.65);
   }
 
   .invite-faq-input:focus-visible {
@@ -1700,7 +1722,16 @@
   }
 
   .invite-faq-accordion {
-    border-block: 1px solid rgb(201 162 77 / 0.28);
+    border-block: 1px solid rgb(201 162 77 / 0.35);
+    border-radius: 0.25rem;
+    padding: 0.35rem 0.75rem;
+    background:
+      linear-gradient(
+        180deg,
+        rgb(252 248 240 / 0.92) 0%,
+        rgb(245 238 225 / 0.88) 100%
+      );
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.3) inset;
   }
 
   .invite-faq-accordion > div {
@@ -1708,7 +1739,7 @@
   }
 
   .invite-faq-accordion button span:first-child {
-    color: var(--invite-navy);
+    color: #1a3050;
     font-family: var(--font-display-family), Georgia, serif;
     font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
     line-height: 1.35;
@@ -1719,7 +1750,7 @@
   }
 
   .invite-faq-answer {
-    color: color-mix(in srgb, var(--invite-body) 92%, transparent);
+    color: #4a4038;
   }
 
   /* Wedding day schedule — alternating grid (wooowinvites-style) */
