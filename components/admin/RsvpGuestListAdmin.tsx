@@ -34,12 +34,16 @@ function guestAllowance(household: Pick<HouseholdRow, "guests" | "maxPlusOnes">)
 }
 
 const gridHeaderClass =
-  "hidden sm:grid sm:grid-cols-[2rem_minmax(10rem,1.4fr)_4.5rem_minmax(12rem,2fr)_5rem_4.5rem_auto] sm:gap-x-2 sm:border-b sm:border-white/10 sm:pb-2 sm:text-[0.65rem] sm:font-medium sm:uppercase sm:tracking-wide text-[var(--admin-muted,#8a9bb0)]";
+  "hidden md:grid md:grid-cols-[1.75rem_minmax(8rem,1.35fr)_3.25rem_minmax(9rem,1.65fr)_4.5rem_3.25rem_minmax(5.5rem,auto)] md:gap-x-2 md:border-b md:border-white/10 md:pb-1.5 md:text-[0.625rem] md:font-medium md:uppercase md:tracking-wide text-[var(--admin-muted,#8a9bb0)]";
 
-const gridRowClass =
-  "grid gap-2 rounded-lg border border-white/10 bg-white/[0.02] p-2 sm:grid-cols-[2rem_minmax(10rem,1.4fr)_4.5rem_minmax(12rem,2fr)_5rem_4.5rem_auto] sm:items-center sm:gap-x-2 sm:gap-y-1 sm:border-0 sm:bg-transparent sm:p-0 sm:py-1.5";
+const compactFieldClass =
+  "admin-input w-full rounded-sm px-2 py-1 text-xs leading-tight outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--admin-gold,#e8c872)]";
 
-const compactFieldClass = `${adminFieldClass} !py-1 !text-xs`;
+const mobileBtnClass =
+  "!min-h-7 !px-2 !py-0.5 !text-[0.625rem] !tracking-normal !normal-case";
+
+const statusPillClass =
+  "inline-flex shrink-0 items-center rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 text-[0.625rem] capitalize leading-none text-[var(--admin-muted,#9aa8bc)]";
 
 export function RsvpGuestListAdmin() {
   const [households, setHouseholds] = useState<HouseholdRow[]>([]);
@@ -222,37 +226,43 @@ export function RsvpGuestListAdmin() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className={adminCardClass}>
-        <h2 className="font-display text-xl text-[var(--admin-gold-bright,#f5e6a8)]">
-          Add invitation
-        </h2>
-        <p className={`mt-2 text-sm ${adminMutedClass}`}>
+    <div className="space-y-4 md:space-y-6">
+      <details className={`${adminCardClass} group !py-3 md:!py-5`}>
+        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-display text-lg text-[var(--admin-gold-bright,#f5e6a8)] md:text-xl">
+              Add invitation
+            </h2>
+            <span className={`text-xs ${adminMutedClass} group-open:hidden`}>Show</span>
+            <span className={`hidden text-xs ${adminMutedClass} group-open:inline`}>Hide</span>
+          </div>
+        </summary>
+        <p className={`mt-2 text-xs md:text-sm ${adminMutedClass}`}>
           One row per guest name. Codes are optional — leave blank to auto-generate.
         </p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 md:mt-4 md:gap-4">
           <label className="block text-sm sm:col-span-2">
-            <span className={`mb-2 block ${adminLabelClass}`}>Household label</span>
+            <span className={`mb-1 block md:mb-2 ${adminLabelClass}`}>Household label</span>
             <input
-              className={adminFieldClass}
+              className={`${adminFieldClass} !mt-1 md:!mt-2`}
               value={newDisplayName}
               onChange={(e) => setNewDisplayName(e.target.value)}
               placeholder="Alex & Riley Example"
             />
           </label>
           <label className="block text-sm">
-            <span className={`mb-2 block ${adminLabelClass}`}>Invitation code (optional)</span>
+            <span className={`mb-1 block md:mb-2 ${adminLabelClass}`}>Code (optional)</span>
             <input
-              className={adminFieldClass}
+              className={`${adminFieldClass} !mt-1 md:!mt-2`}
               value={newCode}
               onChange={(e) => setNewCode(e.target.value)}
               placeholder="EXAMPLE27"
             />
           </label>
           <label className="block text-sm sm:col-span-2">
-            <span className={`mb-2 block ${adminLabelClass}`}>Guest names</span>
+            <span className={`mb-1 block md:mb-2 ${adminLabelClass}`}>Guest names</span>
             <textarea
-              className={`${adminFieldClass} min-h-24`}
+              className={`${adminFieldClass} min-h-20 !mt-1 md:min-h-24 md:!mt-2`}
               value={newGuestNames}
               onChange={(e) => setNewGuestNames(e.target.value)}
               placeholder={"Alex Example\nRiley Example"}
@@ -262,18 +272,18 @@ export function RsvpGuestListAdmin() {
         <Button
           type="button"
           variant="gold"
-          className="mt-4"
+          className="mt-3 !min-h-9 md:mt-4"
           disabled={pending}
           onClick={() => void createHousehold()}
         >
           Add household
         </Button>
-      </div>
+      </details>
 
       <label className="block text-sm">
-        <span className={`mb-2 block ${adminLabelClass}`}>Search guest list</span>
+        <span className={`mb-1 block md:mb-2 ${adminLabelClass}`}>Search guest list</span>
         <input
-          className={adminFieldClass}
+          className={`${adminFieldClass} !mt-1 md:!mt-2`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Name or household"
@@ -286,12 +296,12 @@ export function RsvpGuestListAdmin() {
         </p>
       ) : null}
 
-      <p className={`text-sm ${adminMutedClass}`}>
+      <p className={`text-xs md:text-sm ${adminMutedClass}`}>
         {filtered.length} invitation{filtered.length === 1 ? "" : "s"} ·{" "}
         {filtered.reduce((n, h) => n + h.guests.length, 0)} named guests
       </p>
 
-      <div className="space-y-1">
+      <div className="overflow-x-auto md:overflow-visible">
         <div className={gridHeaderClass}>
           <span />
           <span>Household</span>
@@ -302,9 +312,12 @@ export function RsvpGuestListAdmin() {
           <span className="text-right">Actions</span>
         </div>
 
-        <ul className="space-y-1">
+        <ul className="divide-y divide-white/10 md:space-y-0 md:divide-y-0">
           {filtered.map((household) => (
-            <li key={household.id}>
+            <li
+              key={household.id}
+              className="py-1 first:pt-0 md:rounded-sm md:py-0 md:odd:bg-white/[0.02]"
+            >
               <HouseholdGridRow
                 key={`${household.id}:${household.updatedAt}:${household.guests.map((g) => `${g.id}:${g.fullName}`).join("|")}:${household.displayName}:${household.maxPlusOnes}`}
                 household={household}
@@ -390,48 +403,100 @@ function HouseholdGridRow({
     }
   }
 
+  const expandButton = (
+    <button
+      type="button"
+      className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-white/10 text-[0.625rem] leading-none text-[var(--admin-muted,#8a9bb0)] hover:bg-white/5 md:h-7 md:w-7 md:text-xs"
+      aria-expanded={expanded}
+      aria-label={expanded ? "Collapse guests" : "Expand guests"}
+      onClick={onToggleExpand}
+    >
+      {expanded ? "−" : "+"}
+    </button>
+  );
+
+  const allowanceInput = (
+    <input
+      type="number"
+      min={listed}
+      aria-label="Guests allowed"
+      className={`${compactFieldClass} w-full tabular-nums md:text-center`}
+      value={allowance}
+      onChange={(e) => setAllowance(e.target.value)}
+      title="Total guests allowed (named + extra slots)"
+    />
+  );
+
+  const nameInput = (
+    <input
+      aria-label="Household name"
+      className={compactFieldClass}
+      value={displayName}
+      onChange={(e) => setDisplayName(e.target.value)}
+    />
+  );
+
+  const actionButtons = (
+    <div className="flex shrink-0 items-center gap-0.5 md:gap-1">
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={pending || !dirty}
+        className={mobileBtnClass}
+        onClick={() => void saveAll()}
+      >
+        Save
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        disabled={pending}
+        className={`${mobileBtnClass} !text-red-200`}
+        onClick={onDelete}
+      >
+        <span className="md:hidden">Del</span>
+        <span className="hidden md:inline">Delete</span>
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="sm:space-y-0">
-      <div className={gridRowClass}>
-        <button
-          type="button"
-          className="flex h-7 w-7 items-center justify-center rounded border border-white/10 text-xs text-[var(--admin-muted,#8a9bb0)] hover:bg-white/5"
-          aria-expanded={expanded}
-          aria-label={expanded ? "Collapse guests" : "Expand guests"}
-          onClick={onToggleExpand}
-        >
-          {expanded ? "−" : "+"}
-        </button>
-
-        <label className="min-w-0 sm:contents">
-          <span className={`mb-1 block text-[0.65rem] uppercase sm:hidden ${adminMutedClass}`}>
-            Household
+    <div>
+      {/* Mobile: two tight rows */}
+      <div className="md:hidden">
+        <div className="flex items-center gap-1.5">
+          {expandButton}
+          <div className="min-w-0 flex-1">{nameInput}</div>
+          <label className="flex w-11 shrink-0 flex-col items-center gap-0.5">
+            <span className="text-[0.5625rem] uppercase tracking-wide text-[var(--admin-muted,#9aa8bc)]">
+              Max
+            </span>
+            {allowanceInput}
+          </label>
+        </div>
+        <div className="mt-1 flex items-center gap-1.5 pl-7">
+          <span className={statusPillClass}>{household.rsvpStatus}</span>
+          <span className="text-[0.625rem] tabular-nums text-[var(--admin-muted,#9aa8bc)]">
+            {listed} named
           </span>
-          <input
-            className={compactFieldClass}
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-        </label>
+          <div className="ml-auto">{actionButtons}</div>
+        </div>
+        {!expanded && guestPreview ? (
+          <p
+            className={`mt-0.5 truncate pl-7 text-[0.625rem] leading-snug ${adminMutedClass}`}
+            title={guestPreview}
+          >
+            {guestPreview}
+          </p>
+        ) : null}
+      </div>
 
-        <label className="sm:contents">
-          <span className={`mb-1 block text-[0.65rem] uppercase sm:hidden ${adminMutedClass}`}>
-            Allow
-          </span>
-          <input
-            type="number"
-            min={listed}
-            className={`${compactFieldClass} w-full text-center tabular-nums`}
-            value={allowance}
-            onChange={(e) => setAllowance(e.target.value)}
-            title="Total guests allowed (named + extra slots)"
-          />
-        </label>
-
-        <div className="min-w-0 sm:col-span-1">
-          <span className={`mb-1 block text-[0.65rem] uppercase sm:hidden ${adminMutedClass}`}>
-            Guests
-          </span>
+      {/* Desktop grid */}
+      <div className="hidden md:grid md:grid-cols-[1.75rem_minmax(8rem,1.35fr)_3.25rem_minmax(9rem,1.65fr)_4.5rem_3.25rem_minmax(5.5rem,auto)] md:items-center md:gap-x-2 md:py-1.5">
+        {expandButton}
+        {nameInput}
+        {allowanceInput}
+        <div className="min-w-0">
           {!expanded ? (
             <p className={`truncate text-xs ${adminMutedClass}`} title={guestPreview}>
               {guestPreview || "—"}
@@ -440,46 +505,24 @@ function HouseholdGridRow({
             <p className={`text-xs ${adminMutedClass}`}>Edit below</p>
           )}
         </div>
-
         <span className={`text-xs capitalize ${adminMutedClass}`}>
           {household.rsvpStatus}
         </span>
-
         <span className="text-center text-xs tabular-nums text-[var(--admin-body,#d4dce8)]">
           {listed}
         </span>
-
-        <div className="flex flex-wrap justify-end gap-1">
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={pending || !dirty}
-            className="!px-2 !py-1 !text-xs"
-            onClick={() => void saveAll()}
-          >
-            Save
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={pending}
-            className="!px-2 !py-1 !text-xs !text-red-200"
-            onClick={onDelete}
-          >
-            Delete
-          </Button>
-        </div>
+        <div className="flex justify-end">{actionButtons}</div>
       </div>
 
       {expanded ? (
-        <div className="mt-1 space-y-1 border-l-2 border-white/10 pl-3 sm:ml-8">
+        <div className="mt-1 space-y-0.5 border-l border-white/15 pl-2 md:ml-7 md:space-y-1 md:border-l-2 md:pl-3">
           {household.guests.map((guest) => (
             <div
               key={guest.id}
-              className="flex flex-wrap items-center gap-2 py-0.5"
+              className="grid grid-cols-[1fr_auto] items-center gap-1 py-0.5"
             >
               <input
-                className={`${compactFieldClass} min-w-[10rem] flex-1`}
+                className={compactFieldClass}
                 value={guestDrafts[guest.id] ?? guest.fullName}
                 onChange={(e) =>
                   setGuestDrafts((prev) => ({
@@ -488,23 +531,22 @@ function HouseholdGridRow({
                   }))
                 }
               />
-              <Button
+              <button
                 type="button"
-                variant="ghost"
                 disabled={pending}
-                className="!px-2 !py-1 !text-xs !text-red-200"
+                className="shrink-0 px-1.5 py-0.5 text-[0.625rem] text-red-200/90 hover:text-red-100 disabled:opacity-40"
                 onClick={() => void onRemoveGuest(guest.id, guest.fullName)}
               >
                 Remove
-              </Button>
+              </button>
             </div>
           ))}
-          <div className="flex flex-wrap items-center gap-2 pt-1">
+          <div className="grid grid-cols-[1fr_auto] items-center gap-1 pt-0.5">
             <input
-              className={`${compactFieldClass} min-w-[10rem] flex-1`}
+              className={compactFieldClass}
               value={newGuestName}
               onChange={(e) => setNewGuestName(e.target.value)}
-              placeholder="New guest name"
+              placeholder="Add guest"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && newGuestName.trim()) {
                   e.preventDefault();
@@ -518,19 +560,19 @@ function HouseholdGridRow({
               type="button"
               variant="secondary"
               disabled={pending}
-              className="!px-2 !py-1 !text-xs"
+              className={mobileBtnClass}
               onClick={() => {
                 void onAddGuest(household.id, newGuestName).then(() =>
                   setNewGuestName(""),
                 );
               }}
             >
-              Add guest
+              Add
             </Button>
           </div>
           {household.invitationCodeHint ? (
-            <p className={`pt-1 text-[0.65rem] ${adminMutedClass}`}>
-              Code hint: {household.invitationCodeHint}…
+            <p className={`pt-0.5 text-[0.625rem] ${adminMutedClass}`}>
+              Code: {household.invitationCodeHint}…
             </p>
           ) : null}
         </div>
