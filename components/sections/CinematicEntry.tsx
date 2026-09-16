@@ -165,7 +165,7 @@ export function CinematicEntry({
   return (
     <div
       className={[
-        "intro-overlay video-opening-overlay fixed inset-0 z-[100] overflow-hidden",
+        "intro-overlay video-opening-overlay fixed inset-0 z-[150] overflow-hidden",
         "transition-opacity duration-[480ms] ease-out",
         showThrough ? "bg-transparent" : "bg-[#070e1a]",
         exiting ? "pointer-events-none opacity-0" : "opacity-100",
