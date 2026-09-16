@@ -70,7 +70,7 @@ export function AmbientBackground({ active }: { active: boolean }) {
         </motion.div>
       )}
 
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_50%_40%,transparent_35%,rgba(5,10,20,0.35)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_95%_85%_at_50%_45%,transparent_55%,rgba(5,10,20,0.18)_100%)]" />
     </div>
   );
 }

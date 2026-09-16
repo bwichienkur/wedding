@@ -73,7 +73,7 @@ export function HomeExperience({
         onComplete={completeIntro}
         onRevealStart={beginReveal}
       />
-      <AmbientBackground active={siteRevealed} />
+      <AmbientBackground active={introDone} />
       <div
         className={cn(
           "invite-experience relative z-[1] transition-opacity duration-700 ease-out",

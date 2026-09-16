@@ -66,10 +66,11 @@ export function useVideoIntroPhase({
     activatedRef.current = true;
 
     if (reduceMotion) {
-      onRevealStart();
-      setPhase("skipped");
-      scrollToSiteTop();
-      onComplete();
+      setPhase("activating");
+      schedule(() => {
+        setPhase("glowing");
+        onPlayVideo();
+      }, 200);
       return;
     }
 

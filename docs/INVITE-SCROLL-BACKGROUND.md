@@ -6,17 +6,15 @@ After the full-screen **opening** video (`opening-animation.mp4`), the site uses
 
 | File | Purpose |
 |------|---------|
-| `public/videos/invite-scroll-bg-poster.jpg` | Still frame / reduced-motion fallback |
-| `public/videos/invite-scroll-bg.mp4` | Looping background (currently a subtle Ken Burns export from the poster) |
+| `public/videos/openart-scroll-bg.mp4` | OpenArt floral loop (primary background) |
+| `public/videos/openart-scroll-bg-poster.jpg` | Still frame / reduced-motion fallback |
 
-Paths are defined in `lib/media/invite-scroll-background.ts`. Rendering lives in `components/ambient/AmbientBackground.tsx`, enabled from `HomeExperience` once the opening finishes.
+Paths are defined in `lib/media/invite-scroll-background.ts`. Rendering lives in `components/ambient/AmbientBackground.tsx`, enabled from `HomeExperience` **after the opening intro finishes** (so the drone show is not covered early).
 
-## Replace with your own clip
+## Replace the loop
 
-1. Drop a high-res still into `invite-scroll-bg-poster.jpg` (portrait, navy center + side florals works best).
-2. Either:
-   - Export an **MP4 loop** from your editor → save as `invite-scroll-bg.mp4`, or
-   - Regenerate a gentle zoom loop: `bash scripts/generate-invite-scroll-bg.sh`
+1. Export your clip as `public/videos/openart-scroll-bg.mp4` (portrait-friendly loops work best).
+2. Refresh the poster: `ffmpeg -y -i public/videos/openart-scroll-bg.mp4 -frames:v 1 -update 1 public/videos/openart-scroll-bg-poster.jpg`
 3. Redeploy.
 
-The invite **card** uses a slightly translucent cream panel so the floral video shows at the edges and through the blur; the **hero** sits outside the card so names sit directly on the animated background.
+The invite **card** uses a glassy navy panel (~40% opacity) with **gold** typography so the video shows through.
