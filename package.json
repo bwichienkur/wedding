@@ -16,6 +16,7 @@
     "import:zola": "node scripts/import-zola-media.mjs",
     "upload:section-photo": "node scripts/upload-section-photo.mjs",
     "reset:rsvp-seed": "node scripts/reset-rsvp-seed.mjs",
+    "import:rsvp:zola": "node scripts/import-zola-guest-export.mjs",
     "db:rsvp:apply": "node scripts/apply-supabase-rsvp-schema.mjs"
   },
   "dependencies": {
