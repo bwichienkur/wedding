@@ -308,7 +308,7 @@ export function RsvpGuestListAdmin() {
         </p>
       ) : null}
 
-      <div className={`${adminTableShellClass} max-w-xl`}>
+      <div className={`${adminTableShellClass} w-full sm:max-w-xl`}>
         <div className="flex flex-col gap-2 border-b border-white/10 px-2 py-2 sm:flex-row sm:items-end sm:justify-between">
           <label className="block min-w-0 flex-1 text-sm">
             <span className={`mb-1 block ${adminLabelClass}`}>Search</span>
@@ -330,36 +330,24 @@ export function RsvpGuestListAdmin() {
 
         <div className="overflow-x-auto">
           <table className={adminTableClass}>
-            <colgroup>
-              <col className="w-8" />
-              <col />
-              <col className="w-11" />
-              <col className="w-9" />
-              <col className="w-[4.5rem]" />
-              <col className="w-11" />
-              <col className="w-[5.75rem]" />
-            </colgroup>
             <thead>
               <tr>
-                <th className={adminThClass} scope="col">
+                <th className={`${adminThClass} w-9`} scope="col">
                   <span className="sr-only">Expand</span>
                 </th>
-                <th className={adminThClass} scope="col">
+                <th className={`${adminThClass} min-w-[9rem]`} scope="col">
                   Household
                 </th>
-                <th className={`${adminThClass} text-center`} scope="col">
-                  Max
+                <th className={`${adminThClass} w-14 text-center`} scope="col">
+                  Guests
                 </th>
-                <th className={`${adminThClass} text-center`} scope="col">
-                  #
-                </th>
-                <th className={adminThClass} scope="col">
+                <th className={`${adminThClass} w-[5.25rem]`} scope="col">
                   RSVP
                 </th>
-                <th className={`${adminThClass} hidden sm:table-cell`} scope="col">
+                <th className={`${adminThClass} hidden sm:table-cell w-12`} scope="col">
                   Code
                 </th>
-                <th className={`${adminThClass} text-right`} scope="col">
+                <th className={`${adminThClass} w-[6.25rem] text-right`} scope="col">
                   Actions
                 </th>
               </tr>
@@ -368,7 +356,7 @@ export function RsvpGuestListAdmin() {
               {pageRows.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={6}
                     className={`${adminTdClass} py-10 text-center ${adminMutedClass}`}
                   >
                     No invitations match your search.
@@ -536,7 +524,7 @@ function HouseholdTableBlockInner({
             {expanded ? "▾" : "▸"}
           </button>
         </td>
-        <td className={adminTdClass}>
+        <td className={`${adminTdClass} min-w-[9rem]`}>
           <input
             aria-label="Household name"
             className={compactFieldClass}
@@ -544,20 +532,17 @@ function HouseholdTableBlockInner({
             onChange={(e) => setDisplayName(e.target.value)}
           />
         </td>
-        <td className={`${adminTdClass} text-center`}>
+        <td className={`${adminTdClass} w-14 text-center`}>
           <input
             type="number"
             min={listed}
-            aria-label="Max guests allowed"
-            className={`${compactFieldClass} mx-auto max-w-[2.5rem] px-1 text-center tabular-nums`}
+            aria-label="Guests allowed"
+            className={`${compactFieldClass} mx-auto w-11 px-1 text-center tabular-nums`}
             value={allowance}
             onChange={(e) => setAllowance(e.target.value)}
           />
         </td>
-        <td className={`${adminTdClass} text-center text-xs tabular-nums ${adminMutedClass}`}>
-          {listed}
-        </td>
-        <td className={adminTdClass}>
+        <td className={`${adminTdClass} w-[5.25rem]`}>
           <span
             className={cn(
               "inline-flex max-w-full rounded-full border px-1.5 py-0.5 text-[0.5625rem] capitalize leading-tight",
@@ -597,7 +582,7 @@ function HouseholdTableBlockInner({
       </tr>
       {expanded ? (
         <tr className="bg-[rgb(4_10_20/0.65)]">
-          <td colSpan={7} className="border-b border-white/[0.07] px-3 py-3 md:px-4">
+          <td colSpan={6} className="border-b border-white/[0.07] px-3 py-3 md:px-4">
             <p className={`mb-2 text-[0.625rem] uppercase tracking-wide ${adminLabelClass}`}>
               Guest names
             </p>
