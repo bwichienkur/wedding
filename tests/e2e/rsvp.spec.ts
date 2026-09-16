@@ -5,7 +5,7 @@ const E2E_GUEST_NAME = "Alex Example";
 const E2E_HOUSEHOLD = "The Example Family";
 
 test.describe("RSVP", () => {
-  test("looks up a fictional household and reaches response step", async ({
+  test("looks up a fictional household and reaches the RSVP form", async ({
     page,
   }) => {
     await page.goto("/rsvp");
@@ -18,17 +18,15 @@ test.describe("RSVP", () => {
       .fill(E2E_GUEST_NAME);
     await page.getByRole("button", { name: "Find invitation" }).click();
 
-    await expect(
-      page.getByRole("heading", { name: E2E_GUEST_NAME }).first(),
-    ).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(E2E_HOUSEHOLD)).toBeVisible();
+    await expect(page.getByText(E2E_HOUSEHOLD)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(E2E_GUEST_NAME)).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Attending" }).first(),
     ).toBeVisible();
     await expect(
       page.getByText(/Attending ceremony & reception/i),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Submit RSVP" })).toBeVisible();
   });
 
   test("shows a generic miss for unknown guests", async ({ page }) => {

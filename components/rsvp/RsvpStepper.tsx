@@ -2,29 +2,19 @@
 
 import { cn } from "@/lib/cn";
 
-const STEPS = ["Find", "Respond", "Details", "Review"] as const;
+const STEPS = ["Find", "Your RSVP"] as const;
 
 export function rsvpStepIndex(
-  step:
-    | "lookup"
-    | "select"
-    | "respond"
-    | "details"
-    | "review"
-    | "done",
+  step: "lookup" | "select" | "form" | "done",
 ): number {
   switch (step) {
     case "lookup":
     case "select":
       return 0;
-    case "respond":
+    case "form":
       return 1;
-    case "details":
-      return 2;
-    case "review":
-      return 3;
     case "done":
-      return 4;
+      return 2;
     default:
       return 0;
   }
@@ -33,13 +23,7 @@ export function rsvpStepIndex(
 export function RsvpStepper({
   step,
 }: {
-  step:
-    | "lookup"
-    | "select"
-    | "respond"
-    | "details"
-    | "review"
-    | "done";
+  step: "lookup" | "select" | "form" | "done";
 }) {
   const active = rsvpStepIndex(step);
   if (step === "done") {

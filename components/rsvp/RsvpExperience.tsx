@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { InviteDivider } from "@/components/invite/InviteDecor";
 import {
-  householdRsvpSummary,
   inferHouseholdCeremonyAttending,
   inferHouseholdWelcomeAttending,
   countWelcomeGuests,
@@ -49,13 +48,7 @@ interface Workspace {
   deadlineIsPlaceholder: boolean;
 }
 
-type Step =
-  | "lookup"
-  | "select"
-  | "respond"
-  | "details"
-  | "review"
-  | "done";
+type Step = "lookup" | "select" | "form" | "done";
 
 interface RosterEntry {
   id?: string;
@@ -128,7 +121,10 @@ export function RsvpExperience() {
   const [form, setForm] = useState<HouseholdForm | null>(null);
   const [messageToCouple, setMessageToCouple] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [backing, setBacking] = useState(false);
   const [householdPickerAvailable, setHouseholdPickerAvailable] = useState(false);
 
   const applyWorkspace = useCallback((next: Workspace) => {
@@ -143,7 +139,7 @@ export function RsvpExperience() {
   }
 
   async function returnToInvitationSearch() {
-    setPending(true);
+    setBacking(true);
     setError(null);
     try {
       await clearInvitationSession();
@@ -151,20 +147,7 @@ export function RsvpExperience() {
         householdPickerAvailable && candidates.length > 1 ? "select" : "lookup",
       );
     } finally {
-      setPending(false);
-    }
-  }
-
-  function goToPreviousStep() {
-    setError(null);
-    if (step === "review") {
-      const attending =
-        form?.ceremonyAttending === "yes" || form?.welcomeAttending === "yes";
-      setStep(attending ? "details" : "respond");
-      return;
-    }
-    if (step === "details") {
-      setStep("respond");
+      setBacking(false);
     }
   }
 
@@ -176,7 +159,7 @@ export function RsvpExperience() {
       const data = (await response.json()) as { workspace: Workspace | null };
       if (data.workspace && !cancelled) {
         applyWorkspace(data.workspace);
-        setStep("respond");
+        setStep("form");
       }
     })();
     return () => {
@@ -186,7 +169,7 @@ export function RsvpExperience() {
 
   async function onLookup(event: React.FormEvent) {
     event.preventDefault();
-    setPending(true);
+    setSearching(true);
     setError(null);
     try {
       const response = await fetch("/api/rsvp/lookup", {
@@ -196,6 +179,7 @@ export function RsvpExperience() {
       });
       const data = (await response.json()) as {
         candidates?: HouseholdCandidate[];
+        workspace?: Workspace;
         message?: string;
         error?: string;
       };
@@ -212,6 +196,10 @@ export function RsvpExperience() {
         );
         setHouseholdPickerAvailable(false);
         setStep("lookup");
+      } else if (next.length === 1 && data.workspace) {
+        setHouseholdPickerAvailable(false);
+        applyWorkspace(data.workspace);
+        setStep("form");
       } else if (next.length === 1) {
         setHouseholdPickerAvailable(false);
         await selectCandidate(next[0]!);
@@ -222,12 +210,12 @@ export function RsvpExperience() {
     } catch {
       setError("Unable to look up invitation right now.");
     } finally {
-      setPending(false);
+      setSearching(false);
     }
   }
 
   async function selectCandidate(candidate: HouseholdCandidate) {
-    setPending(true);
+    setOpening(true);
     setError(null);
     try {
       const response = await fetch("/api/rsvp/select", {
@@ -244,11 +232,11 @@ export function RsvpExperience() {
         return;
       }
       applyWorkspace(data.workspace);
-      setStep("respond");
+      setStep("form");
     } catch {
       setError("Unable to open invitation.");
     } finally {
-      setPending(false);
+      setOpening(false);
     }
   }
 
@@ -257,12 +245,43 @@ export function RsvpExperience() {
     return form.ceremonyAttending === "yes" || form.welcomeAttending === "yes";
   }, [form]);
 
+  function validateForm(): string | null {
+    if (!workspace || !form) return "Unable to submit.";
+    if (form.ceremonyAttending === "unknown") {
+      return "Please choose whether you are attending the ceremony.";
+    }
+    if (form.welcomeAttending === "unknown") {
+      return "Please choose whether you are attending the welcome party.";
+    }
+    if (form.ceremonyAttending === "yes") {
+      const names = form.roster.map((entry) => entry.fullName.trim()).filter(Boolean);
+      if (names.length === 0) {
+        return "Add at least one guest name for the ceremony.";
+      }
+      if (names.length > workspace.household.guestAllowance) {
+        return `Your invitation includes up to ${workspace.household.guestAllowance} guests.`;
+      }
+    }
+    if (form.welcomeAttending === "yes") {
+      const maxWelcome =
+        form.ceremonyAttending === "yes"
+          ? form.roster.filter((entry) => entry.fullName.trim()).length
+          : workspace.household.guestAllowance;
+      if (form.welcomeGuestCount < 1 || form.welcomeGuestCount > maxWelcome) {
+        return `Choose 1–${maxWelcome} guests for the welcome party.`;
+      }
+    }
+    return null;
+  }
+
   async function onSubmit() {
     if (!workspace || !form) return;
-    if (form.ceremonyAttending === "unknown" || form.welcomeAttending === "unknown") {
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
-    setPending(true);
+    setSubmitting(true);
     setError(null);
     try {
       const response = await fetch("/api/rsvp/submit", {
@@ -295,38 +314,11 @@ export function RsvpExperience() {
     } catch {
       setError("Unable to save RSVP.");
     } finally {
-      setPending(false);
+      setSubmitting(false);
     }
   }
 
-  function validateRespondStep(): string | null {
-    if (!workspace || !form) return "Unable to continue.";
-    if (form.ceremonyAttending === "unknown") {
-      return "Please choose whether you are attending the ceremony.";
-    }
-    if (form.welcomeAttending === "unknown") {
-      return "Please choose whether you are attending the welcome party.";
-    }
-    if (form.ceremonyAttending === "yes") {
-      const names = form.roster.map((entry) => entry.fullName.trim()).filter(Boolean);
-      if (names.length === 0) {
-        return "Add at least one guest name for the ceremony.";
-      }
-      if (names.length > workspace.household.guestAllowance) {
-        return `Your invitation includes up to ${workspace.household.guestAllowance} guests.`;
-      }
-    }
-    if (form.welcomeAttending === "yes") {
-      const maxWelcome =
-        form.ceremonyAttending === "yes"
-          ? form.roster.filter((entry) => entry.fullName.trim()).length
-          : workspace.household.guestAllowance;
-      if (form.welcomeGuestCount < 1 || form.welcomeGuestCount > maxWelcome) {
-        return `Choose 1–${maxWelcome} guests for the welcome party.`;
-      }
-    }
-    return null;
-  }
+  const selectBusy = opening;
 
   return (
     <div className="invite-rsvp-flow invite-glass-card mx-auto w-full max-w-lg px-5 py-6 sm:px-7 sm:py-8">
@@ -379,10 +371,10 @@ export function RsvpExperience() {
             type="submit"
             variant="gold"
             size="lg"
-            disabled={pending}
+            disabled={searching}
             className="w-full"
           >
-            {pending ? "Searching…" : "Find invitation"}
+            {searching ? "Searching…" : "Find invitation"}
           </Button>
         </form>
       ) : null}
@@ -399,7 +391,7 @@ export function RsvpExperience() {
                   type="button"
                   className="invite-rsvp-household-pick"
                   onClick={() => void selectCandidate(candidate)}
-                  disabled={pending}
+                  disabled={selectBusy}
                 >
                   <span className="font-display text-xl text-invite-navy">
                     {candidate.displayName}
@@ -411,70 +403,35 @@ export function RsvpExperience() {
               </li>
             ))}
           </ul>
-          <RsvpFlowNav
-            backLabel="Back to search"
+          <RsvpActionRow
+            backLabel="Back"
             onBack={() => {
               setError(null);
               setStep("lookup");
             }}
-            pending={pending}
+            backDisabled={selectBusy || backing}
           />
         </div>
       ) : null}
 
-      {workspace && form && (step === "respond" || step === "details" || step === "review") ? (
+      {workspace && form && step === "form" ? (
         <>
           <HouseholdSummary workspace={workspace} form={form} />
-          <RsvpFlowNav
-            backLabel={step === "respond" ? undefined : "Back"}
-            onBack={step === "respond" ? undefined : goToPreviousStep}
-            changeInvitationLabel="Wrong invitation? Search again"
-            onChangeInvitation={() => void returnToInvitationSearch()}
-            pending={pending}
-            className="mt-4"
+          <InvitationFormStep
+            workspace={workspace}
+            form={form}
+            setForm={(updater) =>
+              setForm((current) => (current ? updater(current) : current))
+            }
+            attendingAny={attendingAny}
+            messageToCouple={messageToCouple}
+            setMessageToCouple={setMessageToCouple}
+            submitting={submitting}
+            backing={backing}
+            onBack={() => void returnToInvitationSearch()}
+            onSubmit={() => void onSubmit()}
           />
         </>
-      ) : null}
-
-      {workspace && form && step === "respond" ? (
-        <RespondStep
-          workspace={workspace}
-          form={form}
-          setForm={(updater) =>
-            setForm((current) => (current ? updater(current) : current))
-          }
-          onContinue={() => {
-            const validationError = validateRespondStep();
-            if (validationError) {
-              setError(validationError);
-              return;
-            }
-            setError(null);
-            setStep(attendingAny ? "details" : "review");
-          }}
-        />
-      ) : null}
-
-      {workspace && form && step === "details" ? (
-        <DetailsStep
-          workspace={workspace}
-          form={form}
-          setForm={(updater) =>
-            setForm((current) => (current ? updater(current) : current))
-          }
-          messageToCouple={messageToCouple}
-          setMessageToCouple={setMessageToCouple}
-          onContinue={() => setStep("review")}
-        />
-      ) : null}
-
-      {workspace && form && step === "review" ? (
-        <ReviewStep
-          form={form}
-          messageToCouple={messageToCouple}
-          pending={pending}
-          onSubmit={() => void onSubmit()}
-        />
       ) : null}
 
       {step === "done" ? (
@@ -493,7 +450,7 @@ export function RsvpExperience() {
               type="button"
               variant="secondary"
               className="invite-outline-button !text-invite-navy"
-              onClick={() => setStep("respond")}
+              onClick={() => setStep("form")}
             >
               Update response
             </Button>
@@ -531,13 +488,15 @@ function YesNoChoice({
   label,
   value,
   onChange,
+  disabled,
 }: {
   label: string;
   value: HouseholdYesNo;
   onChange: (value: Exclude<HouseholdYesNo, "unknown">) => void;
+  disabled?: boolean;
 }) {
   return (
-    <fieldset>
+    <fieldset disabled={disabled}>
       <legend className="font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
         {label}
       </legend>
@@ -566,21 +525,40 @@ function YesNoChoice({
   );
 }
 
-function RespondStep({
+function InvitationFormStep({
   workspace,
   form,
   setForm,
-  onContinue,
+  attendingAny,
+  messageToCouple,
+  setMessageToCouple,
+  submitting,
+  backing,
+  onBack,
+  onSubmit,
 }: {
   workspace: Workspace;
   form: HouseholdForm;
   setForm: (updater: (current: HouseholdForm) => HouseholdForm) => void;
-  onContinue: () => void;
+  attendingAny: boolean;
+  messageToCouple: string;
+  setMessageToCouple: (value: string) => void;
+  submitting: boolean;
+  backing: boolean;
+  onBack: () => void;
+  onSubmit: () => void;
 }) {
   const welcomeMax =
     form.ceremonyAttending === "yes"
       ? form.roster.filter((entry) => entry.fullName.trim()).length
       : workspace.household.guestAllowance;
+
+  const rosterNames =
+    form.ceremonyAttending === "yes"
+      ? form.roster.filter((entry) => entry.fullName.trim())
+      : workspace.guests.map((guest) => ({ id: guest.id, fullName: guest.fullName }));
+
+  const formBusy = submitting || backing;
 
   return (
     <div className="mt-8 space-y-6">
@@ -590,6 +568,7 @@ function RespondStep({
         onChange={(ceremonyAttending) =>
           setForm((current) => ({ ...current, ceremonyAttending }))
         }
+        disabled={formBusy}
       />
 
       {form.ceremonyAttending === "yes" ? (
@@ -597,6 +576,7 @@ function RespondStep({
           roster={form.roster}
           allowance={workspace.household.guestAllowance}
           onChange={(roster) => setForm((current) => ({ ...current, roster }))}
+          disabled={formBusy}
         />
       ) : null}
 
@@ -616,6 +596,7 @@ function RespondStep({
                 : current.welcomeGuestCount,
           }))
         }
+        disabled={formBusy}
       />
 
       {form.welcomeAttending === "yes" ? (
@@ -626,6 +607,7 @@ function RespondStep({
           <select
             className="invite-faq-input"
             value={form.welcomeGuestCount}
+            disabled={formBusy}
             onChange={(event) =>
               setForm((current) => ({
                 ...current,
@@ -649,9 +631,90 @@ function RespondStep({
         </label>
       ) : null}
 
-      <Button type="button" variant="gold" size="lg" className="w-full" onClick={onContinue}>
-        Continue
-      </Button>
+      {attendingAny ? (
+        <>
+          {rosterNames.map((entry, index) => {
+            const guestId =
+              entry.id ?? workspace.guests[index]?.id ?? `draft-${index}`;
+            const notes = form.notesByGuestId[guestId] ?? {
+              dietaryNotes: "",
+              accessibilityNotes: "",
+            };
+            return (
+              <div key={guestId} className="invite-rsvp-guest-card">
+                <h2 className="font-display text-lg text-invite-navy">
+                  {entry.fullName.trim() || "Guest"}
+                </h2>
+                <label className="mt-4 block text-sm">
+                  <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                    Dietary restrictions
+                  </span>
+                  <textarea
+                    className="invite-faq-input min-h-20 resize-y"
+                    value={notes.dietaryNotes}
+                    disabled={formBusy}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        notesByGuestId: {
+                          ...current.notesByGuestId,
+                          [guestId]: {
+                            ...notes,
+                            dietaryNotes: event.target.value,
+                          },
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="mt-3 block text-sm">
+                  <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                    Accessibility needs
+                  </span>
+                  <textarea
+                    className="invite-faq-input min-h-20 resize-y"
+                    value={notes.accessibilityNotes}
+                    disabled={formBusy}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        notesByGuestId: {
+                          ...current.notesByGuestId,
+                          [guestId]: {
+                            ...notes,
+                            accessibilityNotes: event.target.value,
+                          },
+                        },
+                      }))
+                    }
+                  />
+                </label>
+              </div>
+            );
+          })}
+          <label className="block text-sm">
+            <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
+              Message to Bright & Lexi
+            </span>
+            <textarea
+              className="invite-faq-input min-h-28 resize-y"
+              value={messageToCouple}
+              disabled={formBusy}
+              onChange={(event) => setMessageToCouple(event.target.value)}
+              placeholder="Optional note for the couple"
+            />
+          </label>
+        </>
+      ) : null}
+
+      <RsvpActionRow
+        backLabel="Back"
+        onBack={onBack}
+        backDisabled={formBusy}
+        primaryLabel={submitting ? "Saving…" : "Submit RSVP"}
+        onPrimary={onSubmit}
+        primaryDisabled={formBusy}
+      />
     </div>
   );
 }
@@ -660,10 +723,12 @@ function RosterEditor({
   roster,
   allowance,
   onChange,
+  disabled,
 }: {
   roster: RosterEntry[];
   allowance: number;
   onChange: (roster: RosterEntry[]) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="invite-rsvp-guest-card">
@@ -679,6 +744,7 @@ function RosterEditor({
             <input
               className="invite-faq-input flex-1"
               value={entry.fullName}
+              disabled={disabled}
               onChange={(event) => {
                 const next = [...roster];
                 next[index] = { ...entry, fullName: event.target.value };
@@ -689,7 +755,7 @@ function RosterEditor({
               type="button"
               variant="ghost"
               className="!text-red-200/90"
-              disabled={roster.length <= 1}
+              disabled={disabled || roster.length <= 1}
               onClick={() => onChange(roster.filter((_, i) => i !== index))}
             >
               Remove
@@ -701,163 +767,11 @@ function RosterEditor({
         type="button"
         variant="secondary"
         className="invite-outline-button mt-3 !text-invite-navy"
-        disabled={roster.length >= allowance}
+        disabled={disabled || roster.length >= allowance}
         onClick={() => onChange([...roster, { fullName: "" }])}
       >
         Add guest
       </Button>
-    </div>
-  );
-}
-
-function DetailsStep({
-  workspace,
-  form,
-  setForm,
-  messageToCouple,
-  setMessageToCouple,
-  onContinue,
-}: {
-  workspace: Workspace;
-  form: HouseholdForm;
-  setForm: (updater: (current: HouseholdForm) => HouseholdForm) => void;
-  messageToCouple: string;
-  setMessageToCouple: (value: string) => void;
-  onContinue: () => void;
-}) {
-  const rosterNames =
-    form.ceremonyAttending === "yes"
-      ? form.roster.filter((entry) => entry.fullName.trim())
-      : workspace.guests.map((guest) => ({ id: guest.id, fullName: guest.fullName }));
-
-  return (
-    <div className="mt-8 space-y-6">
-      {rosterNames.map((entry, index) => {
-        const guestId = entry.id ?? workspace.guests[index]?.id ?? `draft-${index}`;
-        const notes = form.notesByGuestId[guestId] ?? {
-          dietaryNotes: "",
-          accessibilityNotes: "",
-        };
-        return (
-          <div key={guestId} className="invite-rsvp-guest-card">
-            <h2 className="font-display text-lg text-invite-navy">
-              {entry.fullName.trim() || "Guest"}
-            </h2>
-            <label className="mt-4 block text-sm">
-              <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                Dietary restrictions
-              </span>
-              <textarea
-                className="invite-faq-input min-h-20 resize-y"
-                value={notes.dietaryNotes}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    notesByGuestId: {
-                      ...current.notesByGuestId,
-                      [guestId]: {
-                        ...notes,
-                        dietaryNotes: event.target.value,
-                      },
-                    },
-                  }))
-                }
-              />
-            </label>
-            <label className="mt-3 block text-sm">
-              <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                Accessibility needs
-              </span>
-              <textarea
-                className="invite-faq-input min-h-20 resize-y"
-                value={notes.accessibilityNotes}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    notesByGuestId: {
-                      ...current.notesByGuestId,
-                      [guestId]: {
-                        ...notes,
-                        accessibilityNotes: event.target.value,
-                      },
-                    },
-                  }))
-                }
-              />
-            </label>
-          </div>
-        );
-      })}
-      <label className="block text-sm">
-        <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
-          Message to Bright & Lexi
-        </span>
-        <textarea
-          className="invite-faq-input min-h-28 resize-y"
-          value={messageToCouple}
-          onChange={(event) => setMessageToCouple(event.target.value)}
-          placeholder="Optional note for the couple"
-        />
-      </label>
-      <div className="flex flex-wrap gap-3">
-        <Button type="button" variant="gold" onClick={onContinue}>
-          Review
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function ReviewStep({
-  form,
-  messageToCouple,
-  pending,
-  onSubmit,
-}: {
-  form: HouseholdForm;
-  messageToCouple: string;
-  pending: boolean;
-  onSubmit: () => void;
-}) {
-  const rosterSize = form.roster.filter((entry) => entry.fullName.trim()).length;
-  return (
-    <div className="mt-8 space-y-5">
-      <h2 className="text-center font-display text-2xl text-invite-gold-bright">
-        Review your RSVP
-      </h2>
-      <p className="text-center text-sm text-invite-body-soft/95">
-        {householdRsvpSummary({
-          ceremonyAttending: form.ceremonyAttending,
-          welcomeAttending: form.welcomeAttending,
-          welcomeGuestCount: form.welcomeGuestCount,
-          rosterSize,
-        })}
-      </p>
-      {form.ceremonyAttending === "yes" ? (
-        <ul className="invite-rsvp-review-list space-y-2 text-sm">
-          {form.roster
-            .filter((entry) => entry.fullName.trim())
-            .map((entry) => (
-              <li key={entry.id ?? entry.fullName} className="invite-rsvp-review-item">
-                {entry.fullName.trim()}
-              </li>
-            ))}
-        </ul>
-      ) : null}
-      {messageToCouple ? (
-        <p className="text-sm text-invite-body-soft/90">Message: {messageToCouple}</p>
-      ) : null}
-      <div className="flex flex-wrap gap-3 pt-2">
-        <Button
-          type="button"
-          variant="gold"
-          size="lg"
-          disabled={pending}
-          onClick={onSubmit}
-        >
-          {pending ? "Saving…" : "Confirm RSVP"}
-        </Button>
-      </div>
     </div>
   );
 }
@@ -891,50 +805,43 @@ function HouseholdSummary({
   );
 }
 
-function RsvpFlowNav({
+function RsvpActionRow({
   backLabel,
   onBack,
-  changeInvitationLabel,
-  onChangeInvitation,
-  pending,
-  className,
+  backDisabled,
+  primaryLabel,
+  onPrimary,
+  primaryDisabled,
 }: {
-  backLabel?: string;
-  onBack?: () => void;
-  changeInvitationLabel?: string;
-  onChangeInvitation?: () => void;
-  pending?: boolean;
-  className?: string;
+  backLabel: string;
+  onBack: () => void;
+  backDisabled?: boolean;
+  primaryLabel?: string;
+  onPrimary?: () => void;
+  primaryDisabled?: boolean;
 }) {
-  if (!backLabel && !changeInvitationLabel) return null;
   return (
-    <div
-      className={cn(
-        "flex flex-wrap items-center gap-3 border-t border-invite-body/10 pt-4",
-        backLabel ? "justify-between" : "justify-end",
-        className,
-      )}
-    >
-      {backLabel && onBack ? (
+    <div className="flex flex-wrap gap-3 border-t border-invite-body/10 pt-6">
+      <Button
+        type="button"
+        variant="secondary"
+        className="invite-outline-button min-w-[7rem] flex-1 !text-invite-navy sm:flex-none"
+        disabled={backDisabled}
+        onClick={onBack}
+      >
+        {backLabel}
+      </Button>
+      {primaryLabel && onPrimary ? (
         <Button
           type="button"
-          variant="secondary"
-          className="invite-outline-button !text-invite-navy"
-          disabled={pending}
-          onClick={onBack}
+          variant="gold"
+          size="lg"
+          className="min-w-[7rem] flex-1 sm:flex-none"
+          disabled={primaryDisabled}
+          onClick={onPrimary}
         >
-          {backLabel}
+          {primaryLabel}
         </Button>
-      ) : null}
-      {changeInvitationLabel && onChangeInvitation ? (
-        <button
-          type="button"
-          className="text-sm text-invite-body/80 underline decoration-invite-body/30 underline-offset-4 hover:text-invite-gold disabled:opacity-50"
-          disabled={pending}
-          onClick={onChangeInvitation}
-        >
-          {changeInvitationLabel}
-        </button>
       ) : null}
     </div>
   );
