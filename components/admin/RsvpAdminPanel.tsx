@@ -87,14 +87,14 @@ export function RsvpAdminPanel() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-4 md:space-y-8">
+      <div className="flex flex-wrap gap-1.5 md:gap-2">
         <button
           type="button"
           className={
             tab === "responses"
-              ? "rounded-full border border-[var(--admin-gold,#e8c872)] bg-white/10 px-4 py-2 text-sm text-[var(--admin-gold-bright,#f5e6a8)]"
-              : "rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--admin-body,#d4dce8)]"
+              ? "rounded-full border border-[var(--admin-gold,#e8c872)] bg-white/10 px-3 py-1.5 text-xs text-[var(--admin-gold-bright,#f5e6a8)] md:px-4 md:py-2 md:text-sm"
+              : "rounded-full border border-white/15 px-3 py-1.5 text-xs text-[var(--admin-body,#d4dce8)] md:px-4 md:py-2 md:text-sm"
           }
           onClick={() => setTab("responses")}
         >
@@ -104,8 +104,8 @@ export function RsvpAdminPanel() {
           type="button"
           className={
             tab === "guests"
-              ? "rounded-full border border-[var(--admin-gold,#e8c872)] bg-white/10 px-4 py-2 text-sm text-[var(--admin-gold-bright,#f5e6a8)]"
-              : "rounded-full border border-white/15 px-4 py-2 text-sm text-[var(--admin-body,#d4dce8)]"
+              ? "rounded-full border border-[var(--admin-gold,#e8c872)] bg-white/10 px-3 py-1.5 text-xs text-[var(--admin-gold-bright,#f5e6a8)] md:px-4 md:py-2 md:text-sm"
+              : "rounded-full border border-white/15 px-3 py-1.5 text-xs text-[var(--admin-body,#d4dce8)] md:px-4 md:py-2 md:text-sm"
           }
           onClick={() => setTab("guests")}
         >
