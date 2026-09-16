@@ -43,5 +43,6 @@ If Supabase env vars are **not** set, RSVP continues to use `.data/rsvp.json` (`
 
 ## Important
 
-- Keep **`RSVP_SESSION_SECRET`** stable in production — changing it invalidates invitation code hashes and sessions.
+- Keep **`RSVP_SESSION_SECRET`** stable in production — changing it invalidates invitation code hashes and sessions. Set it on Vercel **before** the first RSVP request after enabling Supabase (demo seed hashes are computed with whatever secret is active at import time).
 - Do not expose `SUPABASE_SERVICE_ROLE_KEY` to the browser.
+- If you paste database passwords or JWT keys in chat or tickets, **rotate them** in Supabase and Vercel.

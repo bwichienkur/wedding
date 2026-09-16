@@ -37,9 +37,13 @@ async function main() {
   }
 
   const sql = readFileSync(migrationPath, "utf8");
+  const useSsl =
+    url.includes("supabase") ||
+    url.includes("pooler.supabase.com") ||
+    url.includes("sslmode=require");
   const client = new pg.Client({
     connectionString: url,
-    ssl: url.includes("supabase") ? { rejectUnauthorized: false } : undefined,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
   });
 
   await client.connect();
