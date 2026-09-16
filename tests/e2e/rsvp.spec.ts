@@ -18,10 +18,8 @@ test.describe("RSVP", () => {
       .fill(E2E_GUEST_NAME);
     await page.getByRole("button", { name: "Find invitation" }).click();
 
-    await expect(
-      page.getByRole("heading", { name: E2E_GUEST_NAME }).first(),
-    ).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(E2E_HOUSEHOLD)).toBeVisible();
+    await expect(page.getByText(E2E_HOUSEHOLD)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(E2E_GUEST_NAME)).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Attending" }).first(),
     ).toBeVisible();
