@@ -62,6 +62,14 @@ export function TravelSection({
                     </span>
                   </p>
                 ) : null}
+                {hotel.bookingDeadline ? (
+                  <p className="mt-3 font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                    Reservation deadline
+                    <span className="ml-2 font-display text-sm normal-case tracking-normal text-invite-navy">
+                      {hotel.bookingDeadline}
+                    </span>
+                  </p>
+                ) : null}
                 {hotel.notes ? (
                   <p className="mt-3 text-sm leading-relaxed text-invite-body/85">
                     {hotel.notes}

@@ -19,13 +19,13 @@ Items still needed from Bright & Lexi (do not invent):
 - [ ] Ceremony/reception placement on property
 - [ ] Times for dinner, toasts, dancing, sparkler sendoff
 - [ ] Dress code, children policy, plus-one policy, photography policy
-- [ ] RSVP deadline date (`deadlineISO`)
+- [x] RSVP deadline date (`deadlineISO`) — April 10, 2027
 - [ ] Contact email/phone
 
 ## Travel
 
 - [ ] Recommended airports + drive times
-- [ ] Hotel blocks, booking links, codes, deadlines
+- [x] Hotel blocks, booking links, codes, deadlines — Holiday Inn block; code BLW; reserve by April 10, 2027
 - [ ] Transportation options
 - [ ] Local restaurant/activity recommendations
 

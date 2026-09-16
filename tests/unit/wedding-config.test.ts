@@ -9,6 +9,9 @@ describe("wedding config", () => {
     expect(wedding.wedding.venueName).toBe("Bella Cosa");
     expect(wedding.anniversary.dating.dateISO).toBe("2025-03-20");
     expect(wedding.wedding.ceremonyBegins).toBe("4:00 PM");
+    expect(wedding.rsvp.deadlineIsPlaceholder).toBe(false);
+    expect(wedding.rsvp.deadlineISO).toBe("2027-04-10T23:59:59-04:00");
+    expect(wedding.rsvp.deadlineLabel).toContain("April 10, 2027");
   });
 
   it("marks remaining unknown content as placeholders", () => {
