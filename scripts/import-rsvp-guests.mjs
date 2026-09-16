@@ -4,10 +4,10 @@
  * (Supabase not supported — use Table Editor or SQL for production).
  *
  * CSV columns (header row required):
- *   household_name, guest_name, invitation_code, email, event_slugs
+ *   household_name, guest_name, invitation_code, email
  *
  * - invitation_code: optional per row; only needed once per household (first row)
- * - event_slugs: comma-separated, e.g. ceremony-reception or ceremony-reception,rehearsal-dinner
+ * - Every invitation includes the welcome party and ceremony & reception.
  *
  *   node scripts/import-rsvp-guests.mjs guests.csv
  */
@@ -56,14 +56,8 @@ function parseCsv(text) {
   });
 }
 
-function slugToEventId(slug) {
-  const map = {
-    "ceremony-reception": "event-ceremony-reception",
-    "rehearsal-dinner": "event-rehearsal-dinner",
-  };
-  const id = map[slug.trim()];
-  if (!id) throw new Error(`Unknown event slug: ${slug}`);
-  return id;
+function standardEventIds() {
+  return ["event-welcome-party", "event-ceremony-reception"];
 }
 
 const csvPath = process.argv[2];
@@ -100,10 +94,6 @@ for (const row of rows) {
   let household = householdByName.get(householdName);
   if (!household) {
     const code = (row.invitation_code || row.invitationCode || "").trim();
-    const eventSlugs = (row.event_slugs || row.eventSlugs || "ceremony-reception")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
     household = {
       id: randomUUID(),
       displayName: householdName,
@@ -113,7 +103,7 @@ for (const row of rows) {
       phone: null,
       notesAdmin: "",
       rsvpStatus: "pending",
-      eventIds: eventSlugs.map(slugToEventId),
+      eventIds: standardEventIds(),
       maxPlusOnes: 0,
       createdAt: now,
       updatedAt: now,

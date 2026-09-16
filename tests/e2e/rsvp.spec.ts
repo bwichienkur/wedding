@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+/** Matches lib/rsvp/test-fixtures (e2e server runs with RSVP_INCLUDE_E2E_FIXTURE=1). */
+const E2E_GUEST_NAME = "Alex Example";
+const E2E_HOUSEHOLD = "The Example Family";
+
 test.describe("RSVP", () => {
   test("looks up a fictional household and reaches response step", async ({
     page,
@@ -11,13 +15,16 @@ test.describe("RSVP", () => {
 
     await page
       .getByLabel("Full name or invitation code")
-      .fill("Alex Rivera");
+      .fill(E2E_GUEST_NAME);
     await page.getByRole("button", { name: "Find invitation" }).click();
 
     await expect(
-      page.getByRole("heading", { name: "Alex Rivera" }).first(),
+      page.getByRole("heading", { name: E2E_GUEST_NAME }).first(),
     ).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText("The Rivera Family")).toBeVisible();
+    await expect(page.getByText(E2E_HOUSEHOLD)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Ceremony & welcome party" }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
   });
 

@@ -1,6 +1,10 @@
 import "server-only";
 
 import {
+  filterStandardEvents,
+  STANDARD_EVENT_IDS,
+} from "@/lib/rsvp/event-config";
+import {
   createConfirmationToken,
   hashInvitationCode,
   hashIp,
@@ -52,16 +56,14 @@ export async function lookupHouseholds(query: string): Promise<{
     const guests = db.guests
       .filter((guest) => guest.householdId === household.id)
       .sort((a, b) => a.sortOrder - b.sortOrder);
-    const events = db.events.filter((event) =>
-      household.eventIds.includes(event.id),
-    );
+    const standardEvents = filterStandardEvents(db.events);
     return {
       confirmationToken: createConfirmationToken(household.id),
       displayName: household.displayName,
       guestPreview: guests
         .filter((guest) => !guest.isPlusOne || guest.plusOneNamed)
         .map((guest) => guest.fullName),
-      invitedEventTitles: events.map((event) => event.title),
+      invitedEventTitles: standardEvents.map((event) => event.title),
     };
   });
 
@@ -87,11 +89,10 @@ export async function getHouseholdWorkspace(householdId: string) {
 
   const guests = await getGuestsForHousehold(householdId);
   const responses = await getResponsesForHousehold(householdId);
-  const events = db.events
-    .filter((event) => household.eventIds.includes(event.id))
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const events = filterStandardEvents(db.events);
   const mealOptions = db.mealOptions.filter(
-    (meal) => household.eventIds.includes(meal.eventId) && meal.isActive,
+    (meal) => STANDARD_EVENT_IDS.includes(meal.eventId as (typeof STANDARD_EVENT_IDS)[number]) &&
+      meal.isActive,
   );
 
   return {
@@ -141,7 +142,7 @@ export async function submitHouseholdRsvp(options: {
     (guest) => guest.householdId === options.householdId,
   );
   const guestIds = new Set(guests.map((guest) => guest.id));
-  const eventIds = new Set(household.eventIds);
+  const eventIds = new Set<string>(STANDARD_EVENT_IDS);
 
   for (const response of options.payload.responses) {
     if (!guestIds.has(response.guestId) || !eventIds.has(response.eventId)) {
