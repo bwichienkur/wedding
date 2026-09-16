@@ -50,6 +50,13 @@ Couples with **different last names** (or families split in the export) need a *
 
 After import, open **`.data/invitation-codes.txt`** for each household’s lookup code (do not commit). Use the same `RSVP_SESSION_SECRET` in production before generating codes for Supabase.
 
+**Push to Supabase:**
+
+```bash
+CONFIRM_REPLACE=1 npm run push:rsvp:supabase
+```
+
+## Option B — Production (Supabase)
 
 1. Apply `supabase/migrations/202608240002_rsvp.sql` (see `docs/SUPABASE-RSVP.md`).
 2. Set `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and **`RSVP_SESSION_SECRET`** on Vercel **before** importing codes.
