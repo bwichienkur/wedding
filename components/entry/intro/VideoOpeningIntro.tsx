@@ -14,7 +14,7 @@ interface VideoOpeningIntroProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
-/** Full-screen opening — tap anywhere; subtle seal pulse + bottom cue (no pill button). */
+/** Full-screen opening — tap the envelope poster; video plays in place (no overlay ring). */
 export function VideoOpeningIntro({
   phase,
   reduceMotion,
@@ -22,12 +22,9 @@ export function VideoOpeningIntro({
   videoRef,
 }: VideoOpeningIntroProps) {
   const interactive = phase === "closed";
-  const glowing = phase === "activating" || phase === "glowing";
-  const playbackStarted =
-    phase === "glowing" || phase === "opening" || phase === "opened";
+  const glowing = phase === "glowing";
   const exiting = phase === "opening" || phase === "opened";
-  const showPoster = phase === "closed" || phase === "activating";
-  const showCue = interactive && showPoster && !playbackStarted;
+  const showCue = interactive;
 
   return (
     <div
@@ -36,34 +33,9 @@ export function VideoOpeningIntro({
         exiting && !reduceMotion && "video-opening-fullscreen-exit",
       )}
     >
-      {showPoster ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={OPENING_POSTER}
-          alt=""
-          className="video-opening-media absolute inset-0 z-[1]"
-          draggable={false}
-        />
-      ) : null}
-
-      {showCue && !reduceMotion ? (
-        <div
-          className={cn(
-            "video-opening-seal-pulse pointer-events-none absolute z-[2]",
-            glowing && "is-lit",
-          )}
-          aria-hidden
-        />
-      ) : null}
-
       <video
         ref={videoRef}
-        className={cn(
-          "video-opening-media absolute inset-0 z-[2]",
-          playbackStarted
-            ? "opacity-100"
-            : "pointer-events-none opacity-0",
-        )}
+        className="video-opening-media absolute inset-0 z-[1]"
         src={OPENING_VIDEO}
         poster={OPENING_POSTER}
         playsInline
@@ -80,16 +52,13 @@ export function VideoOpeningIntro({
         }}
         aria-label={wedding.entry.beginLabel}
         className={cn(
-          "absolute inset-0 z-[3]",
+          "absolute inset-0 z-[2]",
           interactive ? "cursor-pointer" : "pointer-events-none",
         )}
       >
         {showCue ? (
           <div
-            className={cn(
-              "video-opening-invite-cue",
-              glowing && "is-lit",
-            )}
+            className={cn("video-opening-invite-cue", glowing && "is-lit")}
             aria-hidden
           >
             <span className="video-opening-invite-cue-mark">

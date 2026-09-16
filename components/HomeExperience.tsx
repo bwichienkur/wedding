@@ -27,7 +27,8 @@ import type { StoryImage, StoryMilestone } from "@/data/types";
 import { mainContentId } from "@/data/navigation";
 import type { ResolvedSiteSections } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
-import { useCallback, useState } from "react";
+import { INVITE_SCROLL_BG_VIDEO } from "@/lib/media/invite-scroll-background";
+import { useCallback, useEffect, useState } from "react";
 
 export interface HomeMediaBundle {
   heroSlides: HeroSlide[];
@@ -67,13 +68,24 @@ export function HomeExperience({
 
   const showRsvp = show("rsvp");
 
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "video";
+    link.href = INVITE_SCROLL_BG_VIDEO;
+    document.head.appendChild(link);
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
+
   return (
     <>
       <CinematicEntry
         onComplete={completeIntro}
         onRevealStart={beginReveal}
       />
-      <AmbientBackground active={introDone} />
+      <AmbientBackground active={siteRevealed} warm />
       <div
         className={cn(
           "invite-experience relative z-[1] transition-opacity duration-700 ease-out",
