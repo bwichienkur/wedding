@@ -48,6 +48,7 @@ export function FaqSection({
       description={description}
       className="invite-faq-section"
     >
+      <div className="invite-glass-card px-4 py-5 sm:px-6 sm:py-6">
       <div className="invite-faq-controls mb-8 flex flex-col gap-4 sm:flex-row sm:items-end">
         <label className="block flex-1 text-sm">
           <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em]">
@@ -91,7 +92,7 @@ export function FaqSection({
             title: item.question,
             content: (
               <div>
-                <p className="mb-2 font-sans text-xs uppercase tracking-[0.16em] text-[#6b5a2e]">
+                <p className="mb-2 font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
                   {item.category}
                 </p>
                 <p
@@ -107,6 +108,7 @@ export function FaqSection({
           }))}
         />
       )}
+      </div>
     </Section>
   );
 }

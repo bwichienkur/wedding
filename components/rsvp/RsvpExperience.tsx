@@ -205,7 +205,7 @@ export function RsvpExperience() {
   }
 
   return (
-    <div className="invite-rsvp-flow invite-readable-panel mx-auto w-full max-w-lg px-5 py-6 sm:px-7 sm:py-8">
+    <div className="invite-rsvp-flow invite-glass-card mx-auto w-full max-w-lg px-5 py-6 sm:px-7 sm:py-8">
       <p className="font-sans text-[0.58rem] uppercase tracking-[0.28em] text-invite-gold">
         RSVP
       </p>
@@ -456,7 +456,7 @@ export function RsvpExperience() {
           )}
           {attendingYes ? (
             <label className="block text-sm">
-              <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-[#6b5a2e]">
+              <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
                 Message to Bright & Lexi
               </span>
               <textarea
@@ -485,10 +485,10 @@ export function RsvpExperience() {
 
       {workspace && step === "review" ? (
         <div className="mt-8 space-y-5">
-          <h2 className="text-center font-display text-2xl text-invite-navy">
+          <h2 className="text-center font-display text-2xl text-invite-gold-bright">
             Review your RSVP
           </h2>
-          <ul className="invite-rsvp-review-list space-y-3 text-sm text-invite-body/90">
+          <ul className="invite-rsvp-review-list space-y-3 text-sm text-invite-body-soft/95">
             {drafts.map((draft) => {
               const guest = workspace.guests.find(
                 (item) => item.id === draft.guestId,
@@ -502,20 +502,20 @@ export function RsvpExperience() {
                   key={`${draft.guestId}-${draft.eventId}`}
                   className="invite-rsvp-review-item"
                 >
-                  <p className="font-display text-lg text-[#0f1e33]">
+                  <p className="font-display text-lg text-invite-gold-bright">
                     {guestDisplayName(guest, draft.plusOneName)} ·{" "}
                     {eventRecord.title}
                   </p>
-                  <p className="mt-1 text-[#1f1812]">
+                  <p className="mt-1 text-invite-body-soft/95">
                     {attendingLabel(draft.attending)}
                   </p>
                   {draft.dietaryNotes ? (
-                    <p className="mt-1 text-[#2a2218]">
+                    <p className="mt-1 text-invite-body-soft/85">
                       Dietary: {draft.dietaryNotes}
                     </p>
                   ) : null}
                   {draft.accessibilityNotes ? (
-                    <p className="mt-1 text-[#2a2218]">
+                    <p className="mt-1 text-invite-body-soft/85">
                       Accessibility: {draft.accessibilityNotes}
                     </p>
                   ) : null}
@@ -524,7 +524,7 @@ export function RsvpExperience() {
             })}
           </ul>
           {messageToCouple ? (
-            <p className="text-sm text-[#1f1812]">
+            <p className="text-sm text-invite-body-soft/90">
               Message: {messageToCouple}
             </p>
           ) : null}
