@@ -42,7 +42,7 @@ function guestAllowance(household: Pick<HouseholdRow, "guests" | "maxPlusOnes">)
 }
 
 const compactFieldClass =
-  "admin-input w-full rounded-sm px-2 py-1 text-xs leading-tight outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--admin-gold,#e8c872)]";
+  "admin-input h-7 w-full min-w-0 rounded-sm px-2 py-0 text-xs leading-none outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--admin-gold,#e8c872)]";
 
 const tableBtnClass =
   "!min-h-7 !px-2 !py-0.5 !text-[0.625rem] !tracking-normal !normal-case md:!text-xs";
@@ -308,12 +308,12 @@ export function RsvpGuestListAdmin() {
         </p>
       ) : null}
 
-      <div className={adminTableShellClass}>
-        <div className="flex flex-col gap-3 border-b border-white/10 px-3 py-3 sm:flex-row sm:items-end sm:justify-between md:px-4">
+      <div className={`${adminTableShellClass} max-w-xl`}>
+        <div className="flex flex-col gap-2 border-b border-white/10 px-2 py-2 sm:flex-row sm:items-end sm:justify-between">
           <label className="block min-w-0 flex-1 text-sm">
             <span className={`mb-1 block ${adminLabelClass}`}>Search</span>
             <input
-              className={`${adminFieldClass} !mt-0`}
+              className={`${adminFieldClass} !mt-0 !py-1.5 !text-xs`}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -330,27 +330,36 @@ export function RsvpGuestListAdmin() {
 
         <div className="overflow-x-auto">
           <table className={adminTableClass}>
+            <colgroup>
+              <col className="w-8" />
+              <col />
+              <col className="w-11" />
+              <col className="w-9" />
+              <col className="w-[4.5rem]" />
+              <col className="w-11" />
+              <col className="w-[5.75rem]" />
+            </colgroup>
             <thead>
               <tr>
-                <th className={`${adminThClass} w-8`} scope="col">
+                <th className={adminThClass} scope="col">
                   <span className="sr-only">Expand</span>
                 </th>
                 <th className={adminThClass} scope="col">
                   Household
                 </th>
-                <th className={`${adminThClass} w-16 text-center`} scope="col">
+                <th className={`${adminThClass} text-center`} scope="col">
                   Max
                 </th>
-                <th className={`${adminThClass} hidden sm:table-cell`} scope="col">
-                  Guests
+                <th className={`${adminThClass} text-center`} scope="col">
+                  #
                 </th>
-                <th className={`${adminThClass} w-24`} scope="col">
+                <th className={adminThClass} scope="col">
                   RSVP
                 </th>
-                <th className={`${adminThClass} hidden md:table-cell w-16`} scope="col">
+                <th className={`${adminThClass} hidden sm:table-cell`} scope="col">
                   Code
                 </th>
-                <th className={`${adminThClass} w-28 text-right`} scope="col">
+                <th className={`${adminThClass} text-right`} scope="col">
                   Actions
                 </th>
               </tr>
@@ -391,7 +400,7 @@ export function RsvpGuestListAdmin() {
           </table>
         </div>
 
-        <div className={adminTableFootClass}>
+        <div className={`${adminTableFootClass} px-2 py-2`}>
           <p className={`text-xs ${adminMutedClass}`}>
             Showing{" "}
             <span className="tabular-nums text-[var(--admin-body,#d4dce8)]">
@@ -495,8 +504,6 @@ function HouseholdTableBlockInner({
       (g) => (guestDrafts[g.id] ?? g.fullName).trim() !== g.fullName,
     );
 
-  const guestPreview = household.guests.map((g) => g.fullName).join(", ");
-
   async function saveAll() {
     const name = displayName.trim();
     if (!name) return;
@@ -521,7 +528,7 @@ function HouseholdTableBlockInner({
         <td className={adminTdClass}>
           <button
             type="button"
-            className="flex h-7 w-7 items-center justify-center rounded-sm border border-white/12 bg-white/[0.03] text-xs text-[var(--admin-gold,#e8c872)] hover:bg-white/[0.08]"
+            className="flex h-7 w-7 items-center justify-center rounded-sm border border-white/12 bg-white/[0.03] text-[0.65rem] leading-none text-[var(--admin-gold,#e8c872)] hover:bg-white/[0.08]"
             aria-expanded={expanded}
             aria-label={expanded ? "Collapse guests" : "Edit guests"}
             onClick={onToggleExpand}
@@ -536,45 +543,37 @@ function HouseholdTableBlockInner({
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
           />
-          <p
-            className={`mt-1 truncate text-[0.625rem] sm:hidden ${adminMutedClass}`}
-            title={guestPreview}
-          >
-            {guestPreview || "—"}
-          </p>
         </td>
         <td className={`${adminTdClass} text-center`}>
           <input
             type="number"
             min={listed}
             aria-label="Max guests allowed"
-            className={`${compactFieldClass} mx-auto max-w-[3.25rem] text-center tabular-nums`}
+            className={`${compactFieldClass} mx-auto max-w-[2.5rem] px-1 text-center tabular-nums`}
             value={allowance}
             onChange={(e) => setAllowance(e.target.value)}
           />
         </td>
-        <td className={`${adminTdClass} hidden max-w-[14rem] sm:table-cell`}>
-          <p className={`truncate text-xs ${adminMutedClass}`} title={guestPreview}>
-            {listed === 0 ? "—" : `${listed} · ${guestPreview}`}
-          </p>
+        <td className={`${adminTdClass} text-center text-xs tabular-nums ${adminMutedClass}`}>
+          {listed}
         </td>
         <td className={adminTdClass}>
           <span
             className={cn(
-              "inline-flex rounded-full border px-2 py-0.5 text-[0.625rem] capitalize leading-tight md:text-xs",
+              "inline-flex max-w-full rounded-full border px-1.5 py-0.5 text-[0.5625rem] capitalize leading-tight",
               rsvpStatusClass(household.rsvpStatus),
             )}
           >
             {household.rsvpStatus}
           </span>
         </td>
-        <td className={`${adminTdClass} hidden md:table-cell`}>
-          <span className="font-mono text-[0.625rem] text-[var(--admin-muted,#9aa8bc)]">
+        <td className={`${adminTdClass} hidden sm:table-cell`}>
+          <span className="font-mono text-[0.5625rem] text-[var(--admin-muted,#9aa8bc)]">
             {household.invitationCodeHint ? `${household.invitationCodeHint}…` : "—"}
           </span>
         </td>
         <td className={`${adminTdClass} text-right`}>
-          <div className="inline-flex flex-col items-stretch gap-1 sm:flex-row sm:items-center sm:justify-end">
+          <div className="inline-flex items-center justify-end gap-0.5">
             <Button
               type="button"
               variant="secondary"

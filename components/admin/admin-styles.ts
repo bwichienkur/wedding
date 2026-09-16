@@ -36,13 +36,13 @@ export const adminTableShellClass =
   "admin-glass-card overflow-hidden rounded-sm";
 
 export const adminTableClass =
-  "w-full min-w-[36rem] border-collapse text-xs md:min-w-0 md:text-sm";
+  "w-full table-fixed border-collapse text-xs";
 
 export const adminThClass =
-  "whitespace-nowrap border-b border-[rgb(212_175_55/0.22)] bg-[rgb(4_10_20/0.85)] px-2 py-2 text-left font-sans text-[0.625rem] font-medium uppercase tracking-[0.12em] text-[var(--admin-gold,#e8c872)] md:px-3";
+  "whitespace-nowrap border-b border-[rgb(212_175_55/0.22)] bg-[rgb(4_10_20/0.85)] px-2 py-1.5 text-left font-sans text-[0.625rem] font-medium uppercase tracking-[0.12em] text-[var(--admin-gold,#e8c872)]";
 
 export const adminTdClass =
-  "border-b border-white/[0.07] px-2 py-2 align-middle text-[var(--admin-body,#d4dce8)] md:px-3";
+  "border-b border-white/[0.07] px-2 py-1.5 align-middle text-[var(--admin-body,#d4dce8)]";
 
 export const adminTableFootClass =
   "flex flex-col gap-3 border-t border-white/10 bg-[rgb(4_10_20/0.5)] px-3 py-3 sm:flex-row sm:items-center sm:justify-between";
