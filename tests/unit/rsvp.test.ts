@@ -37,33 +37,47 @@ describe("rsvp rate limit", () => {
 });
 
 describe("rsvp service", () => {
+  const supabaseConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+  );
+
   beforeEach(async () => {
+    if (supabaseConfigured) return;
     await resetRsvpDbForTests();
   });
 
-  it("finds a household by test guest name without exposing ids", async () => {
-    const result = await lookupHouseholds(TEST_GUEST_NAME);
-    expect(result.candidates.length).toBe(1);
-    expect(result.candidates[0]?.displayName).toBe(TEST_HOUSEHOLD_DISPLAY);
-    expect(result.candidates[0]).not.toHaveProperty("householdId");
-    expect(result.candidates[0]?.guestPreview).toContain(TEST_GUEST_NAME);
-  });
+  it.skipIf(supabaseConfigured)(
+    "finds a household by test guest name without exposing ids",
+    async () => {
+      const result = await lookupHouseholds(TEST_GUEST_NAME);
+      expect(result.candidates.length).toBe(1);
+      expect(result.candidates[0]?.displayName).toBe(TEST_HOUSEHOLD_DISPLAY);
+      expect(result.candidates[0]).not.toHaveProperty("householdId");
+      expect(result.candidates[0]?.guestPreview).toContain(TEST_GUEST_NAME);
+    },
+  );
 
-  it("finds a household by invitation code", async () => {
+  it.skipIf(supabaseConfigured)("finds a household by invitation code", async () => {
     const result = await lookupHouseholds(TEST_INVITATION_CODE);
     expect(result.candidates.length).toBe(1);
     expect(result.candidates[0]?.displayName).toBe(TEST_HOUSEHOLD_DISPLAY);
   });
 
-  it("lists standard invitation events for every household", async () => {
-    const result = await lookupHouseholds(TEST_INVITATION_CODE);
-    expect(result.candidates[0]?.invitedEventTitles).toEqual([
-      "Welcome Party",
-      "Ceremony & Reception",
-    ]);
-  });
+  it.skipIf(supabaseConfigured)(
+    "lists standard invitation events for every household",
+    async () => {
+      const result = await lookupHouseholds(TEST_INVITATION_CODE);
+      expect(result.candidates[0]?.invitedEventTitles).toEqual([
+        "Welcome Party",
+        "Ceremony & Reception",
+      ]);
+    },
+  );
 
-  it("submits a household RSVP after token selection", async () => {
+  it.skipIf(supabaseConfigured)(
+    "submits a household RSVP after token selection",
+    async () => {
     const lookup = await lookupHouseholds(TEST_GUEST_NAME);
     const token = lookup.candidates[0]!.confirmationToken;
     const householdId = await resolveHouseholdFromToken(token);
@@ -101,5 +115,6 @@ describe("rsvp service", () => {
 
     expect(result.status).toBe("complete");
     expect(hashInvitationCode(TEST_INVITATION_CODE)).toHaveLength(64);
-  });
+    },
+  );
 });

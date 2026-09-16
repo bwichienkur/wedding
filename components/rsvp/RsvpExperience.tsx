@@ -72,9 +72,6 @@ interface ResponseDraft {
   plusOneName?: string;
 }
 
-const showDemoHint =
-  process.env.NODE_ENV === "development" &&
-  process.env.NEXT_PUBLIC_RSVP_DEMO_HINT === "1";
 
 export function RsvpExperience() {
   const [step, setStep] = useState<Step>("lookup");
@@ -257,16 +254,10 @@ export function RsvpExperience() {
               placeholder="Name as it appears on your invitation"
             />
           </label>
-          {showDemoHint ? (
-            <p className="text-sm text-invite-body/75">
-              Dev: set <code className="text-xs">NEXT_PUBLIC_RSVP_DEMO_HINT=1</code>{" "}
-              only when using a local test import.
-            </p>
-          ) : (
-            <p className="text-sm text-invite-body/75">
-              Use the name on your invitation or the code from your card.
-            </p>
-          )}
+          <p className="text-sm text-invite-body/75">
+            Use your first or last name, full name, or invitation code — spelling
+            can be partial (e.g. “Lexi” or “Wichienkur”).
+          </p>
           <Button
             type="submit"
             variant="gold"
