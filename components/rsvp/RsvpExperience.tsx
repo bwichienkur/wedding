@@ -6,8 +6,8 @@ import { InviteDivider } from "@/components/invite/InviteDecor";
 import {
   inferHouseholdCeremonyAttending,
   inferHouseholdWelcomeAttending,
-  countWelcomeGuests,
   resolveCeremonyAndWelcomeEvents,
+  welcomeHeadCountForHousehold,
   type HouseholdYesNo,
 } from "@/components/rsvp/attendance-plan";
 import { RsvpStepper } from "@/components/rsvp/RsvpStepper";
@@ -83,12 +83,6 @@ function buildInitialForm(workspace: Workspace): HouseholdForm {
         guestIds,
       )
     : "unknown";
-  const welcomeGuestCount = pair
-    ? Math.max(
-        1,
-        countWelcomeGuests(workspace.responses, pair.welcome.id, guestIds),
-      )
-    : 1;
 
   const notesByGuestId: HouseholdForm["notesByGuestId"] = {};
   for (const guest of workspace.guests) {
@@ -101,15 +95,31 @@ function buildInitialForm(workspace: Workspace): HouseholdForm {
     };
   }
 
+  return withSyncedWelcomeHeadCount(
+    {
+      ceremonyAttending,
+      welcomeAttending,
+      welcomeGuestCount: 0,
+      roster: workspace.guests.map((guest) => ({
+        id: guest.id,
+        fullName: guest.fullName,
+      })),
+      notesByGuestId,
+    },
+    workspace.household.guestAllowance,
+  );
+}
+
+function withSyncedWelcomeHeadCount(
+  form: HouseholdForm,
+  guestAllowance: number,
+): HouseholdForm {
   return {
-    ceremonyAttending,
-    welcomeAttending,
-    welcomeGuestCount,
-    roster: workspace.guests.map((guest) => ({
-      id: guest.id,
-      fullName: guest.fullName,
-    })),
-    notesByGuestId,
+    ...form,
+    welcomeGuestCount: welcomeHeadCountForHousehold({
+      guestAllowance,
+      welcomeAttending: form.welcomeAttending,
+    }),
   };
 }
 
@@ -262,15 +272,6 @@ export function RsvpExperience() {
         return `Your invitation includes up to ${workspace.household.guestAllowance} guests.`;
       }
     }
-    if (form.welcomeAttending === "yes") {
-      const maxWelcome =
-        form.ceremonyAttending === "yes"
-          ? form.roster.filter((entry) => entry.fullName.trim()).length
-          : workspace.household.guestAllowance;
-      if (form.welcomeGuestCount < 1 || form.welcomeGuestCount > maxWelcome) {
-        return `Choose 1–${maxWelcome} guests for the welcome party.`;
-      }
-    }
     return null;
   }
 
@@ -290,8 +291,10 @@ export function RsvpExperience() {
         body: JSON.stringify({
           ceremonyAttending: form.ceremonyAttending,
           welcomeAttending: form.welcomeAttending,
-          welcomeGuestCount:
-            form.welcomeAttending === "yes" ? form.welcomeGuestCount : 0,
+          welcomeGuestCount: welcomeHeadCountForHousehold({
+            guestAllowance: workspace.household.guestAllowance,
+            welcomeAttending: form.welcomeAttending,
+          }),
           guestRoster:
             form.ceremonyAttending === "yes" ? form.roster : undefined,
           guestNotes: Object.entries(form.notesByGuestId).map(
@@ -445,26 +448,31 @@ export function RsvpExperience() {
           <p className="max-w-md text-base leading-relaxed text-invite-body/85">
             Your RSVP is saved.
           </p>
-          <div className="flex flex-wrap justify-center gap-3 pt-2">
+          <div className="mx-auto mt-8 flex w-full max-w-sm flex-col gap-3">
+            <ButtonLink
+              href="/"
+              variant="gold"
+              size="lg"
+              className="w-full justify-center"
+            >
+              Return to the invitation
+            </ButtonLink>
             <Button
               type="button"
               variant="secondary"
-              className="invite-outline-button !text-invite-navy"
+              className="invite-outline-button w-full !text-invite-navy"
               onClick={() => setStep("form")}
             >
               Update response
             </Button>
             <Button
               type="button"
-              variant="secondary"
-              className="invite-outline-button !text-invite-navy"
+              variant="ghost"
+              className="w-full !text-invite-body/85 hover:!text-invite-gold"
               onClick={() => void returnToInvitationSearch()}
             >
               Search for a different invitation
             </Button>
-            <ButtonLink href="/" variant="gold">
-              Return to the invitation
-            </ButtonLink>
           </div>
         </div>
       ) : null}
@@ -548,10 +556,7 @@ function InvitationFormStep({
   onBack: () => void;
   onSubmit: () => void;
 }) {
-  const welcomeMax =
-    form.ceremonyAttending === "yes"
-      ? form.roster.filter((entry) => entry.fullName.trim()).length
-      : workspace.household.guestAllowance;
+  const guestAllowance = workspace.household.guestAllowance;
 
   const rosterNames =
     form.ceremonyAttending === "yes"
@@ -560,13 +565,22 @@ function InvitationFormStep({
 
   const formBusy = submitting || backing;
 
+  const updateForm = (
+    updater: (current: HouseholdForm) => HouseholdForm,
+  ) => {
+    setForm((current) => {
+      if (!current) return current;
+      return withSyncedWelcomeHeadCount(updater(current), guestAllowance);
+    });
+  };
+
   return (
     <div className="mt-8 space-y-6">
       <YesNoChoice
         label="Attending ceremony & reception?"
         value={form.ceremonyAttending}
         onChange={(ceremonyAttending) =>
-          setForm((current) => ({ ...current, ceremonyAttending }))
+          updateForm((current) => ({ ...current, ceremonyAttending }))
         }
         disabled={formBusy}
       />
@@ -574,8 +588,8 @@ function InvitationFormStep({
       {form.ceremonyAttending === "yes" ? (
         <RosterEditor
           roster={form.roster}
-          allowance={workspace.household.guestAllowance}
-          onChange={(roster) => setForm((current) => ({ ...current, roster }))}
+          allowance={guestAllowance}
+          onChange={(roster) => updateForm((current) => ({ ...current, roster }))}
           disabled={formBusy}
         />
       ) : null}
@@ -584,51 +598,17 @@ function InvitationFormStep({
         label="Attending welcome party?"
         value={form.welcomeAttending}
         onChange={(welcomeAttending) =>
-          setForm((current) => ({
-            ...current,
-            welcomeAttending,
-            welcomeGuestCount:
-              welcomeAttending === "yes"
-                ? Math.min(
-                    Math.max(1, current.welcomeGuestCount),
-                    welcomeMax || 1,
-                  )
-                : current.welcomeGuestCount,
-          }))
+          updateForm((current) => ({ ...current, welcomeAttending }))
         }
         disabled={formBusy}
       />
 
       {form.welcomeAttending === "yes" ? (
-        <label className="block text-sm">
-          <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-            How many guests for the welcome party?
-          </span>
-          <select
-            className="invite-faq-input"
-            value={form.welcomeGuestCount}
-            disabled={formBusy}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                welcomeGuestCount: Number(event.target.value),
-              }))
-            }
-          >
-            {Array.from({ length: Math.max(1, welcomeMax) }, (_, index) => {
-              const count = index + 1;
-              return (
-                <option key={count} value={count}>
-                  {count} guest{count === 1 ? "" : "s"}
-                </option>
-              );
-            })}
-          </select>
-          <p className="mt-2 text-xs text-invite-body/70">
-            Up to {welcomeMax} guest{welcomeMax === 1 ? "" : "s"} on your
-            invitation.
-          </p>
-        </label>
+        <p className="text-sm leading-relaxed text-invite-body/80">
+          We&apos;ll plan for all {guestAllowance} guest
+          {guestAllowance === 1 ? "" : "s"} on your invitation at the welcome
+          party.
+        </p>
       ) : null}
 
       {attendingAny ? (

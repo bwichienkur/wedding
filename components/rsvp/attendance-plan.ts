@@ -66,6 +66,15 @@ export function countWelcomeGuests(
   ).length;
 }
 
+/** Welcome party uses the full guest allowance on the invitation (no partial head count). */
+export function welcomeHeadCountForHousehold(options: {
+  guestAllowance: number;
+  welcomeAttending: HouseholdYesNo;
+}): number {
+  if (options.welcomeAttending !== "yes") return 0;
+  return Math.max(1, options.guestAllowance);
+}
+
 export function householdRsvpSummary(options: {
   ceremonyAttending: HouseholdYesNo;
   welcomeAttending: HouseholdYesNo;

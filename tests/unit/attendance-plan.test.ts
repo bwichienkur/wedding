@@ -4,6 +4,7 @@ import {
   householdRsvpSummary,
   inferHouseholdCeremonyAttending,
   inferHouseholdWelcomeAttending,
+  welcomeHeadCountForHousehold,
 } from "@/components/rsvp/attendance-plan";
 
 describe("household attendance", () => {
@@ -36,5 +37,20 @@ describe("household attendance", () => {
         rosterSize: 2,
       }),
     ).toContain("Welcome party: 2 guests");
+  });
+
+  it("uses full guest allowance for welcome head count", () => {
+    expect(
+      welcomeHeadCountForHousehold({
+        guestAllowance: 4,
+        welcomeAttending: "yes",
+      }),
+    ).toBe(4);
+    expect(
+      welcomeHeadCountForHousehold({
+        guestAllowance: 4,
+        welcomeAttending: "no",
+      }),
+    ).toBe(0);
   });
 });
