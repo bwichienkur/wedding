@@ -24,4 +24,14 @@ export interface ResolvedSiteSection {
   description: string;
 }
 
+/** Extra context for the sections admin UI (not used on the public site). */
+export interface AdminSectionMeta {
+  mountedOnInvite: boolean;
+  inviteOrder: number | null;
+  adminHint: string;
+  contentTab?: "venue" | "travel" | "faq" | "party";
+}
+
+export type AdminSectionRow = ResolvedSiteSection & AdminSectionMeta;
+
 export type ResolvedSiteSections = Record<SiteSectionId, ResolvedSiteSection>;

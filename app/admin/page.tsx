@@ -1,8 +1,15 @@
+import { adminDashboardGroups } from "@/data/admin-nav";
+import { AdminPageShell } from "@/components/admin/AdminPageShell";
+import {
+  adminBodyClass,
+  adminCardClass,
+  adminMutedClass,
+} from "@/components/admin/admin-styles";
 import { isAdminAuthenticated } from "@/lib/auth/admin";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AdminSignOutButton } from "@/components/admin/AdminSignOutButton";
+import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -16,51 +23,41 @@ export default async function AdminHomePage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="font-sans text-xs uppercase tracking-[0.22em] text-gold">
-        Administration
-      </p>
-      <h1 className="mt-3 font-display text-4xl text-forest">Bright & Lexi</h1>
-      <p className="mt-4 max-w-prose text-ink-muted">
-        Secure tools for sections, content, media, and RSVP management.
-      </p>
-      <ul className="mt-10 space-y-4">
-        <li>
-          <Link
-            href="/admin/sections"
-            className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            Sections — visibility &amp; descriptions
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/admin/content"
-            className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            Section content — FAQ, party, venue, travel
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/admin/rsvp"
-            className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            RSVP management
-          </Link>
-        </li>
-        <li>
-          <Link
-            href="/admin/media"
-            className="inline-flex min-h-12 items-center font-sans text-base text-forest underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            Media — photos &amp; videos by section
-          </Link>
-        </li>
-        <li>
-          <AdminSignOutButton />
-        </li>
-      </ul>
-    </main>
+    <AdminPageShell
+      activeNav="home"
+      title="Overview"
+      description="Manage the scrolling wedding invite — section headings, guest content, media, and RSVPs — in one place."
+    >
+      <div className="space-y-10">
+        {adminDashboardGroups.map((group) => (
+          <section key={group.title}>
+            <h2 className="font-sans text-xs uppercase tracking-[0.2em] text-[var(--admin-gold,#e8c872)]">
+              {group.title}
+            </h2>
+            <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+              {group.items.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      adminCardClass,
+                      "block transition hover:border-[rgb(212_175_55/0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--admin-gold,#e8c872)]",
+                    )}
+                  >
+                    <p className="font-display text-xl text-[var(--admin-gold-bright,#f5e6a8)]">
+                      {item.title}
+                    </p>
+                    <p className={cn("mt-2", adminBodyClass)}>{item.body}</p>
+                    <p className={cn("mt-4 text-xs uppercase tracking-[0.14em]", adminMutedClass)}>
+                      Open →
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </AdminPageShell>
   );
 }

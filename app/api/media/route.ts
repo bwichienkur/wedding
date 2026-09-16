@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getResolvedLogistics } from "@/lib/logistics/store";
+import { listBundledMediaFromParty } from "@/lib/media/bundled-assets";
 import {
   archiveMediaAsset,
   getMediaById,
@@ -15,8 +17,12 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const assets = await listMediaAssets();
-  return NextResponse.json({ assets });
+  const [assets, logistics] = await Promise.all([
+    listMediaAssets(),
+    getResolvedLogistics(),
+  ]);
+  const bundled = listBundledMediaFromParty(logistics.party);
+  return NextResponse.json({ assets, bundled });
 }
 
 export async function PATCH(request: Request) {

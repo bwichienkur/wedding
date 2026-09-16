@@ -8,7 +8,20 @@ import type {
   VenueInfo,
   WeddingPartyMember,
 } from "@/data/logistics-types";
-import { useRouter } from "next/navigation";
+import {
+  adminAlertErrorClass,
+  adminAlertSuccessClass,
+  adminBodyClass,
+  adminCardClass,
+  adminFieldClass,
+  adminLabelClass,
+  adminMutedClass,
+  adminTabActiveClass,
+  adminTabIdleClass,
+} from "@/components/admin/admin-styles";
+import { cn } from "@/lib/cn";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 type Tab = "venue" | "travel" | "faq" | "party";
@@ -20,15 +33,24 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: "party", label: "Wedding party" },
 ];
 
-const fieldClass =
-  "mt-2 w-full rounded-sm border border-stone/60 bg-white px-3 py-2 text-sm text-forest outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold";
-
-const labelClass =
-  "font-sans text-xs uppercase tracking-[0.16em] text-gold";
+const fieldClass = adminFieldClass;
+const labelClass = adminLabelClass;
 
 export function ContentAdminPanel() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("faq");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab");
+  const [tab, setTab] = useState<Tab>(() => {
+    if (
+      initialTab === "venue" ||
+      initialTab === "travel" ||
+      initialTab === "faq" ||
+      initialTab === "party"
+    ) {
+      return initialTab;
+    }
+    return "faq";
+  });
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -124,26 +146,37 @@ export function ContentAdminPanel() {
   }
 
   if (!loaded || !venue || !travel) {
-    return <p className="text-sm text-ink-muted">Loading section content…</p>;
+    return <p className={adminMutedClass}>Loading section content…</p>;
   }
 
   return (
     <div className="space-y-8">
-      <p className="max-w-prose text-sm text-ink-muted">
-        Add, edit, or remove the pieces guests see inside each section — FAQ
-        answers, wedding-party bios, venue details, and travel notes.
+      <p className={`max-w-prose ${adminBodyClass}`}>
+        Section headings live under{" "}
+        <Link
+          href="/admin/sections"
+          className="text-[var(--admin-gold-bright,#f5e6a8)] underline-offset-4 hover:underline"
+        >
+          Sections
+        </Link>
+        . Party portraits are managed in{" "}
+        <Link
+          href="/admin/media?placement=party"
+          className="text-[var(--admin-gold-bright,#f5e6a8)] underline-offset-4 hover:underline"
+        >
+          Media
+        </Link>
+        .
       </p>
 
-      <div className="flex flex-wrap gap-2 border-b border-stone/40 pb-3">
+      <div className="flex flex-wrap gap-2 border-b border-[rgb(212_175_55/0.2)] pb-3">
         {TABS.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setTab(item.id)}
-            className={`min-h-11 px-3 font-sans text-sm uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold ${
-              tab === item.id
-                ? "text-forest underline decoration-gold decoration-2 underline-offset-8"
-                : "text-ink-muted"
+            className={`min-h-11 px-3 font-sans text-sm uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--admin-gold,#e8c872)] ${
+              tab === item.id ? adminTabActiveClass : adminTabIdleClass
             }`}
           >
             {item.label}
@@ -151,16 +184,8 @@ export function ContentAdminPanel() {
         ))}
       </div>
 
-      {error ? (
-        <p className="rounded-sm border border-rose/40 bg-rose/10 px-4 py-3 text-sm text-forest">
-          {error}
-        </p>
-      ) : null}
-      {success ? (
-        <p className="rounded-sm border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-forest">
-          {success}
-        </p>
-      ) : null}
+      {error ? <p className={adminAlertErrorClass}>{error}</p> : null}
+      {success ? <p className={adminAlertSuccessClass}>{success}</p> : null}
 
       {tab === "venue" ? (
         <VenueEditor
@@ -294,7 +319,7 @@ function VenueEditor({
   onSave: () => void;
 }) {
   return (
-    <div className="space-y-4 rounded-sm border border-stone/50 bg-ivory px-5 py-5">
+    <div className={cn(adminCardClass, "space-y-4")}>
       {(
         [
           ["name", "Venue name"],
@@ -343,7 +368,7 @@ function TravelEditor({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 rounded-sm border border-stone/50 bg-ivory px-5 py-5">
+      <div className={cn(adminCardClass, "space-y-4")}>
         <label className="block">
           <span className={labelClass}>Intro</span>
           <textarea
@@ -380,7 +405,7 @@ function TravelEditor({
 
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-2xl text-forest">Airports</h2>
+          <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">Airports</h2>
           <Button
             type="button"
             variant="secondary"
@@ -409,7 +434,7 @@ function TravelEditor({
         {travel.airports.map((airport, index) => (
           <div
             key={airport.id}
-            className="space-y-3 rounded-sm border border-stone/50 bg-ivory px-5 py-5"
+            className={cn(adminCardClass, "space-y-3")}
           >
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
@@ -479,7 +504,7 @@ function TravelEditor({
 
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-2xl text-forest">
+          <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">
             Local recommendations
           </h2>
           <Button
@@ -508,7 +533,7 @@ function TravelEditor({
         {travel.recommendations.map((item, index) => (
           <div
             key={item.id}
-            className="space-y-3 rounded-sm border border-stone/50 bg-ivory px-5 py-5"
+            className={cn(adminCardClass, "space-y-3")}
           >
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
@@ -630,8 +655,8 @@ function FaqEditor({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-3 rounded-sm border border-dashed border-gold/50 bg-ivory px-5 py-5">
-        <h2 className="font-display text-2xl text-forest">Add FAQ</h2>
+      <div className={cn(adminCardClass, "space-y-3 border-dashed")}>
+        <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">Add FAQ</h2>
         <label className="block">
           <span className={labelClass}>Category</span>
           <input
@@ -697,7 +722,7 @@ function FaqEditor({
           return (
             <li
               key={item.id}
-              className="space-y-3 rounded-sm border border-stone/50 bg-ivory px-5 py-5"
+              className={cn(adminCardClass, "space-y-3")}
             >
               <label className="block">
                 <span className={labelClass}>Category</span>
@@ -816,8 +841,8 @@ function PartyEditor({
         including the ceremony pianist under Shared.
       </p>
 
-      <div className="space-y-3 rounded-sm border border-dashed border-gold/50 bg-ivory px-5 py-5">
-        <h2 className="font-display text-2xl text-forest">Add person</h2>
+      <div className={cn(adminCardClass, "space-y-3 border-dashed")}>
+        <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">Add person</h2>
         <PartyFields
           member={creating}
           onChange={setCreating}
@@ -854,7 +879,7 @@ function PartyEditor({
           return (
             <li
               key={member.id}
-              className="space-y-3 rounded-sm border border-stone/50 bg-ivory px-5 py-5"
+              className={cn(adminCardClass, "space-y-3")}
             >
               <PartyFields
                 member={draft}
@@ -988,6 +1013,65 @@ function PartyFields({
               ...member,
               funFact: event.target.value || undefined,
               funFactIsPlaceholder: false,
+            })
+          }
+        />
+      </label>
+      <div className="mt-2 flex flex-wrap items-center gap-4">
+        {member.photoSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={member.photoSrc}
+            alt=""
+            className="h-20 w-16 rounded-sm object-cover object-[center_22%] ring-1 ring-[rgb(212_175_55/0.35)]"
+          />
+        ) : (
+          <div className="flex h-20 w-16 items-center justify-center rounded-sm bg-[rgb(7_14_26/0.6)] text-[10px] uppercase tracking-wider text-[var(--admin-muted,#9aa8bc)]">
+            No photo
+          </div>
+        )}
+        <div className="min-w-0 flex-1 text-sm text-[var(--admin-muted,#9aa8bc)]">
+          {member.photoSrc ? (
+            <p>
+              Portrait:{" "}
+              <code className="text-[var(--admin-body,#d4dce8)]">
+                {member.photoSrc}
+              </code>
+            </p>
+          ) : (
+            <p>No portrait yet.</p>
+          )}
+          <Link
+            href={`/admin/media?placement=party&member=${encodeURIComponent(member.id)}`}
+            className="mt-1 inline-block text-[var(--admin-gold,#e8c872)] underline-offset-4 hover:underline"
+          >
+            Manage in Media →
+          </Link>
+        </div>
+      </div>
+      <label className="block">
+        <span className={labelClass}>Photo URL (optional)</span>
+        <input
+          className={fieldClass}
+          value={member.photoSrc ?? ""}
+          placeholder="/images/party/member-id.jpg"
+          onChange={(event) =>
+            onChange({
+              ...member,
+              photoSrc: event.target.value.trim() || undefined,
+            })
+          }
+        />
+      </label>
+      <label className="block">
+        <span className={labelClass}>Photo alt text</span>
+        <input
+          className={fieldClass}
+          value={member.photoAlt ?? ""}
+          onChange={(event) =>
+            onChange({
+              ...member,
+              photoAlt: event.target.value,
             })
           }
         />

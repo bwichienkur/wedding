@@ -3,9 +3,18 @@
 import { put } from "@vercel/blob/client";
 import { Button } from "@/components/ui/Button";
 import {
+  adminAlertErrorClass,
+  adminBodyClass,
+  adminCardClass,
+  adminFieldClass,
+  adminLabelClass,
+  adminMutedClass,
+} from "@/components/admin/admin-styles";
+import {
   sectionMediaPlacements,
   type SectionMediaPlacement,
 } from "@/data/section-media";
+import type { BundledMediaAsset } from "@/lib/media/bundled-assets";
 import {
   extensionForMime,
   isHeicFile,
@@ -17,7 +26,7 @@ import {
   MEDIA_CATEGORY_LABELS,
   type MediaAsset,
 } from "@/lib/media/types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const FORM_UPLOAD_SAFE_BYTES = 4 * 1024 * 1024;
@@ -29,12 +38,18 @@ function placementLabel(key: string | null): string {
 
 export function MediaAdminPanel() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [assets, setAssets] = useState<MediaAsset[]>([]);
+  const [bundled, setBundled] = useState<BundledMediaAsset[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [placementKey, setPlacementKey] = useState(
-    sectionMediaPlacements[0]?.key ?? "home.hero",
-  );
-  const [title, setTitle] = useState("");
+  const [placementKey, setPlacementKey] = useState(() => {
+    const fromUrl = searchParams.get("placement");
+    if (fromUrl && sectionMediaPlacements.some((item) => item.key === fromUrl)) {
+      return fromUrl;
+    }
+    return sectionMediaPlacements[0]?.key ?? "home.hero";
+  });
+  const [title, setTitle] = useState(() => searchParams.get("member") ?? "");
   const [description, setDescription] = useState("");
   const [alt, setAlt] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
@@ -69,8 +84,12 @@ export function MediaAdminPanel() {
       setError("Unable to load media assets.");
       return;
     }
-    const data = (await response.json()) as { assets: MediaAsset[] };
+    const data = (await response.json()) as {
+      assets: MediaAsset[];
+      bundled?: BundledMediaAsset[];
+    };
     setAssets(data.assets.filter((asset) => asset.status !== "archived"));
+    setBundled(data.bundled ?? []);
     setLoaded(true);
   }, [router]);
 
@@ -90,9 +109,13 @@ export function MediaAdminPanel() {
         setError("Unable to load media assets.");
         return;
       }
-      const data = (await mediaResponse.json()) as { assets: MediaAsset[] };
+      const data = (await mediaResponse.json()) as {
+        assets: MediaAsset[];
+        bundled?: BundledMediaAsset[];
+      };
       if (!cancelled) {
         setAssets(data.assets.filter((asset) => asset.status !== "archived"));
+        setBundled(data.bundled ?? []);
         setLoaded(true);
       }
       if (statusResponse.ok) {
@@ -118,6 +141,11 @@ export function MediaAdminPanel() {
   const assetsForPlacement = useMemo(
     () => assets.filter((asset) => asset.placementKey === placement.key),
     [assets, placement.key],
+  );
+
+  const bundledForPlacement = useMemo(
+    () => bundled.filter((item) => item.placementKey === placement.key),
+    [bundled, placement.key],
   );
 
   async function uploadPhoto(file: File) {
@@ -385,13 +413,14 @@ export function MediaAdminPanel() {
 
   return (
     <div className="space-y-12">
-      <section className="border border-stone bg-parchment/40 p-5 sm:p-8">
-        <h2 className="font-display text-2xl text-forest">
+      <section className={adminCardClass}>
+        <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">
           Upload to a page section
         </h2>
-        <p className="mt-2 text-sm text-ink-muted">
-          Choose a section, then upload a photo and/or Mux video. Published
-          assets replace the placeholders on the public site for that section.
+        <p className={`mt-2 ${adminBodyClass}`}>
+          Pick a placement that matches the live invite (grouped below). Uploaded
+          assets replace placeholders; bundled repo files stay until you publish
+          an upload for the same person.
         </p>
 
         {storageReady === false ? (
@@ -416,13 +445,11 @@ export function MediaAdminPanel() {
         ) : null}
 
         <label className="mt-6 block text-sm">
-          <span className="mb-2 block uppercase tracking-[0.14em] text-ink-muted">
-            Section
-          </span>
+          <span className={`mb-2 block ${adminLabelClass}`}>Placement</span>
           <select
             value={placement.key}
             onChange={(event) => setPlacementKey(event.target.value)}
-            className="min-h-11 w-full border border-stone bg-ivory px-3"
+            className={adminFieldClass}
           >
             {groupPlacements().map((group) => (
               <optgroup key={group.sectionId} label={group.label}>
@@ -439,7 +466,7 @@ export function MediaAdminPanel() {
           </select>
         </label>
 
-        <p className="mt-3 text-sm text-ink-muted">{placement.description}</p>
+        <p className={`mt-3 ${adminMutedClass}`}>{placement.description}</p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
@@ -571,58 +598,101 @@ export function MediaAdminPanel() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl text-forest">
+        <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">
           {placement.label}
         </h2>
-        <p className="mt-2 text-sm text-ink-muted">
-          Assets assigned to this section.{" "}
+        <p className={`mt-2 ${adminMutedClass}`}>
+          Assets assigned to this placement.{" "}
           {placement.allowMultiple
             ? "Order follows sort order, then upload time."
             : "Only the first published ready asset is shown publicly."}
         </p>
         {!loaded ? (
-          <p className="mt-4 text-sm text-ink-muted" role="status">
+          <p className={`mt-4 ${adminMutedClass}`} role="status">
             Loading media…
           </p>
         ) : null}
         <ul className="mt-6 space-y-4">
-          {loaded && assetsForPlacement.length === 0 ? (
-            <li className="text-sm text-ink-muted">
+          {loaded &&
+          assetsForPlacement.length === 0 &&
+          bundledForPlacement.length === 0 ? (
+            <li className={adminMutedClass}>
               No media assigned here yet. Upload above or reassign from the full
               library.
             </li>
-          ) : (
-            assetsForPlacement.map((asset) => (
-              <AssetRow
-                key={asset.id}
-                asset={asset}
-                onPatch={patchAsset}
-                onArchive={archiveAsset}
-              />
-            ))
-          )}
+          ) : null}
+          {bundledForPlacement.map((item) => (
+            <BundledAssetRow key={item.id} asset={item} />
+          ))}
+          {assetsForPlacement.map((asset) => (
+            <AssetRow
+              key={asset.id}
+              asset={asset}
+              onPatch={patchAsset}
+              onArchive={archiveAsset}
+            />
+          ))}
         </ul>
       </section>
 
       <section>
-        <h2 className="font-display text-2xl text-forest">Full library</h2>
+        <h2 className="font-display text-2xl text-[var(--admin-gold-bright,#f5e6a8)]">
+          Full library
+        </h2>
         <ul className="mt-6 space-y-4">
-          {loaded && assets.length === 0 ? (
-            <li className="text-sm text-ink-muted">No media assets yet.</li>
-          ) : (
-            assets.map((asset) => (
-              <AssetRow
-                key={asset.id}
-                asset={asset}
-                onPatch={patchAsset}
-                onArchive={archiveAsset}
-                showPlacementSelect
-              />
-            ))
-          )}
+          {loaded && assets.length === 0 && bundled.length === 0 ? (
+            <li className={adminMutedClass}>No media assets yet.</li>
+          ) : null}
+          {bundled.map((item) => (
+            <BundledAssetRow key={item.id} asset={item} showPlacement />
+          ))}
+          {assets.map((asset) => (
+            <AssetRow
+              key={asset.id}
+              asset={asset}
+              onPatch={patchAsset}
+              onArchive={archiveAsset}
+              showPlacementSelect
+            />
+          ))}
         </ul>
       </section>
     </div>
+  );
+}
+
+function BundledAssetRow({
+  asset,
+  showPlacement = false,
+}: {
+  asset: BundledMediaAsset;
+  showPlacement?: boolean;
+}) {
+  return (
+    <li className={adminCardClass}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-xl text-[var(--admin-gold-bright,#f5e6a8)]">
+            {asset.alt}
+          </p>
+          <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--admin-gold,#e8c872)]">
+            Bundled site file · id {asset.title}
+          </p>
+          {showPlacement ? (
+            <p className={`mt-2 ${adminMutedClass}`}>
+              Placement: {placementLabel(asset.placementKey)}
+            </p>
+          ) : null}
+          <p className={`mt-2 text-sm ${adminMutedClass}`}>{asset.hint}</p>
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={asset.publicUrl}
+          alt=""
+          className="h-24 w-20 rounded-sm object-cover ring-1 ring-[rgb(212_175_55/0.35)]"
+        />
+      </div>
+    </li>
   );
 }
 
@@ -630,26 +700,20 @@ function groupPlacements(): Array<{
   sectionId: string;
   label: string;
   items: SectionMediaPlacement[];
+  legacy?: boolean;
 }> {
   const labels: Record<string, string> = {
-    home: "Homepage",
-    story: "Our story",
-    gallery: "Memories gallery",
-    proposal: "Proposal",
-    venue: "Venue",
-    party: "Wedding party",
-    closing: "Closing",
+    home: "Opening & hero (optional)",
+    story: "Our story — on invite",
+    gallery: "Memories gallery — on invite",
+    venue: "Venue — on invite",
+    party: "Wedding party — on invite",
+    proposal: "Proposal (not on invite scroll)",
+    closing: "Closing (not on invite scroll)",
   };
-  const order = [
-    "home",
-    "story",
-    "gallery",
-    "proposal",
-    "venue",
-    "party",
-    "closing",
-  ];
-  return order
+  const inviteOrder = ["home", "venue", "story", "gallery", "party"];
+  const legacyOrder = ["proposal", "closing"];
+  const inviteGroups = inviteOrder
     .map((sectionId) => ({
       sectionId,
       label: labels[sectionId] ?? sectionId,
@@ -658,6 +722,17 @@ function groupPlacements(): Array<{
       ),
     }))
     .filter((group) => group.items.length > 0);
+  const legacyGroups = legacyOrder
+    .map((sectionId) => ({
+      sectionId,
+      label: labels[sectionId] ?? sectionId,
+      items: sectionMediaPlacements.filter(
+        (item) => item.sectionId === sectionId,
+      ),
+      legacy: true,
+    }))
+    .filter((group) => group.items.length > 0);
+  return [...inviteGroups, ...legacyGroups];
 }
 
 function AssetRow({
@@ -677,17 +752,19 @@ function AssetRow({
       : asset.posterUrl;
 
   return (
-    <li className="border border-stone bg-ivory p-4 sm:p-5">
+    <li className={adminCardClass}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="font-display text-xl text-forest">{asset.title}</p>
-          <p className="mt-1 text-xs uppercase tracking-[0.14em] text-gold">
+          <p className="font-display text-xl text-[var(--admin-gold-bright,#f5e6a8)]">
+            {asset.title}
+          </p>
+          <p className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--admin-gold,#e8c872)]">
             {asset.kind} · {MEDIA_CATEGORY_LABELS[asset.category]} ·{" "}
             {asset.status}
             {asset.isPublished ? " · published" : " · unpublished"}
             {asset.isPrivate ? " · private" : ""}
           </p>
-          <p className="mt-2 text-sm text-ink-muted">
+          <p className={`mt-2 ${adminMutedClass}`}>
             Section: {placementLabel(asset.placementKey)}
           </p>
           {asset.errorMessage ? (
@@ -702,7 +779,7 @@ function AssetRow({
               </span>
               <select
                 value={asset.placementKey ?? ""}
-                className="min-h-11 w-full border border-stone bg-parchment/40 px-3"
+                className={adminFieldClass}
                 onChange={(event) => {
                   const value = event.target.value || null;
                   void onPatch(asset.id, { placementKey: value });
@@ -720,7 +797,11 @@ function AssetRow({
         </div>
         {thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={thumb} alt="" className="h-20 w-32 object-cover" />
+          <img
+            src={thumb}
+            alt=""
+            className="h-20 w-32 rounded-sm object-cover ring-1 ring-[rgb(212_175_55/0.35)]"
+          />
         ) : null}
       </div>
       <div className="mt-4 flex flex-wrap gap-2">

@@ -21,8 +21,9 @@ export const sectionMediaPlacements: SectionMediaPlacement[] = [
   {
     key: "home.hero",
     sectionId: "home",
-    label: "Homepage hero",
-    description: "Rotating photos on the homepage (3–6 recommended).",
+    label: "Hero slides (optional)",
+    description:
+      "Extra hero stills if you enable a photo carousel. The live invite uses the opening video and names/date overlay — not these slides.",
     accepts: ["image"],
     allowMultiple: true,
     defaultCategory: "section_photo",
@@ -61,7 +62,7 @@ export const sectionMediaPlacements: SectionMediaPlacement[] = [
     key: "gallery",
     sectionId: "gallery",
     label: "Memories gallery",
-    description: "Photos shown in the memories timeline/gallery.",
+    description: "Photos in the scrolling gallery section (matches Sections → Memories gallery).",
     accepts: ["image"],
     allowMultiple: true,
     defaultCategory: "relationship_memory",
@@ -133,7 +134,8 @@ export const sectionMediaPlacements: SectionMediaPlacement[] = [
     key: "party",
     sectionId: "party",
     label: "Wedding party portraits",
-    description: "Portraits for wedding party members (sorted).",
+    description:
+      "One portrait per person. Set title or alt to the member id (e.g. zach-bragg) to match bios. Repo photos appear as bundled assets until uploaded here.",
     accepts: ["image"],
     allowMultiple: true,
     defaultCategory: "section_photo",
