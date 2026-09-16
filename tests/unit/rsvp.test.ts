@@ -7,13 +7,18 @@ import {
   submitHouseholdRsvp,
 } from "@/lib/rsvp/service";
 import { resetRsvpDbForTests } from "@/lib/rsvp/store";
+import {
+  TEST_GUEST_NAME,
+  TEST_HOUSEHOLD_DISPLAY,
+  TEST_INVITATION_CODE,
+} from "@/lib/rsvp/test-fixtures";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("rsvp normalize", () => {
   it("normalizes names consistently", () => {
-    expect(normalizeGuestName("  Alex   Rivera ")).toBe("alex rivera");
-    expect(namesMatch("Alex Rivera", "alex rivera")).toBe(true);
-    expect(namesMatch("Alex", "Alex Rivera")).toBe(false);
+    expect(normalizeGuestName("  Alex   Example ")).toBe("alex example");
+    expect(namesMatch("Alex Example", "alex example")).toBe(true);
+    expect(namesMatch("Alex", "Alex Example")).toBe(false);
   });
 });
 
@@ -36,68 +41,49 @@ describe("rsvp service", () => {
     await resetRsvpDbForTests();
   });
 
-  it("finds a household by fictional guest name without exposing ids", async () => {
-    const result = await lookupHouseholds("Alex Rivera");
+  it("finds a household by test guest name without exposing ids", async () => {
+    const result = await lookupHouseholds(TEST_GUEST_NAME);
     expect(result.candidates.length).toBe(1);
-    expect(result.candidates[0]?.displayName).toContain("Rivera");
+    expect(result.candidates[0]?.displayName).toBe(TEST_HOUSEHOLD_DISPLAY);
     expect(result.candidates[0]).not.toHaveProperty("householdId");
-    expect(result.candidates[0]?.guestPreview).toContain("Alex Rivera");
+    expect(result.candidates[0]?.guestPreview).toContain(TEST_GUEST_NAME);
   });
 
   it("finds a household by invitation code", async () => {
-    const result = await lookupHouseholds("LEE2027");
+    const result = await lookupHouseholds(TEST_INVITATION_CODE);
     expect(result.candidates.length).toBe(1);
-    expect(result.candidates[0]?.displayName).toContain("Jordan Lee");
+    expect(result.candidates[0]?.displayName).toBe(TEST_HOUSEHOLD_DISPLAY);
   });
 
-  it("finds Bright Wichienkur example households", async () => {
-    const byCode = await lookupHouseholds("WICHIEN27");
-    expect(byCode.candidates.length).toBe(1);
-    expect(byCode.candidates[0]?.displayName).toBe("Bright Wichienkur");
-    expect(byCode.candidates[0]?.guestPreview).toContain("Bright Wichienkur");
-
-    const byName = await lookupHouseholds("Bright Wichienkur");
-    expect(byName.candidates.length).toBe(2);
-    expect(byName.ambiguous).toBe(true);
-  });
-
-  it("handles duplicate last names as ambiguous candidates", async () => {
-    const result = await lookupHouseholds("Brooks");
-    // exact full-name match required — last name alone should not match
-    expect(result.candidates.length).toBe(0);
-
-    const taylor = await lookupHouseholds("Taylor Brooks");
-    const morgan = await lookupHouseholds("Morgan Brooks");
-    expect(taylor.candidates.length).toBe(1);
-    expect(morgan.candidates.length).toBe(1);
-    expect(taylor.candidates[0]?.displayName).not.toBe(
-      morgan.candidates[0]?.displayName,
-    );
+  it("lists standard invitation events for every household", async () => {
+    const result = await lookupHouseholds(TEST_INVITATION_CODE);
+    expect(result.candidates[0]?.invitedEventTitles).toEqual([
+      "Welcome Party",
+      "Ceremony & Reception",
+    ]);
   });
 
   it("submits a household RSVP after token selection", async () => {
-    const lookup = await lookupHouseholds("Alex Rivera");
+    const lookup = await lookupHouseholds(TEST_GUEST_NAME);
     const token = lookup.candidates[0]!.confirmationToken;
     const householdId = await resolveHouseholdFromToken(token);
     expect(householdId).toBeTruthy();
 
-    const workspaceLookup = await lookupHouseholds("Alex Rivera");
-    expect(workspaceLookup.candidates[0]?.invitedEventTitles.length).toBeGreaterThan(0);
-
-    // Pull guests via submit path using service workspace helper would need import
     const { getHouseholdWorkspace } = await import("@/lib/rsvp/service");
     const workspace = await getHouseholdWorkspace(householdId!);
     expect(workspace).toBeTruthy();
+    expect(workspace!.events.map((event) => event.slug)).toEqual([
+      "welcome-party",
+      "ceremony-reception",
+    ]);
 
     const responses = workspace!.guests.flatMap((guest) =>
       workspace!.events.map((event) => ({
         guestId: guest.id,
         eventId: event.id,
         attending: "yes" as const,
-        mealOptionId:
-          workspace!.mealOptions.find((meal) => meal.eventId === event.id)?.id ??
-          null,
-        dietaryNotes: guest.fullName === "Quinn Rivera" ? "Nut allergy" : "",
+        mealOptionId: null,
+        dietaryNotes: "",
         accessibilityNotes: "",
       })),
     );
@@ -105,7 +91,7 @@ describe("rsvp service", () => {
     const result = await submitHouseholdRsvp({
       householdId: householdId!,
       payload: {
-        songRequest: "At Last",
+        songRequest: "",
         messageToCouple: "Cannot wait to celebrate.",
         responses,
       },
@@ -114,6 +100,6 @@ describe("rsvp service", () => {
     });
 
     expect(result.status).toBe("complete");
-    expect(hashInvitationCode("RIVERA27")).toHaveLength(64);
+    expect(hashInvitationCode(TEST_INVITATION_CODE)).toHaveLength(64);
   });
 });

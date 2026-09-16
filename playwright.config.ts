@@ -21,6 +21,9 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    env: {
+      RSVP_INCLUDE_E2E_FIXTURE: "1",
+    },
   },
   projects: [
     {

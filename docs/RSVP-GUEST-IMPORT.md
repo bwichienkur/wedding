@@ -9,7 +9,7 @@ Each **household** (invitation unit) has:
 - `display_name` — shown after lookup (“The Rivera Family”)
 - Optional **invitation code** — guests can search by name or code
 - `email`, `phone`, admin notes
-- Which **events** they’re invited to (ceremony, rehearsal, etc.)
+- Every invitation includes the **welcome party** and **ceremony & reception**; guests choose which they attend in RSVP.
 
 Each **guest** belongs to one household (full name, child/plus-one flags).
 
@@ -17,11 +17,8 @@ Invitation codes are stored **hashed** server-side (`RSVP_SESSION_SECRET` must s
 
 ## Option A — Local development (`.data/rsvp.json`)
 
-1. Edit fictional/demo data in `lib/rsvp/seed.ts`, **or** merge your real list into that structure (`households`, `guests`, `eventIds`).
-2. Reset the file:
-   ```bash
-   npm run reset:rsvp-seed
-   ```
+1. Run `npm run reset:rsvp-seed` to refresh events (no sample guests).
+2. Import CSV with `node scripts/import-rsvp-guests.mjs guests.csv`
 3. Restart `npm run dev` and test at `/rsvp`.
 
 Use **only fictional names** in git; keep real guest data in Supabase or a private CSV, not committed.
@@ -30,16 +27,16 @@ Use **only fictional names** in git; keep real guest data in Supabase or a priva
 
 1. Apply `supabase/migrations/202608240002_rsvp.sql` (see `docs/SUPABASE-RSVP.md`).
 2. Set `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and **`RSVP_SESSION_SECRET`** on Vercel **before** importing codes.
-3. If tables are empty, the app auto-imports the **demo seed** once. For a real list, **clear demo rows** (or use a fresh project) then insert your data.
+3. If tables are empty, the app seeds **events only** (no guest list). Import your households before sharing `/rsvp`.
 
 ### CSV → Supabase (recommended workflow)
 
 1. Export from Zola, Google Sheets, or your planner as CSV with columns like:
 
-   | household_name | guest_name | invitation_code | email | event_slugs |
-   |----------------|------------|-----------------|-------|-------------|
-   | Alex & Riley Rivera | Alex Rivera | RIVERA27 | alex@… | ceremony-reception |
-   | Alex & Riley Rivera | Riley Rivera | | | ceremony-reception |
+   | household_name | guest_name | invitation_code | email |
+   |----------------|------------|-----------------|-------|
+   | Alex & Riley Example | Alex Example | EXAMPLE27 | alex@… |
+   | Alex & Riley Example | Riley Example | | |
 
 2. Hash each invitation code the same way the app does (Node, with your production `RSVP_SESSION_SECRET`):
 
@@ -56,7 +53,7 @@ Use **only fictional names** in git; keep real guest data in Supabase or a priva
 3. Insert into Supabase tables:
    - `households` — one row per invitation
    - `guests` — one row per person (`household_id`, `full_name`, `normalized_name` lowercased/trimmed)
-   - `household_event_invitations` — link household to `events.id` (e.g. `event-ceremony-reception` from seed)
+   - `household_event_invitations` — link each household to both `event-welcome-party` and `event-ceremony-reception`
 
 4. Verify: `/admin/rsvp` and lookup on `/rsvp`.
 

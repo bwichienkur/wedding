@@ -3,7 +3,15 @@
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { InviteDivider } from "@/components/invite/InviteDecor";
-import { attendingLabel, guestDisplayName } from "@/components/rsvp/rsvp-copy";
+import { guestDisplayName } from "@/components/rsvp/rsvp-copy";
+import {
+  ATTENDANCE_PLAN_OPTIONS,
+  attendancePlanForGuest,
+  attendancePlanLabel,
+  attendingForPlan,
+  resolveCeremonyAndWelcomeEvents,
+  type AttendancePlan,
+} from "@/components/rsvp/attendance-plan";
 import { RsvpStepper } from "@/components/rsvp/RsvpStepper";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
@@ -64,7 +72,9 @@ interface ResponseDraft {
   plusOneName?: string;
 }
 
-const showDemoHint = process.env.NODE_ENV === "development";
+const showDemoHint =
+  process.env.NODE_ENV === "development" &&
+  process.env.NEXT_PUBLIC_RSVP_DEMO_HINT === "1";
 
 export function RsvpExperience() {
   const [step, setStep] = useState<Step>("lookup");
@@ -249,9 +259,8 @@ export function RsvpExperience() {
           </label>
           {showDemoHint ? (
             <p className="text-sm text-invite-body/75">
-              Demo: try <strong>Bright Wichienkur</strong> (code{" "}
-              <strong>WICHIEN27</strong>), <strong>Alex Rivera</strong>, or{" "}
-              <strong>RIVERA27</strong>.
+              Dev: set <code className="text-xs">NEXT_PUBLIC_RSVP_DEMO_HINT=1</code>{" "}
+              only when using a local test import.
             </p>
           ) : (
             <p className="text-sm text-invite-body/75">
@@ -308,152 +317,114 @@ export function RsvpExperience() {
       ) : null}
 
       {workspace && step === "respond" ? (
+        <RespondStep
+          workspace={workspace}
+          drafts={drafts}
+          onSetPlan={(guestId, plan) => {
+            const pair = resolveCeremonyAndWelcomeEvents(workspace.events);
+            if (!pair) return;
+            const ceremonyAttending = attendingForPlan(plan, "ceremony");
+            const welcomeAttending = attendingForPlan(plan, "welcome");
+            updateDraft(guestId, pair.ceremony.id, {
+              attending: ceremonyAttending,
+              mealOptionId: null,
+            });
+            updateDraft(guestId, pair.welcome.id, {
+              attending: welcomeAttending,
+              mealOptionId: null,
+            });
+          }}
+          updateDraft={updateDraft}
+          onContinue={() => {
+            const pair = resolveCeremonyAndWelcomeEvents(workspace.events);
+            if (!pair) {
+              setError("RSVP events are not configured.");
+              return;
+            }
+            const incomplete = workspace.guests.some(
+              (guest) =>
+                attendancePlanForGuest(
+                  drafts,
+                  guest.id,
+                  pair.ceremony.id,
+                  pair.welcome.id,
+                ) === "unknown",
+            );
+            if (incomplete) {
+              setError(
+                "Please choose ceremony, welcome party, both, or can’t attend for each guest.",
+              );
+              return;
+            }
+            setError(null);
+            setStep("details");
+          }}
+        />
+      ) : null}
+
+      {workspace && step === "details" ? (
         <div className="mt-8 space-y-6">
-          {workspace.guests.map((guest) => (
-            <div key={guest.id} className="invite-rsvp-guest-card">
-              <h2 className="font-display text-xl text-invite-navy sm:text-2xl">
-                {guest.isPlusOne && !guest.plusOneNamed
-                  ? "Plus-one"
-                  : guest.fullName}
-              </h2>
-              {guest.isPlusOne && !guest.plusOneNamed ? (
+          {workspace.guests.map((guest) => {
+            const pair = resolveCeremonyAndWelcomeEvents(workspace.events);
+            if (!pair) return null;
+            const plan = attendancePlanForGuest(
+              drafts,
+              guest.id,
+              pair.ceremony.id,
+              pair.welcome.id,
+            );
+            if (plan === "neither" || plan === "unknown") return null;
+            const draft =
+              drafts.find(
+                (item) =>
+                  item.guestId === guest.id &&
+                  item.eventId === pair.ceremony.id,
+              ) ??
+              drafts.find(
+                (item) =>
+                  item.guestId === guest.id && item.eventId === pair.welcome.id,
+              );
+            if (!draft) return null;
+            return (
+              <div key={guest.id} className="invite-rsvp-guest-card">
+                <h2 className="font-display text-lg text-invite-navy">
+                  {guestDisplayName(guest, draft.plusOneName)}
+                </h2>
                 <label className="mt-4 block text-sm">
                   <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                    Plus-one name
+                    Dietary restrictions
                   </span>
-                  <input
-                    className="invite-faq-input"
-                    value={
-                      drafts.find((draft) => draft.guestId === guest.id)
-                        ?.plusOneName ?? ""
-                    }
+                  <textarea
+                    className="invite-faq-input min-h-20 resize-y"
+                    value={draft.dietaryNotes}
                     onChange={(event) => {
                       for (const eventRecord of workspace.events) {
                         updateDraft(guest.id, eventRecord.id, {
-                          plusOneName: event.target.value,
+                          dietaryNotes: event.target.value,
                         });
                       }
                     }}
                   />
                 </label>
-              ) : null}
-              {workspace.events.map((eventRecord) => {
-                const draft = drafts.find(
-                  (item) =>
-                    item.guestId === guest.id && item.eventId === eventRecord.id,
-                );
-                if (!draft) return null;
-                return (
-                  <fieldset key={eventRecord.id} className="mt-5">
-                    <legend className="font-sans text-xs uppercase tracking-[0.18em] text-invite-gold">
-                      {eventRecord.title}
-                    </legend>
-                    {eventRecord.location ? (
-                      <p className="mt-1 text-xs text-invite-body/70">
-                        {eventRecord.location}
-                      </p>
-                    ) : null}
-                    <div
-                      className="invite-rsvp-segments mt-3"
-                      role="group"
-                      aria-label={`Attendance for ${eventRecord.title}`}
-                    >
-                      {(["yes", "no"] as Attending[]).map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          className={cn(
-                            "invite-rsvp-segment",
-                            draft.attending === value && "is-active",
-                          )}
-                          aria-pressed={draft.attending === value}
-                          onClick={() =>
-                            updateDraft(guest.id, eventRecord.id, {
-                              attending: value,
-                              mealOptionId: null,
-                            })
-                          }
-                        >
-                          {value === "yes" ? "Attending" : "Can't make it"}
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
-                );
-              })}
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="gold"
-            size="lg"
-            className="w-full"
-            onClick={() => {
-              if (drafts.some((draft) => draft.attending === "unknown")) {
-                setError(
-                  "Please choose attending or can’t make it for each guest.",
-                );
-                return;
-              }
-              setError(null);
-              setStep("details");
-            }}
-          >
-            Continue
-          </Button>
-        </div>
-      ) : null}
-
-      {workspace && step === "details" ? (
-        <div className="mt-8 space-y-6">
-          {workspace.guests.map((guest) =>
-            workspace.events.map((eventRecord) => {
-              const draft = drafts.find(
-                (item) =>
-                  item.guestId === guest.id && item.eventId === eventRecord.id,
-              );
-              if (!draft || draft.attending !== "yes") return null;
-              return (
-                <div
-                  key={`${guest.id}-${eventRecord.id}`}
-                  className="invite-rsvp-guest-card"
-                >
-                  <h2 className="font-display text-lg text-invite-navy">
-                    {guestDisplayName(guest, draft.plusOneName)} ·{" "}
-                    {eventRecord.title}
-                  </h2>
-                  <label className="mt-4 block text-sm">
-                    <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                      Dietary restrictions
-                    </span>
-                    <textarea
-                      className="invite-faq-input min-h-20 resize-y"
-                      value={draft.dietaryNotes}
-                      onChange={(event) =>
-                        updateDraft(guest.id, eventRecord.id, {
-                          dietaryNotes: event.target.value,
-                        })
-                      }
-                    />
-                  </label>
-                  <label className="mt-3 block text-sm">
-                    <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                      Accessibility needs
-                    </span>
-                    <textarea
-                      className="invite-faq-input min-h-20 resize-y"
-                      value={draft.accessibilityNotes}
-                      onChange={(event) =>
+                <label className="mt-3 block text-sm">
+                  <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                    Accessibility needs
+                  </span>
+                  <textarea
+                    className="invite-faq-input min-h-20 resize-y"
+                    value={draft.accessibilityNotes}
+                    onChange={(event) => {
+                      for (const eventRecord of workspace.events) {
                         updateDraft(guest.id, eventRecord.id, {
                           accessibilityNotes: event.target.value,
-                        })
+                        });
                       }
-                    />
-                  </label>
-                </div>
-              );
-            }),
-          )}
+                    }}
+                  />
+                </label>
+              </div>
+            );
+          })}
           {attendingYes ? (
             <label className="block text-sm">
               <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
@@ -489,32 +460,30 @@ export function RsvpExperience() {
             Review your RSVP
           </h2>
           <ul className="invite-rsvp-review-list space-y-3 text-sm text-invite-body-soft/95">
-            {drafts.map((draft) => {
-              const guest = workspace.guests.find(
-                (item) => item.id === draft.guestId,
+            {workspace.guests.map((guest) => {
+              const pair = resolveCeremonyAndWelcomeEvents(workspace.events);
+              if (!pair) return null;
+              const plan = attendancePlanForGuest(
+                drafts,
+                guest.id,
+                pair.ceremony.id,
+                pair.welcome.id,
               );
-              const eventRecord = workspace.events.find(
-                (item) => item.id === draft.eventId,
-              );
-              if (!guest || !eventRecord) return null;
+              const draft = drafts.find((item) => item.guestId === guest.id);
               return (
-                <li
-                  key={`${draft.guestId}-${draft.eventId}`}
-                  className="invite-rsvp-review-item"
-                >
+                <li key={guest.id} className="invite-rsvp-review-item">
                   <p className="font-display text-lg text-invite-gold-bright">
-                    {guestDisplayName(guest, draft.plusOneName)} ·{" "}
-                    {eventRecord.title}
+                    {guestDisplayName(guest, draft?.plusOneName)}
                   </p>
                   <p className="mt-1 text-invite-body-soft/95">
-                    {attendingLabel(draft.attending)}
+                    {attendancePlanLabel(plan)}
                   </p>
-                  {draft.dietaryNotes ? (
+                  {draft?.dietaryNotes ? (
                     <p className="mt-1 text-invite-body-soft/85">
                       Dietary: {draft.dietaryNotes}
                     </p>
                   ) : null}
-                  {draft.accessibilityNotes ? (
+                  {draft?.accessibilityNotes ? (
                     <p className="mt-1 text-invite-body-soft/85">
                       Accessibility: {draft.accessibilityNotes}
                     </p>
@@ -598,6 +567,110 @@ export function RsvpExperience() {
   );
 }
 
+function RespondStep({
+  workspace,
+  drafts,
+  onSetPlan,
+  updateDraft,
+  onContinue,
+}: {
+  workspace: Workspace;
+  drafts: ResponseDraft[];
+  onSetPlan: (guestId: string, plan: AttendancePlan) => void;
+  updateDraft: (
+    guestId: string,
+    eventId: string,
+    patch: Partial<ResponseDraft>,
+  ) => void;
+  onContinue: () => void;
+}) {
+  const pair = resolveCeremonyAndWelcomeEvents(workspace.events);
+  if (!pair) {
+    return (
+      <p className="mt-8 text-sm text-invite-body/85" role="alert">
+        RSVP events are not configured. Please contact the couple.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-8 space-y-6">
+      {workspace.guests.map((guest) => {
+        const plan = attendancePlanForGuest(
+          drafts,
+          guest.id,
+          pair.ceremony.id,
+          pair.welcome.id,
+        );
+        return (
+          <div key={guest.id} className="invite-rsvp-guest-card">
+            <h2 className="font-display text-xl text-invite-navy sm:text-2xl">
+              {guest.isPlusOne && !guest.plusOneNamed
+                ? "Plus-one"
+                : guest.fullName}
+            </h2>
+            {guest.isPlusOne && !guest.plusOneNamed ? (
+              <label className="mt-4 block text-sm">
+                <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+                  Plus-one name
+                </span>
+                <input
+                  className="invite-faq-input"
+                  value={
+                    drafts.find((draft) => draft.guestId === guest.id)
+                      ?.plusOneName ?? ""
+                  }
+                  onChange={(event) => {
+                    for (const eventRecord of workspace.events) {
+                      updateDraft(guest.id, eventRecord.id, {
+                        plusOneName: event.target.value,
+                      });
+                    }
+                  }}
+                />
+              </label>
+            ) : null}
+            <fieldset className="mt-5">
+              <legend className="font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
+                Will join you for
+              </legend>
+              <div
+                className="invite-rsvp-segments mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
+                role="group"
+                aria-label={`Attendance for ${guest.fullName}`}
+              >
+                {ATTENDANCE_PLAN_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={cn(
+                      "invite-rsvp-segment min-w-[10rem] flex-1",
+                      plan === option.value && "is-active",
+                    )}
+                    aria-pressed={plan === option.value}
+                    onClick={() => onSetPlan(guest.id, option.value)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+        );
+      })}
+      <Button
+        type="button"
+        variant="gold"
+        size="lg"
+        className="w-full"
+        onClick={onContinue}
+      >
+        Continue
+      </Button>
+    </div>
+  );
+}
+
 function HouseholdSummary({
   workspace,
   drafts,
@@ -614,8 +687,8 @@ function HouseholdSummary({
         {workspace.household.displayName}
       </p>
       <p className="mt-2 text-sm text-invite-body/85">
-        Invited to{" "}
-        {workspace.events.map((event) => event.title).join(" · ")}
+        You&apos;re invited to the welcome party and ceremony & reception.
+        Choose what each guest will attend below.
       </p>
       <ul className="invite-rsvp-roster-names mt-4">
         {workspace.guests.map((guest) => {

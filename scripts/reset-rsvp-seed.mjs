@@ -20,5 +20,5 @@ if (existsSync(file)) {
 }
 
 console.log(
-  "Restart `npm run dev` if it is running, then try /rsvp with Bright Wichienkur or WICHIEN27.",
+  "Restart `npm run dev` if it is running, then import guests or test with RSVP_INCLUDE_E2E_FIXTURE=1 in CI.",
 );

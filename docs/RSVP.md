@@ -5,21 +5,14 @@
 1. Open `/rsvp`
 2. Enter a full name or invitation code
 3. Confirm the correct household if multiple matches appear
-4. Respond for each invited guest and event
-5. Add meals (when attending), dietary needs, accessibility needs
-6. Optional song request and message
+4. For each guest, choose **ceremony & welcome party**, **ceremony only**, **welcome party only**, or **can’t attend**
+5. Add dietary and accessibility notes when attending either event
+6. Optional message to the couple
 7. Review and confirm
 
-Demo seed (fictional only):
+There are **no demo guests** in production seed data. Import your real list (see below) or use a CSV import locally.
 
-- Name: `Alex Rivera` or code `RIVERA27`
-- Name: **`Bright Wichienkur`** or code **`WICHIEN27`** (solo example)
-- Name: **`Bright Wichienkur`** / **`Lexi Wichienkur`** or code **`BRIGHTLEX27`** (couple example — two households match “Bright Wichienkur”; pick the right card)
-- Name: `Jordan Lee` or code `LEE2027` (includes unnamed plus-one)
-- Name: `Sam Nguyen` / `Casey Nguyen` or code `NGUYEN27` (ceremony + rehearsal)
-- Duplicate last name demo: `Taylor Brooks` / `Morgan Brooks`
-
-After changing seed guests locally, run `npm run reset:rsvp-seed` and restart the dev server so `.data/rsvp.json` is rebuilt.
+After changing `lib/rsvp/seed.ts` event definitions, run `npm run reset:rsvp-seed` and restart the dev server.
 
 **Importing a real guest list:** see [`docs/RSVP-GUEST-IMPORT.md`](./RSVP-GUEST-IMPORT.md) (CSV → local JSON or Supabase). Admin `/admin/rsvp` is for managing responses, not bulk import.
 
@@ -45,4 +38,6 @@ Set `EMAIL_ENABLED=true`, `RESEND_API_KEY`, and `EMAIL_FROM` to send confirmatio
 
 ## Data
 
-Phase 6 stores RSVP data in `.data/rsvp.json` (gitignored) seeded with fictional households. Supabase SQL is prepared in `supabase/migrations/202608240002_rsvp.sql`.
+Local development uses `.data/rsvp.json` (gitignored). Production should use Supabase (`supabase/migrations/202608240002_rsvp.sql`).
+
+If Supabase already has old demo guests or a **rehearsal dinner** event, replace events with **Welcome Party** and **Ceremony & Reception** and clear demo households before go-live.

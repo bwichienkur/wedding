@@ -20,7 +20,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Demo RSVP (fictional): `/rsvp` → **`Bright Wichienkur`** / **`WICHIEN27`**, or `Alex Rivera` / `RIVERA27`. Run `npm run reset:rsvp-seed` after seed updates.
+RSVP: import guests via [`docs/RSVP-GUEST-IMPORT.md`](docs/RSVP-GUEST-IMPORT.md). Production seed has **no sample guests** — run `npm run reset:rsvp-seed` then import CSV locally, or load Supabase before go-live.
 
 ## Documentation
 
