@@ -1739,18 +1739,22 @@
   }
 
   .invite-faq-accordion button span:first-child {
-    color: #1a3050;
+    color: #0f1e33;
     font-family: var(--font-display-family), Georgia, serif;
     font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+    font-weight: 500;
     line-height: 1.35;
   }
 
   .invite-faq-accordion button span:last-child {
-    color: var(--invite-gold);
+    color: #1a3050;
+    font-weight: 600;
   }
 
   .invite-faq-answer {
-    color: #4a4038;
+    color: #1f1812;
+    font-size: 1rem;
+    line-height: 1.65;
   }
 
   /* Wedding day schedule — alternating grid (wooowinvites-style) */
