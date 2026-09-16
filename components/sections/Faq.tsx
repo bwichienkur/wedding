@@ -85,12 +85,13 @@ export function FaqSection({
       ) : (
         <Accordion
           className="invite-faq-accordion"
+          variant="invite"
           items={filtered.map((item) => ({
             id: `faq-${item.id}`,
             title: item.question,
             content: (
               <div>
-                <p className="mb-2 font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
+                <p className="mb-2 font-sans text-xs uppercase tracking-[0.16em] text-[#6b5a2e]">
                   {item.category}
                 </p>
                 <p
