@@ -113,6 +113,11 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
                 <CountdownCell value={countdown.days} label="Days" />
                 <CountdownCell value={countdown.hours} label="Hours" />
                 <CountdownCell value={countdown.minutes} label="Minutes" />
+                <CountdownCell
+                  value={countdown.seconds}
+                  label="Seconds"
+                  pad
+                />
               </div>
             )}
           </motion.div>
@@ -156,10 +161,21 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
   );
 }
 
-function CountdownCell({ value, label }: { value: number; label: string }) {
+function CountdownCell({
+  value,
+  label,
+  pad = false,
+}: {
+  value: number;
+  label: string;
+  pad?: boolean;
+}) {
+  const display = pad ? String(value).padStart(2, "0") : String(value);
   return (
     <div className="min-w-[4rem] text-center">
-      <p className="font-display text-4xl text-invite-navy sm:text-5xl">{value}</p>
+      <p className="font-display text-4xl tabular-nums text-invite-navy sm:text-5xl">
+        {display}
+      </p>
       <p className="mt-1 font-sans text-[0.62rem] uppercase tracking-[0.24em] text-invite-body/60">
         {label}
       </p>

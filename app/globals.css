@@ -896,6 +896,28 @@
     object-position: center center;
   }
 
+  @media (min-width: 768px) {
+    .video-opening-media {
+      object-fit: contain;
+    }
+  }
+
+  .invite-ambient-bg__media {
+    image-rendering: auto;
+  }
+
+  @media (min-width: 768px) {
+    .invite-ambient-bg__media {
+      max-height: 100%;
+      max-width: 100%;
+      margin: auto;
+      inset: 0;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+  }
+
   /* Subtle seal radiance on the opening poster (full-screen tap, no pill). */
   .video-opening-seal-pulse {
     left: 50%;
@@ -1424,8 +1446,8 @@
   }
 
   .invite-countdown-unit {
-    flex: 1 1 5.5rem;
-    max-width: 7.5rem;
+    flex: 1 1 4.75rem;
+    max-width: 6.5rem;
     text-align: center;
     padding: 1rem 0.65rem 0.85rem;
     border-radius: 0.25rem;
@@ -2225,6 +2247,36 @@
 
   .invite-venue-pill:hover {
     background: rgb(201 162 77 / 0.12);
+  }
+
+  .invite-venue-directions-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 9999px;
+    border: 2px solid rgb(212 175 55 / 0.72);
+    background: rgb(7 14 26 / 0.45);
+    color: var(--invite-gold-bright);
+    box-shadow:
+      0 0 20px rgb(212 175 55 / 0.25),
+      inset 0 1px 0 rgb(255 255 255 / 0.1);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .invite-venue-directions-btn:hover {
+    border-color: rgb(255 215 100 / 0.9);
+    background: rgb(7 14 26 / 0.62);
+    transform: scale(1.04);
+  }
+
+  .invite-venue-directions-btn:focus-visible {
+    outline: 2px solid var(--invite-gold-bright);
+    outline-offset: 3px;
   }
 
   .invite-photo-frame {

@@ -73,7 +73,7 @@ export function OurStory({
   milestones,
   eyebrow = "Our story",
   title = "How we got here",
-  description = "Three chapters — from the first hello to our wedding day at Bella Cosa.",
+  description,
 }: {
   milestones: StoryMilestone[];
   eyebrow?: string;
@@ -81,7 +81,12 @@ export function OurStory({
   description?: string;
 }) {
   return (
-    <Section id="story" eyebrow={eyebrow} title={title} description={description}>
+    <Section
+      id="story"
+      eyebrow={eyebrow}
+      title={title}
+      description={description?.trim() ? description : undefined}
+    >
       <ol className="mt-2 grid gap-6">
         {milestones.map((milestone) => (
           <li key={milestone.id}>

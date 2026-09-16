@@ -44,8 +44,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     defaultVisible: true,
     defaultEyebrow: "Our story",
     defaultTitle: "How we got here",
-    defaultDescription:
-      "Three chapters — how we met, the proposal, and our wedding day at Bella Cosa.",
+    defaultDescription: "",
     hasDescription: true,
   },
   {

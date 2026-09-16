@@ -9,6 +9,7 @@ export interface CountdownParts {
   days: number;
   hours: number;
   minutes: number;
+  seconds: number;
   isPast: boolean;
 }
 
@@ -17,15 +18,16 @@ export function getCountdownParts(now: Date = new Date()): CountdownParts {
   const diff = target.getTime() - now.getTime();
 
   if (diff <= 0) {
-    return { days: 0, hours: 0, minutes: 0, isPast: true };
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
   }
 
-  const totalMinutes = Math.floor(diff / 60_000);
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86_400);
+  const hours = Math.floor((totalSeconds % 86_400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
-  return { days, hours, minutes, isPast: false };
+  return { days, hours, minutes, seconds, isPast: false };
 }
 
 /** Minute-stable countdown snapshot for useSyncExternalStore. */

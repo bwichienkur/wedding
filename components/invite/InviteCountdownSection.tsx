@@ -36,16 +36,33 @@ export function InviteCountdownSection() {
             ·
           </span>
           <CountdownUnit value={countdown.minutes} label="Minutes" />
+          <span className="invite-countdown-sep" aria-hidden>
+            ·
+          </span>
+          <CountdownUnit
+            value={countdown.seconds}
+            label="Seconds"
+            pad
+          />
         </div>
       )}
     </section>
   );
 }
 
-function CountdownUnit({ value, label }: { value: number; label: string }) {
+function CountdownUnit({
+  value,
+  label,
+  pad = false,
+}: {
+  value: number;
+  label: string;
+  pad?: boolean;
+}) {
+  const display = pad ? String(value).padStart(2, "0") : String(value);
   return (
     <div className="invite-countdown-unit">
-      <p className="invite-countdown-value">{value}</p>
+      <p className="invite-countdown-value">{display}</p>
       <p className="invite-countdown-label">{label}</p>
     </div>
   );
