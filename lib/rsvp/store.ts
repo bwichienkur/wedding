@@ -234,6 +234,7 @@ export async function updateHouseholdAdminRecord(
       | "notesAdmin"
       | "invitationCodeHash"
       | "invitationCodeHint"
+      | "maxPlusOnes"
     >
   >,
 ): Promise<void> {
