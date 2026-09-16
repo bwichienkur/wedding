@@ -896,6 +896,14 @@
     object-position: center center;
   }
 
+  .video-opening-media.opacity-0 {
+    transition: opacity 160ms ease-out;
+  }
+
+  .video-opening-media:not(.opacity-0) {
+    transition: opacity 160ms ease-out;
+  }
+
   @media (min-width: 768px) {
     .video-opening-media {
       object-fit: contain;

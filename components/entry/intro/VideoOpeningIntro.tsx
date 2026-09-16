@@ -12,6 +12,7 @@ interface VideoOpeningIntroProps {
   reduceMotion: boolean;
   onActivate: () => void;
   videoRef: React.RefObject<HTMLVideoElement | null>;
+  openingVideoPlaying?: boolean;
 }
 
 /** Full-screen opening — tap the envelope poster; video plays in place (no overlay ring). */
@@ -20,11 +21,13 @@ export function VideoOpeningIntro({
   reduceMotion,
   onActivate,
   videoRef,
+  openingVideoPlaying = false,
 }: VideoOpeningIntroProps) {
   const interactive = phase === "closed";
   const glowing = phase === "glowing";
   const exiting = phase === "opening" || phase === "opened";
-  const showCue = interactive;
+  const showPosterCover = !openingVideoPlaying && !exiting;
+  const showCue = interactive || (glowing && showPosterCover);
 
   return (
     <div
@@ -35,13 +38,27 @@ export function VideoOpeningIntro({
     >
       <video
         ref={videoRef}
-        className="video-opening-media absolute inset-0 z-[1]"
+        className={cn(
+          "video-opening-media absolute inset-0 z-[1]",
+          showPosterCover && "opacity-0",
+        )}
         src={OPENING_VIDEO}
         poster={OPENING_POSTER}
         playsInline
         muted
         preload="auto"
       />
+
+      {showPosterCover ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={OPENING_POSTER}
+          alt=""
+          className="video-opening-media pointer-events-none absolute inset-0 z-[2]"
+          decoding="sync"
+          fetchPriority="high"
+        />
+      ) : null}
 
       <button
         type="button"
@@ -52,7 +69,7 @@ export function VideoOpeningIntro({
         }}
         aria-label={wedding.entry.beginLabel}
         className={cn(
-          "absolute inset-0 z-[2]",
+          "absolute inset-0 z-[3]",
           interactive ? "cursor-pointer" : "pointer-events-none",
         )}
       >
