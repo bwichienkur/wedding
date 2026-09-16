@@ -42,7 +42,7 @@ export function createSeedDatabase(): RsvpDatabase {
       location: "Bella Cosa, Lake Wales, Florida",
       isAdultsOnly: false,
       allowsPlusOnes: true,
-      collectMeals: true,
+      collectMeals: false,
       sortOrder: 1,
     },
     {
@@ -53,7 +53,7 @@ export function createSeedDatabase(): RsvpDatabase {
       location: null,
       isAdultsOnly: true,
       allowsPlusOnes: false,
-      collectMeals: true,
+      collectMeals: false,
       sortOrder: 0,
     },
   ];

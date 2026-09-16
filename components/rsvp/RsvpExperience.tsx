@@ -72,7 +72,6 @@ export function RsvpExperience() {
   const [candidates, setCandidates] = useState<HouseholdCandidate[]>([]);
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [drafts, setDrafts] = useState<ResponseDraft[]>([]);
-  const [songRequest, setSongRequest] = useState("");
   const [messageToCouple, setMessageToCouple] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -187,7 +186,7 @@ export function RsvpExperience() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          songRequest,
+          songRequest: "",
           messageToCouple,
           responses: drafts,
         }),
@@ -206,7 +205,7 @@ export function RsvpExperience() {
   }
 
   return (
-    <div className="invite-rsvp-flow mx-auto w-full max-w-lg">
+    <div className="invite-rsvp-flow invite-readable-panel mx-auto w-full max-w-lg px-5 py-6 sm:px-7 sm:py-8">
       <p className="font-sans text-[0.58rem] uppercase tracking-[0.28em] text-invite-gold">
         RSVP
       </p>
@@ -344,9 +343,6 @@ export function RsvpExperience() {
                     item.guestId === guest.id && item.eventId === eventRecord.id,
                 );
                 if (!draft) return null;
-                const meals = workspace.mealOptions.filter(
-                  (meal) => meal.eventId === eventRecord.id,
-                );
                 return (
                   <fieldset key={eventRecord.id} className="mt-5">
                     <legend className="font-sans text-xs uppercase tracking-[0.18em] text-invite-gold">
@@ -374,8 +370,7 @@ export function RsvpExperience() {
                           onClick={() =>
                             updateDraft(guest.id, eventRecord.id, {
                               attending: value,
-                              mealOptionId:
-                                value === "yes" ? draft.mealOptionId : null,
+                              mealOptionId: null,
                             })
                           }
                         >
@@ -383,31 +378,6 @@ export function RsvpExperience() {
                         </button>
                       ))}
                     </div>
-                    {draft.attending === "yes" &&
-                    eventRecord.collectMeals &&
-                    meals.length > 0 ? (
-                      <label className="mt-4 block text-sm">
-                        <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                          Meal preference
-                        </span>
-                        <select
-                          className="invite-faq-input"
-                          value={draft.mealOptionId ?? ""}
-                          onChange={(event) =>
-                            updateDraft(guest.id, eventRecord.id, {
-                              mealOptionId: event.target.value || null,
-                            })
-                          }
-                        >
-                          <option value="">Select a meal</option>
-                          {meals.map((meal) => (
-                            <option key={meal.id} value={meal.id}>
-                              {meal.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    ) : null}
                   </fieldset>
                 );
               })}
@@ -485,28 +455,17 @@ export function RsvpExperience() {
             }),
           )}
           {attendingYes ? (
-            <>
-              <label className="block text-sm">
-                <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                  Song request
-                </span>
-                <input
-                  className="invite-faq-input"
-                  value={songRequest}
-                  onChange={(event) => setSongRequest(event.target.value)}
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
-                  Message to Bright & Lexi
-                </span>
-                <textarea
-                  className="invite-faq-input min-h-24 resize-y"
-                  value={messageToCouple}
-                  onChange={(event) => setMessageToCouple(event.target.value)}
-                />
-              </label>
-            </>
+            <label className="block text-sm">
+              <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-[#6b5a2e]">
+                Message to Bright & Lexi
+              </span>
+              <textarea
+                className="invite-faq-input min-h-28 resize-y"
+                value={messageToCouple}
+                onChange={(event) => setMessageToCouple(event.target.value)}
+                placeholder="Optional note for the couple"
+              />
+            </label>
           ) : null}
           <div className="flex flex-wrap gap-3">
             <Button
@@ -537,30 +496,26 @@ export function RsvpExperience() {
               const eventRecord = workspace.events.find(
                 (item) => item.id === draft.eventId,
               );
-              const meal = workspace.mealOptions.find(
-                (item) => item.id === draft.mealOptionId,
-              );
               if (!guest || !eventRecord) return null;
               return (
                 <li
                   key={`${draft.guestId}-${draft.eventId}`}
                   className="invite-rsvp-review-item"
                 >
-                  <p className="font-display text-lg text-invite-navy">
+                  <p className="font-display text-lg text-[#0f1e33]">
                     {guestDisplayName(guest, draft.plusOneName)} ·{" "}
                     {eventRecord.title}
                   </p>
-                  <p className="mt-1">
+                  <p className="mt-1 text-[#1f1812]">
                     {attendingLabel(draft.attending)}
-                    {meal ? ` · ${meal.label}` : ""}
                   </p>
                   {draft.dietaryNotes ? (
-                    <p className="mt-1 text-invite-body/80">
+                    <p className="mt-1 text-[#2a2218]">
                       Dietary: {draft.dietaryNotes}
                     </p>
                   ) : null}
                   {draft.accessibilityNotes ? (
-                    <p className="mt-1 text-invite-body/80">
+                    <p className="mt-1 text-[#2a2218]">
                       Accessibility: {draft.accessibilityNotes}
                     </p>
                   ) : null}
@@ -568,13 +523,8 @@ export function RsvpExperience() {
               );
             })}
           </ul>
-          {songRequest ? (
-            <p className="text-sm text-invite-body/85">
-              Song request: {songRequest}
-            </p>
-          ) : null}
           {messageToCouple ? (
-            <p className="text-sm text-invite-body/85">
+            <p className="text-sm text-[#1f1812]">
               Message: {messageToCouple}
             </p>
           ) : null}

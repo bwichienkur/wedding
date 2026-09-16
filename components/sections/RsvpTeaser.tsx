@@ -20,7 +20,7 @@ export function RsvpSection({
       description={description}
       className="invite-rsvp-section"
     >
-      <div className="invite-rsvp-card mx-auto max-w-md">
+      <div className="invite-rsvp-card invite-readable-panel mx-auto max-w-md">
         <p
           className={cn(
             "font-display text-lg text-invite-navy sm:text-xl",

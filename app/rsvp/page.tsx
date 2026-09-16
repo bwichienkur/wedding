@@ -1,5 +1,6 @@
 import { InviteCanvas } from "@/components/invite/InviteCanvas";
 import { RsvpExperience } from "@/components/rsvp/RsvpExperience";
+import { RsvpPageShell } from "@/components/rsvp/RsvpPageShell";
 import { wedding } from "@/data/wedding";
 import type { Metadata } from "next";
 
@@ -11,10 +12,12 @@ export const metadata: Metadata = {
 
 export default function RsvpPage() {
   return (
-    <InviteCanvas className="invite-rsvp-page">
-      <main className="invite-section border-t-0 pt-6 sm:pt-8">
-        <RsvpExperience />
-      </main>
-    </InviteCanvas>
+    <RsvpPageShell>
+      <InviteCanvas className="invite-rsvp-page">
+        <main className="invite-section border-t-0 pt-6 sm:pt-8">
+          <RsvpExperience />
+        </main>
+      </InviteCanvas>
+    </RsvpPageShell>
   );
 }
