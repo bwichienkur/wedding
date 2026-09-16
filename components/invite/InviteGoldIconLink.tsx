@@ -55,16 +55,11 @@ export function PhoneIcon({ className }: { className?: string }) {
     <svg
       className={className}
       viewBox="0 0 24 24"
-      fill="none"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <path
-        d="M8.5 4.5h2l1.2 2.8a1 1 0 0 0 .95.65l2.6-.35a1 1 0 0 1 1.15 1.15l-.35 2.6a1 1 0 0 0 .65.95L19 13.5v2a2 2 0 0 1-2 2A14.5 14.5 0 0 1 5 7.5a2 2 0 0 1 2-2Z"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
+      <path d="M20.01 15.38c-1.23 0-2.43-.2-3.57-.57a1 1 0 0 0-.98.24l-1.85 1.85a15.64 15.64 0 0 1-6.17-6.17l1.85-1.85a1 1 0 0 0 .24-.98 10.87 10.87 0 0 1-.57-3.57 1 1 0 0 0-.99-.85H4.19A1.19 1.19 0 0 0 3 4.18c0 9.07 7.35 16.42 16.42 16.42.65 0 1.18-.53 1.19-1.18v-3.65a1 1 0 0 0-.85-.99z" />
     </svg>
   );
 }
