@@ -210,7 +210,7 @@ export async function submitHouseholdRsvp(options: {
   let welcomeGuestCount = payload.welcomeGuestCount ?? 0;
   if (welcomeAttending === "yes") {
     if (welcomeGuestCount < 1) throw new Error("INVALID_RESPONSE");
-    if (welcomeGuestCount !== allowance) throw new Error("INVALID_RESPONSE");
+    if (welcomeGuestCount > allowance) throw new Error("INVALID_RESPONSE");
   } else {
     welcomeGuestCount = 0;
   }

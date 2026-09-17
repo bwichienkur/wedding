@@ -2,6 +2,7 @@
 
 import { Accordion } from "@/components/ui/Accordion";
 import { Section } from "@/components/ui/Section";
+import { InviteSelect } from "@/components/invite/InviteSelect";
 import type { FaqItem } from "@/data/logistics-types";
 import { faqItems as defaultFaqItems } from "@/data/faq";
 import { cn } from "@/lib/cn";
@@ -66,10 +67,9 @@ export function FaqSection({
           <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em]">
             Category
           </span>
-          <select
+          <InviteSelect
             value={category}
             onChange={(event) => setCategory(event.target.value)}
-            className="invite-faq-input"
           >
             <option value="All">All</option>
             {categories.map((item) => (
@@ -77,7 +77,7 @@ export function FaqSection({
                 {item}
               </option>
             ))}
-          </select>
+          </InviteSelect>
         </label>
       </div>
 
