@@ -4,7 +4,8 @@ import {
   householdRsvpSummary,
   inferHouseholdCeremonyAttending,
   inferHouseholdWelcomeAttending,
-  welcomeHeadCountForHousehold,
+  clampWelcomeGuestCount,
+  initialWelcomeGuestCount,
 } from "@/components/rsvp/attendance-plan";
 
 describe("household attendance", () => {
@@ -39,18 +40,21 @@ describe("household attendance", () => {
     ).toContain("Welcome party: 2 guests");
   });
 
-  it("uses full guest allowance for welcome head count", () => {
+  it("defaults welcome count to guest allowance and clamps selections", () => {
     expect(
-      welcomeHeadCountForHousehold({
+      initialWelcomeGuestCount({
         guestAllowance: 4,
         welcomeAttending: "yes",
       }),
     ).toBe(4);
     expect(
-      welcomeHeadCountForHousehold({
+      initialWelcomeGuestCount({
         guestAllowance: 4,
-        welcomeAttending: "no",
+        welcomeAttending: "yes",
+        savedCount: 2,
       }),
-    ).toBe(0);
+    ).toBe(2);
+    expect(clampWelcomeGuestCount(99, 4)).toBe(4);
+    expect(clampWelcomeGuestCount(0, 4)).toBe(4);
   });
 });

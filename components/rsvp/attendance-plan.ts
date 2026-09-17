@@ -66,13 +66,29 @@ export function countWelcomeGuests(
   ).length;
 }
 
-/** Welcome party uses the full guest allowance on the invitation (no partial head count). */
-export function welcomeHeadCountForHousehold(options: {
+/** Clamp welcome head count to 1 … guest allowance (admin allocation). */
+export function clampWelcomeGuestCount(
+  count: number,
+  guestAllowance: number,
+): number {
+  const max = Math.max(1, guestAllowance);
+  if (!Number.isFinite(count) || count < 1) return max;
+  return Math.min(max, Math.round(count));
+}
+
+export function initialWelcomeGuestCount(options: {
   guestAllowance: number;
   welcomeAttending: HouseholdYesNo;
+  savedCount?: number;
 }): number {
-  if (options.welcomeAttending !== "yes") return 0;
-  return Math.max(1, options.guestAllowance);
+  const max = Math.max(1, options.guestAllowance);
+  if (options.welcomeAttending !== "yes") {
+    return max;
+  }
+  if (options.savedCount != null && options.savedCount >= 1) {
+    return clampWelcomeGuestCount(options.savedCount, options.guestAllowance);
+  }
+  return max;
 }
 
 export function householdRsvpSummary(options: {

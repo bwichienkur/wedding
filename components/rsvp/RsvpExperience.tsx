@@ -3,11 +3,14 @@
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { InviteDivider } from "@/components/invite/InviteDecor";
+import { InviteSelect } from "@/components/invite/InviteSelect";
 import {
+  clampWelcomeGuestCount,
+  countWelcomeGuests,
   inferHouseholdCeremonyAttending,
   inferHouseholdWelcomeAttending,
+  initialWelcomeGuestCount,
   resolveCeremonyAndWelcomeEvents,
-  welcomeHeadCountForHousehold,
   type HouseholdYesNo,
 } from "@/components/rsvp/attendance-plan";
 import { RsvpStepper } from "@/components/rsvp/RsvpStepper";
@@ -95,31 +98,25 @@ function buildInitialForm(workspace: Workspace): HouseholdForm {
     };
   }
 
-  return withSyncedWelcomeHeadCount(
-    {
-      ceremonyAttending,
-      welcomeAttending,
-      welcomeGuestCount: 0,
-      roster: workspace.guests.map((guest) => ({
-        id: guest.id,
-        fullName: guest.fullName,
-      })),
-      notesByGuestId,
-    },
-    workspace.household.guestAllowance,
-  );
-}
+  const allowance = workspace.household.guestAllowance;
+  const savedWelcomeCount =
+    pair && welcomeAttending === "yes"
+      ? countWelcomeGuests(workspace.responses, pair.welcome.id, guestIds)
+      : undefined;
 
-function withSyncedWelcomeHeadCount(
-  form: HouseholdForm,
-  guestAllowance: number,
-): HouseholdForm {
   return {
-    ...form,
-    welcomeGuestCount: welcomeHeadCountForHousehold({
-      guestAllowance,
-      welcomeAttending: form.welcomeAttending,
+    ceremonyAttending,
+    welcomeAttending,
+    welcomeGuestCount: initialWelcomeGuestCount({
+      guestAllowance: allowance,
+      welcomeAttending,
+      savedCount: savedWelcomeCount,
     }),
+    roster: workspace.guests.map((guest) => ({
+      id: guest.id,
+      fullName: guest.fullName,
+    })),
+    notesByGuestId,
   };
 }
 
@@ -272,6 +269,15 @@ export function RsvpExperience() {
         return `Your invitation includes up to ${workspace.household.guestAllowance} guests.`;
       }
     }
+    if (form.welcomeAttending === "yes") {
+      const allowance = workspace.household.guestAllowance;
+      if (
+        form.welcomeGuestCount < 1 ||
+        form.welcomeGuestCount > allowance
+      ) {
+        return `Choose 1–${allowance} guests for the welcome party.`;
+      }
+    }
     return null;
   }
 
@@ -291,10 +297,8 @@ export function RsvpExperience() {
         body: JSON.stringify({
           ceremonyAttending: form.ceremonyAttending,
           welcomeAttending: form.welcomeAttending,
-          welcomeGuestCount: welcomeHeadCountForHousehold({
-            guestAllowance: workspace.household.guestAllowance,
-            welcomeAttending: form.welcomeAttending,
-          }),
+          welcomeGuestCount:
+            form.welcomeAttending === "yes" ? form.welcomeGuestCount : 0,
           guestRoster:
             form.ceremonyAttending === "yes" ? form.roster : undefined,
           guestNotes: Object.entries(form.notesByGuestId).map(
@@ -565,22 +569,15 @@ function InvitationFormStep({
 
   const formBusy = submitting || backing;
 
-  const updateForm = (
-    updater: (current: HouseholdForm) => HouseholdForm,
-  ) => {
-    setForm((current) => {
-      if (!current) return current;
-      return withSyncedWelcomeHeadCount(updater(current), guestAllowance);
-    });
-  };
-
   return (
     <div className="mt-8 space-y-6">
       <YesNoChoice
         label="Attending ceremony & reception?"
         value={form.ceremonyAttending}
         onChange={(ceremonyAttending) =>
-          updateForm((current) => ({ ...current, ceremonyAttending }))
+          setForm((current) =>
+            current ? { ...current, ceremonyAttending } : current,
+          )
         }
         disabled={formBusy}
       />
@@ -589,7 +586,9 @@ function InvitationFormStep({
         <RosterEditor
           roster={form.roster}
           allowance={guestAllowance}
-          onChange={(roster) => updateForm((current) => ({ ...current, roster }))}
+          onChange={(roster) =>
+            setForm((current) => (current ? { ...current, roster } : current))
+          }
           disabled={formBusy}
         />
       ) : null}
@@ -598,17 +597,61 @@ function InvitationFormStep({
         label="Attending welcome party?"
         value={form.welcomeAttending}
         onChange={(welcomeAttending) =>
-          updateForm((current) => ({ ...current, welcomeAttending }))
+          setForm((current) => {
+            if (!current) return current;
+            const nextCount =
+              welcomeAttending === "yes"
+                ? clampWelcomeGuestCount(
+                    current.welcomeGuestCount,
+                    guestAllowance,
+                  )
+                : current.welcomeGuestCount;
+            return {
+              ...current,
+              welcomeAttending,
+              welcomeGuestCount: nextCount,
+            };
+          })
         }
         disabled={formBusy}
       />
 
       {form.welcomeAttending === "yes" ? (
-        <p className="text-sm leading-relaxed text-invite-body/80">
-          We&apos;ll plan for all {guestAllowance} guest
-          {guestAllowance === 1 ? "" : "s"} on your invitation at the welcome
-          party.
-        </p>
+        <label className="block text-sm">
+          <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-body/75">
+            How many guests for the welcome party?
+          </span>
+          <InviteSelect
+            value={form.welcomeGuestCount}
+            disabled={formBusy}
+            onChange={(event) =>
+              setForm((current) =>
+                current
+                  ? {
+                      ...current,
+                      welcomeGuestCount: clampWelcomeGuestCount(
+                        Number(event.target.value),
+                        guestAllowance,
+                      ),
+                    }
+                  : current,
+              )
+            }
+          >
+            {Array.from({ length: guestAllowance }, (_, index) => {
+              const count = index + 1;
+              return (
+                <option key={count} value={count}>
+                  {count} guest{count === 1 ? "" : "s"}
+                </option>
+              );
+            })}
+          </InviteSelect>
+          <p className="mt-2 text-xs text-invite-body/70">
+            Your invitation includes up to {guestAllowance} guest
+            {guestAllowance === 1 ? "" : "s"} (set on our guest list).
+          </p>
+        </label>
       ) : null}
 
       {attendingAny ? (
