@@ -1,7 +1,7 @@
 import "server-only";
 
 import { hashInvitationCode } from "@/lib/rsvp/crypto";
-import { STANDARD_EVENT_IDS } from "@/lib/rsvp/event-config";
+import { filterStandardEvents, STANDARD_EVENT_IDS } from "@/lib/rsvp/event-config";
 import { normalizeGuestName } from "@/lib/rsvp/normalize";
 import {
   appendAudit,
@@ -13,8 +13,14 @@ import {
   updateGuestAdmin,
   updateHouseholdAdminRecord,
 } from "@/lib/rsvp/store";
-import type { Guest, Household } from "@/lib/rsvp/types";
+import type { Attending, Guest, Household } from "@/lib/rsvp/types";
 import { randomUUID } from "crypto";
+
+export interface AdminGuestRsvpEvent {
+  eventId: string;
+  eventTitle: string;
+  attending: Attending;
+}
 
 export interface AdminHouseholdWithGuests {
   id: string;
@@ -26,39 +32,72 @@ export interface AdminHouseholdWithGuests {
   notesAdmin: string;
   maxPlusOnes: number;
   updatedAt: string;
+  messageToCouple: string;
+  songRequest: string;
+  submittedAt: string | null;
   guests: Array<{
     id: string;
     fullName: string;
     isChild: boolean;
     isPlusOne: boolean;
     sortOrder: number;
+    events: AdminGuestRsvpEvent[];
+    dietaryNotes: string;
+    accessibilityNotes: string;
   }>;
 }
 
 export async function listAdminGuestHouseholds(): Promise<AdminHouseholdWithGuests[]> {
   const db = await readRsvpDb();
+  const standardEvents = filterStandardEvents(db.events);
+
   return db.households
-    .map((household) => ({
-      id: household.id,
-      displayName: household.displayName,
-      email: household.email,
-      phone: household.phone,
-      rsvpStatus: household.rsvpStatus,
-      invitationCodeHint: household.invitationCodeHint,
-      notesAdmin: household.notesAdmin,
-      maxPlusOnes: household.maxPlusOnes,
-      updatedAt: household.updatedAt,
-      guests: db.guests
+    .map((household) => {
+      const householdGuests = db.guests
         .filter((guest) => guest.householdId === household.id)
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((guest) => ({
-          id: guest.id,
-          fullName: guest.fullName,
-          isChild: guest.isChild,
-          isPlusOne: guest.isPlusOne,
-          sortOrder: guest.sortOrder,
-        })),
-    }))
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+
+      const latest = db.submissions
+        .filter((submission) => submission.householdId === household.id)
+        .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))[0];
+
+      return {
+        id: household.id,
+        displayName: household.displayName,
+        email: household.email,
+        phone: household.phone,
+        rsvpStatus: household.rsvpStatus,
+        invitationCodeHint: household.invitationCodeHint,
+        notesAdmin: household.notesAdmin,
+        maxPlusOnes: household.maxPlusOnes,
+        updatedAt: household.updatedAt,
+        messageToCouple: latest?.messageToCouple ?? "",
+        songRequest: latest?.songRequest ?? "",
+        submittedAt: latest?.submittedAt ?? null,
+        guests: householdGuests.map((guest) => {
+          const guestResponses = db.responses.filter(
+            (response) => response.guestId === guest.id,
+          );
+          const sample = guestResponses[0];
+          return {
+            id: guest.id,
+            fullName: guest.fullName,
+            isChild: guest.isChild,
+            isPlusOne: guest.isPlusOne,
+            sortOrder: guest.sortOrder,
+            events: standardEvents.map((event) => ({
+              eventId: event.id,
+              eventTitle: event.title,
+              attending:
+                guestResponses.find((response) => response.eventId === event.id)
+                  ?.attending ?? "unknown",
+            })),
+            dietaryNotes: sample?.dietaryNotes ?? "",
+            accessibilityNotes: sample?.accessibilityNotes ?? "",
+          };
+        }),
+      };
+    })
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
 }
 

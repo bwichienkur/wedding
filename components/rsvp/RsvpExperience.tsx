@@ -510,6 +510,7 @@ function YesNoChoice({
   const [pressed, setPressed] = useState(value);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync when parent form resets
     setPressed(value);
   }, [value]);
 

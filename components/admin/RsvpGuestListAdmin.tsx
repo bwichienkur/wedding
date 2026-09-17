@@ -15,12 +15,21 @@ import {
 import { cn } from "@/lib/cn";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
+interface GuestRsvpEvent {
+  eventId: string;
+  eventTitle: string;
+  attending: string;
+}
+
 interface GuestRow {
   id: string;
   fullName: string;
   isChild: boolean;
   isPlusOne: boolean;
   sortOrder: number;
+  events: GuestRsvpEvent[];
+  dietaryNotes: string;
+  accessibilityNotes: string;
 }
 
 interface HouseholdRow {
@@ -32,8 +41,21 @@ interface HouseholdRow {
   notesAdmin: string;
   maxPlusOnes: number;
   updatedAt: string;
+  messageToCouple: string;
+  songRequest: string;
+  submittedAt: string | null;
   guests: GuestRow[];
 }
+
+const STATUS_FILTERS = [
+  { value: "all", label: "All" },
+  { value: "pending", label: "Pending" },
+  { value: "complete", label: "Complete" },
+  { value: "declined", label: "Declined" },
+  { value: "partial", label: "Partial" },
+] as const;
+
+type StatusFilter = (typeof STATUS_FILTERS)[number]["value"];
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
@@ -60,9 +82,22 @@ function rsvpStatusClass(status: string) {
   }
 }
 
+function formatAttending(value: string): string {
+  if (value === "yes") return "Yes";
+  if (value === "no") return "No";
+  return "—";
+}
+
+function attendingClass(value: string): string {
+  if (value === "yes") return "text-emerald-200/90";
+  if (value === "no") return "text-rose-200/80";
+  return "text-[var(--admin-muted,#9aa8bc)]";
+}
+
 export function RsvpGuestListAdmin() {
   const [households, setHouseholds] = useState<HouseholdRow[]>([]);
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -89,17 +124,38 @@ export function RsvpGuestListAdmin() {
     void load();
   }, [load]);
 
+  const statusTotals = useMemo(() => {
+    const totals: Record<StatusFilter, number> = {
+      all: households.length,
+      pending: 0,
+      complete: 0,
+      declined: 0,
+      partial: 0,
+    };
+    for (const household of households) {
+      if (household.rsvpStatus === "pending") totals.pending += 1;
+      else if (household.rsvpStatus === "complete") totals.complete += 1;
+      else if (household.rsvpStatus === "declined") totals.declined += 1;
+      else if (household.rsvpStatus === "partial") totals.partial += 1;
+    }
+    return totals;
+  }, [households]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return households;
-    return households.filter(
-      (household) =>
+    return households.filter((household) => {
+      const statusOk =
+        statusFilter === "all" || household.rsvpStatus === statusFilter;
+      if (!statusOk) return false;
+      if (!q) return true;
+      return (
         household.displayName.toLowerCase().includes(q) ||
         household.guests.some((guest) =>
           guest.fullName.toLowerCase().includes(q),
-        ),
-    );
-  }, [households, query]);
+        )
+      );
+    });
+  }, [households, query, statusFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageIndex = Math.min(page, totalPages);
@@ -247,6 +303,21 @@ export function RsvpGuestListAdmin() {
     }
   }
 
+  async function exportCsv() {
+    const response = await fetch("/api/admin/rsvp?format=csv");
+    if (!response.ok) {
+      setError("Unable to export CSV.");
+      return;
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "rsvp-export.csv";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-4 md:space-y-6">
       <details className={`${adminCardClass} group !py-3 md:!py-5`}>
@@ -307,6 +378,44 @@ export function RsvpGuestListAdmin() {
           {error}
         </p>
       ) : null}
+
+      <div className="flex flex-wrap items-center gap-2">
+        {STATUS_FILTERS.map(({ value, label }) => (
+          <button
+            key={value}
+            type="button"
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-xs transition-colors",
+              statusFilter === value
+                ? "border-[var(--admin-gold,#e8c872)] bg-white/10 text-[var(--admin-gold-bright,#f5e6a8)]"
+                : "border-white/15 text-[var(--admin-body,#d4dce8)] hover:border-white/25",
+            )}
+            onClick={() => {
+              setStatusFilter(value);
+              setPage(1);
+            }}
+          >
+            {label}
+            <span className="ml-1.5 tabular-nums opacity-75">
+              {statusTotals[value]}
+            </span>
+          </button>
+        ))}
+        <Button
+          type="button"
+          variant="secondary"
+          className={`${tableBtnClass} ml-auto`}
+          disabled={pending}
+          onClick={() => void exportCsv()}
+        >
+          Export CSV
+        </Button>
+      </div>
+
+      <p className={`text-xs ${adminMutedClass}`}>
+        Expand a row to edit guest names and view each guest&apos;s ceremony, welcome,
+        and dietary responses.
+      </p>
 
       <div className={`${adminTableShellClass} w-full sm:max-w-xl`}>
         <div className="flex flex-col gap-2 border-b border-white/10 px-2 py-2 sm:flex-row sm:items-end sm:justify-between">
@@ -529,7 +638,7 @@ function HouseholdTableBlockInner({
             type="button"
             className="flex h-7 w-7 items-center justify-center rounded-sm border border-white/12 bg-white/[0.03] text-[0.65rem] leading-none text-[var(--admin-gold,#e8c872)] hover:bg-white/[0.08]"
             aria-expanded={expanded}
-            aria-label={expanded ? "Collapse guests" : "Edit guests"}
+            aria-label={expanded ? "Collapse details" : "View guests and responses"}
             onClick={onToggleExpand}
           >
             {expanded ? "▾" : "▸"}
@@ -594,64 +703,148 @@ function HouseholdTableBlockInner({
       {expanded ? (
         <tr className="bg-[rgb(4_10_20/0.65)]">
           <td colSpan={6} className="border-b border-white/[0.07] px-3 py-3 md:px-4">
-            <p className={`mb-2 text-[0.625rem] uppercase tracking-wide ${adminLabelClass}`}>
-              Guest names
-            </p>
-            <ul className="space-y-1.5">
-              {household.guests.map((guest) => (
-                <li
-                  key={guest.id}
-                  className="grid grid-cols-[1fr_auto] items-center gap-2 sm:max-w-xl"
-                >
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div>
+                <p className={`mb-2 text-[0.625rem] uppercase tracking-wide ${adminLabelClass}`}>
+                  Guest names
+                </p>
+                <ul className="space-y-1.5">
+                  {household.guests.map((guest) => (
+                    <li
+                      key={guest.id}
+                      className="grid grid-cols-[1fr_auto] items-center gap-2"
+                    >
+                      <input
+                        className={compactFieldClass}
+                        value={guestDrafts[guest.id] ?? guest.fullName}
+                        onChange={(e) =>
+                          setGuestDrafts((prev) => ({
+                            ...prev,
+                            [guest.id]: e.target.value,
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        disabled={pending}
+                        className="text-xs text-red-200/90 hover:text-red-100 disabled:opacity-40"
+                        onClick={() => void onRemoveGuest(guest.id, guest.fullName)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-2 grid grid-cols-[1fr_auto] items-center gap-2">
                   <input
                     className={compactFieldClass}
-                    value={guestDrafts[guest.id] ?? guest.fullName}
-                    onChange={(e) =>
-                      setGuestDrafts((prev) => ({
-                        ...prev,
-                        [guest.id]: e.target.value,
-                      }))
-                    }
+                    value={newGuestName}
+                    onChange={(e) => setNewGuestName(e.target.value)}
+                    placeholder="Add guest name"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && newGuestName.trim()) {
+                        e.preventDefault();
+                        void onAddGuest(household.id, newGuestName).then(() =>
+                          setNewGuestName(""),
+                        );
+                      }
+                    }}
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="secondary"
                     disabled={pending}
-                    className="text-xs text-red-200/90 hover:text-red-100 disabled:opacity-40"
-                    onClick={() => void onRemoveGuest(guest.id, guest.fullName)}
+                    className={tableBtnClass}
+                    onClick={() => {
+                      void onAddGuest(household.id, newGuestName).then(() =>
+                        setNewGuestName(""),
+                      );
+                    }}
                   >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-2 grid grid-cols-[1fr_auto] items-center gap-2 sm:max-w-xl">
-              <input
-                className={compactFieldClass}
-                value={newGuestName}
-                onChange={(e) => setNewGuestName(e.target.value)}
-                placeholder="Add guest name"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && newGuestName.trim()) {
-                    e.preventDefault();
-                    void onAddGuest(household.id, newGuestName).then(() =>
-                      setNewGuestName(""),
-                    );
-                  }
-                }}
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={pending}
-                className={tableBtnClass}
-                onClick={() => {
-                  void onAddGuest(household.id, newGuestName).then(() =>
-                    setNewGuestName(""),
-                  );
-                }}
-              >
-                Add
-              </Button>
+                    Add
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <p className={`mb-2 text-[0.625rem] uppercase tracking-wide ${adminLabelClass}`}>
+                  RSVP responses
+                </p>
+                {household.submittedAt ? (
+                  <p className={`mb-2 text-[0.625rem] ${adminMutedClass}`}>
+                    Submitted {new Date(household.submittedAt).toLocaleString()}
+                  </p>
+                ) : null}
+                {household.email ? (
+                  <p className={`mb-2 text-xs ${adminMutedClass}`}>{household.email}</p>
+                ) : null}
+                {household.messageToCouple ? (
+                  <p className="mb-2 text-xs text-[var(--admin-body,#d4dce8)]">
+                    <span className={adminLabelClass}>Message: </span>
+                    {household.messageToCouple}
+                  </p>
+                ) : null}
+                {household.songRequest ? (
+                  <p className="mb-2 text-xs text-[var(--admin-body,#d4dce8)]">
+                    <span className={adminLabelClass}>Song: </span>
+                    {household.songRequest}
+                  </p>
+                ) : null}
+                <div className="overflow-x-auto rounded-sm border border-white/10">
+                  <table className="w-full min-w-[16rem] text-left text-xs">
+                    <thead className="bg-white/[0.04] text-[0.5625rem] uppercase tracking-wide text-[var(--admin-muted,#9aa8bc)]">
+                      <tr>
+                        <th className="px-2 py-1.5 font-normal">Guest</th>
+                        {household.guests[0]?.events.map((event) => (
+                          <th key={event.eventId} className="px-2 py-1.5 font-normal">
+                            {event.eventTitle.replace(" & Reception", "")}
+                          </th>
+                        )) ?? null}
+                        <th className="hidden px-2 py-1.5 font-normal sm:table-cell">
+                          Dietary
+                        </th>
+                        <th className="hidden px-2 py-1.5 font-normal md:table-cell">
+                          A11y
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {household.guests.map((guest) => (
+                        <tr key={guest.id} className="border-t border-white/[0.06]">
+                          <td className="px-2 py-1.5 text-[var(--admin-body,#d4dce8)]">
+                            {guest.fullName}
+                          </td>
+                          {guest.events.map((event) => (
+                            <td
+                              key={event.eventId}
+                              className={cn(
+                                "px-2 py-1.5 tabular-nums",
+                                attendingClass(event.attending),
+                              )}
+                            >
+                              {formatAttending(event.attending)}
+                            </td>
+                          ))}
+                          <td className="hidden max-w-[8rem] truncate px-2 py-1.5 sm:table-cell">
+                            {guest.dietaryNotes || "—"}
+                          </td>
+                          <td className="hidden max-w-[8rem] truncate px-2 py-1.5 md:table-cell">
+                            {guest.accessibilityNotes || "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {household.rsvpStatus === "pending" &&
+                household.guests.every((guest) =>
+                  guest.events.every((event) => event.attending === "unknown"),
+                ) ? (
+                  <p className={`mt-2 text-xs ${adminMutedClass}`}>
+                    No RSVP submitted yet.
+                  </p>
+                ) : null}
+              </div>
             </div>
           </td>
         </tr>
