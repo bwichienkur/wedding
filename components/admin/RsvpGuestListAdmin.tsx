@@ -11,7 +11,13 @@ import {
   adminTableShellClass,
   adminTdClass,
   adminThClass,
+  adminToolbarControlClass,
+  adminToolbarSelectClass,
 } from "@/components/admin/admin-styles";
+import {
+  sumCeremonyAcrossHouseholds,
+  sumWelcomeAcrossHouseholds,
+} from "@/lib/rsvp/admin-attendance";
 import { cn } from "@/lib/cn";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
@@ -44,6 +50,9 @@ interface HouseholdRow {
   messageToCouple: string;
   songRequest: string;
   submittedAt: string | null;
+  welcomeAttendingCount: number;
+  ceremonyAttendingCount: number;
+  ceremonyGuestNames: string[];
   guests: GuestRow[];
 }
 
@@ -167,6 +176,14 @@ export function RsvpGuestListAdmin() {
 
   const rangeStart = filtered.length === 0 ? 0 : (pageIndex - 1) * pageSize + 1;
   const rangeEnd = Math.min(pageIndex * pageSize, filtered.length);
+
+  const attendanceTotals = useMemo(
+    () => ({
+      welcome: sumWelcomeAcrossHouseholds(filtered),
+      ceremony: sumCeremonyAcrossHouseholds(filtered),
+    }),
+    [filtered],
+  );
 
   async function createHousehold() {
     const guestNames = newGuestNames
@@ -379,47 +396,9 @@ export function RsvpGuestListAdmin() {
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-2">
-        {STATUS_FILTERS.map(({ value, label }) => (
-          <button
-            key={value}
-            type="button"
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-xs transition-colors",
-              statusFilter === value
-                ? "border-[var(--admin-gold,#e8c872)] bg-white/10 text-[var(--admin-gold-bright,#f5e6a8)]"
-                : "border-white/15 text-[var(--admin-body,#d4dce8)] hover:border-white/25",
-            )}
-            onClick={() => {
-              setStatusFilter(value);
-              setPage(1);
-            }}
-          >
-            {label}
-            <span className="ml-1.5 tabular-nums opacity-75">
-              {statusTotals[value]}
-            </span>
-          </button>
-        ))}
-        <Button
-          type="button"
-          variant="secondary"
-          className={`${tableBtnClass} ml-auto`}
-          disabled={pending}
-          onClick={() => void exportCsv()}
-        >
-          Export CSV
-        </Button>
-      </div>
-
-      <p className={`text-xs ${adminMutedClass}`}>
-        Expand a row to edit guest names and view each guest&apos;s ceremony, welcome,
-        and dietary responses.
-      </p>
-
-      <div className={`${adminTableShellClass} w-full sm:max-w-xl`}>
-        <div className="flex flex-col gap-2 border-b border-white/10 px-2 py-2 sm:flex-row sm:items-end sm:justify-between">
-          <label className="block min-w-0 flex-1 text-sm">
+      <div className={`${adminTableShellClass} w-full`}>
+        <div className="flex flex-col gap-3 border-b border-white/10 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-end">
+          <label className="block min-w-0 flex-1 text-sm sm:min-w-[12rem]">
             <span className={`mb-1 block ${adminLabelClass}`}>Search</span>
             <input
               className={`${adminFieldClass} !mt-0 !py-1.5 !text-xs`}
@@ -431,22 +410,66 @@ export function RsvpGuestListAdmin() {
               placeholder="Household or guest name"
             />
           </label>
-          <div className="flex shrink-0 items-center gap-2 self-end">
-            <Button
+          <label className="block w-full text-sm sm:w-48">
+            <span className={`mb-1 block ${adminLabelClass}`}>RSVP status</span>
+            <select
+              className={adminToolbarSelectClass}
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value as StatusFilter);
+                setPage(1);
+              }}
+            >
+              {STATUS_FILTERS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label} ({statusTotals[value]})
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="flex w-full flex-wrap gap-2 sm:ml-auto sm:w-auto">
+            <button
               type="button"
-              variant="secondary"
-              className={tableBtnClass}
+              className={adminToolbarControlClass}
               disabled={pending}
               onClick={() => void load()}
             >
               Refresh
-            </Button>
-            <p className={`text-xs ${adminMutedClass}`}>
-              {filtered.length} invitation{filtered.length === 1 ? "" : "s"} ·{" "}
-              {filtered.reduce((n, h) => n + h.guests.length, 0)} guests
-            </p>
+            </button>
+            <button
+              type="button"
+              className={adminToolbarControlClass}
+              disabled={pending}
+              onClick={() => void exportCsv()}
+            >
+              Export CSV
+            </button>
           </div>
         </div>
+
+        <div
+          className={`flex flex-wrap gap-x-4 gap-y-1 border-b border-white/10 px-3 py-2 text-xs ${adminMutedClass}`}
+        >
+          <span>
+            <span className={adminLabelClass}>Invitations </span>
+            {filtered.length}
+          </span>
+          <span>
+            <span className={adminLabelClass}>Welcome party </span>
+            {attendanceTotals.welcome} guest
+            {attendanceTotals.welcome === 1 ? "" : "s"}
+          </span>
+          <span>
+            <span className={adminLabelClass}>Ceremony </span>
+            {attendanceTotals.ceremony} guest
+            {attendanceTotals.ceremony === 1 ? "" : "s"}
+          </span>
+        </div>
+
+        <p className={`border-b border-white/10 px-3 py-2 text-xs ${adminMutedClass}`}>
+          Expand a row to edit guest names and view full RSVP detail. Ceremony names
+          column lists everyone marked attending the ceremony.
+        </p>
 
         <div className="overflow-x-auto">
           <table className={adminTableClass}>
@@ -464,6 +487,15 @@ export function RsvpGuestListAdmin() {
                 <th className={`${adminThClass} w-[5.25rem]`} scope="col">
                   RSVP
                 </th>
+                <th className={`${adminThClass} w-12 text-center`} scope="col">
+                  Welcome
+                </th>
+                <th className={`${adminThClass} w-12 text-center`} scope="col">
+                  Ceremony
+                </th>
+                <th className={`${adminThClass} hidden min-w-[8rem] md:table-cell`} scope="col">
+                  Ceremony names
+                </th>
                 <th className={`${adminThClass} hidden sm:table-cell w-12`} scope="col">
                   Code
                 </th>
@@ -476,7 +508,7 @@ export function RsvpGuestListAdmin() {
               {pageRows.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={9}
                     className={`${adminTdClass} py-10 text-center ${adminMutedClass}`}
                   >
                     No invitations match your search.
@@ -672,6 +704,28 @@ function HouseholdTableBlockInner({
             {household.rsvpStatus}
           </span>
         </td>
+        <td className={`${adminTdClass} text-center tabular-nums`}>
+          {household.welcomeAttendingCount > 0
+            ? household.welcomeAttendingCount
+            : "—"}
+        </td>
+        <td className={`${adminTdClass} text-center tabular-nums`}>
+          {household.ceremonyAttendingCount > 0
+            ? household.ceremonyAttendingCount
+            : "—"}
+        </td>
+        <td
+          className={`${adminTdClass} hidden max-w-[11rem] truncate md:table-cell`}
+          title={
+            household.ceremonyGuestNames.length
+              ? household.ceremonyGuestNames.join(", ")
+              : undefined
+          }
+        >
+          {household.ceremonyGuestNames.length
+            ? household.ceremonyGuestNames.join(", ")
+            : "—"}
+        </td>
         <td className={`${adminTdClass} hidden sm:table-cell`}>
           <span className="font-mono text-[0.5625rem] text-[var(--admin-muted,#9aa8bc)]">
             {household.invitationCodeHint ? `${household.invitationCodeHint}…` : "—"}
@@ -702,7 +756,7 @@ function HouseholdTableBlockInner({
       </tr>
       {expanded ? (
         <tr className="bg-[rgb(4_10_20/0.65)]">
-          <td colSpan={6} className="border-b border-white/[0.07] px-3 py-3 md:px-4">
+          <td colSpan={9} className="border-b border-white/[0.07] px-3 py-3 md:px-4">
             <div className="grid gap-6 lg:grid-cols-2">
               <div>
                 <p className={`mb-2 text-[0.625rem] uppercase tracking-wide ${adminLabelClass}`}>
