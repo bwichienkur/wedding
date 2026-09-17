@@ -15,6 +15,7 @@ import {
   guestAllowanceForHousehold,
   syncGuestRosterInMemory,
 } from "@/lib/rsvp/household-rsvp";
+import { deriveHouseholdRsvpStatus } from "@/components/rsvp/attendance-plan";
 import { scoreGuestNameMatch } from "@/lib/rsvp/matching";
 import { namesMatch, normalizeGuestName, sanitizeText } from "@/lib/rsvp/normalize";
 import {
@@ -236,11 +237,10 @@ export async function submitHouseholdRsvp(options: {
     notesByGuestId,
   });
 
-  const attendingValues = records.map((record) => record.attending);
-  let status: RsvpStatus = "complete";
-  if (attendingValues.every((value) => value === "no")) status = "declined";
-  else if (attendingValues.some((value) => value === "unknown")) status = "partial";
-  else if (attendingValues.some((value) => value === "no")) status = "partial";
+  const status: RsvpStatus = deriveHouseholdRsvpStatus({
+    ceremonyAttending,
+    welcomeAttending,
+  });
 
   await saveHouseholdResponses({
     householdId: options.householdId,

@@ -507,6 +507,12 @@ function YesNoChoice({
   onChange: (value: Exclude<HouseholdYesNo, "unknown">) => void;
   disabled?: boolean;
 }) {
+  const [pressed, setPressed] = useState(value);
+
+  useEffect(() => {
+    setPressed(value);
+  }, [value]);
+
   return (
     <fieldset disabled={disabled}>
       <legend className="font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
@@ -524,10 +530,13 @@ function YesNoChoice({
             type="button"
             className={cn(
               "invite-rsvp-segment flex-1",
-              value === choice && "is-active",
+              pressed === choice && "is-active",
             )}
-            aria-pressed={value === choice}
-            onClick={() => onChange(choice)}
+            aria-pressed={pressed === choice}
+            onClick={() => {
+              setPressed(choice);
+              onChange(choice);
+            }}
           >
             {text}
           </button>

@@ -1683,6 +1683,14 @@
     color: var(--invite-body);
   }
 
+  .invite-rsvp-flow button,
+  .invite-rsvp-flow select,
+  .invite-rsvp-flow input,
+  .invite-rsvp-flow textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   .invite-rsvp-stepper {
     margin-top: 1.5rem;
   }
@@ -1816,9 +1824,15 @@
     text-transform: uppercase;
     color: color-mix(in srgb, var(--invite-body-soft) 90%, white);
     transition:
-      background 0.15s ease,
-      border-color 0.15s ease,
-      color 0.15s ease;
+      background 80ms ease,
+      border-color 80ms ease,
+      color 80ms ease;
+  }
+
+  .invite-rsvp-segment:active:not(:disabled) {
+    border-color: rgb(201 162 77 / 0.85);
+    background: rgb(212 175 55 / 0.22);
+    color: var(--invite-gold-bright);
   }
 
   .invite-rsvp-segment.is-active {

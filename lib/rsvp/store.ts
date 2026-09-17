@@ -46,10 +46,10 @@ async function ensureStore(): Promise<void> {
 }
 
 export async function readRsvpDb(): Promise<RsvpDatabase> {
+  if (isSupabaseRsvpConfigured()) {
+    return readRsvpDbSupabase();
+  }
   return withRsvpDbCache(async () => {
-    if (isSupabaseRsvpConfigured()) {
-      return readRsvpDbSupabase();
-    }
     await ensureStore();
     const raw = await fs.readFile(DATA_FILE, "utf8");
     return JSON.parse(raw) as RsvpDatabase;
