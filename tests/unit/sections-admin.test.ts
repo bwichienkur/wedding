@@ -36,7 +36,7 @@ describe("resolveSiteSections", () => {
         party: { visible: false },
         story: {
           description: "Our story, in a few quiet chapters.",
-          title: "Bright & Lexi",
+          title: "Lexi & Bright",
         },
         rsvp: { visible: false },
       },
@@ -47,7 +47,7 @@ describe("resolveSiteSections", () => {
     expect(resolved.story.description).toBe(
       "Our story, in a few quiet chapters.",
     );
-    expect(resolved.story.title).toBe("Bright & Lexi");
+    expect(resolved.story.title).toBe("Lexi & Bright");
     // Required sections stay visible even if override says otherwise
     expect(resolved.rsvp.visible).toBe(true);
   });

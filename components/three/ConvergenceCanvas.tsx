@@ -34,7 +34,7 @@ export function ConvergenceCanvas() {
     <div ref={ref} className="h-[22rem] w-full sm:h-[28rem]">
       <CanvasShell
         className="h-full w-full"
-        ariaLabel="Bright and Lexi’s paths weaving into one golden thread"
+        ariaLabel="Lexi and Bright’s paths weaving into one golden thread"
         camera={{ position: [0.4, 0, 4.2], fov: 40 }}
       >
         <ConvergenceScene

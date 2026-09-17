@@ -54,7 +54,7 @@ describe("media validation", () => {
       muxUploadId: null,
       storagePath: "abc.jpg",
       publicUrl: "/api/media/file/abc",
-      alt: "Bright and Lexi",
+      alt: "Lexi and Bright",
       width: 1600,
       height: 2000,
       focalX: 50,

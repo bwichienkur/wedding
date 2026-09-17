@@ -6,7 +6,7 @@ describe("MonogramSvg", () => {
   it("exposes an accessible name by default", () => {
     render(<MonogramSvg />);
     expect(
-      screen.getByRole("img", { name: /Bright & Lexi monogram/i }),
+      screen.getByRole("img", { name: /Lexi & Bright monogram/i }),
     ).toBeInTheDocument();
   });
 

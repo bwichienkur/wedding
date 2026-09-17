@@ -54,7 +54,7 @@ export function buildIcsEvent(item: ScheduleItem): string | null {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Bright & Lexi//Wedding//EN",
+    "PRODID:-//Lexi & Bright//Wedding//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
