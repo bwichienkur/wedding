@@ -96,7 +96,7 @@ describe("rsvp service", () => {
       payload: {
         ceremonyAttending: "yes",
         welcomeAttending: "yes",
-        welcomeGuestCount: workspace!.guests.length,
+        welcomeGuestCount: workspace!.household.guestAllowance,
         guestRoster: workspace!.guests.map((guest) => ({
           id: guest.id,
           fullName: guest.fullName,

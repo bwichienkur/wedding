@@ -207,13 +207,10 @@ export async function submitHouseholdRsvp(options: {
     rosterGuests = synced.guests;
   }
 
-  const rosterSize = rosterGuests.length;
   let welcomeGuestCount = payload.welcomeGuestCount ?? 0;
   if (welcomeAttending === "yes") {
-    const welcomeMax =
-      ceremonyAttending === "yes" ? rosterSize : allowance;
     if (welcomeGuestCount < 1) throw new Error("INVALID_RESPONSE");
-    if (welcomeGuestCount > welcomeMax) throw new Error("INVALID_RESPONSE");
+    if (welcomeGuestCount !== allowance) throw new Error("INVALID_RESPONSE");
   } else {
     welcomeGuestCount = 0;
   }
