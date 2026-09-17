@@ -6,6 +6,7 @@ import {
   inferHouseholdWelcomeAttending,
   clampWelcomeGuestCount,
   initialWelcomeGuestCount,
+  deriveHouseholdRsvpStatus,
 } from "@/components/rsvp/attendance-plan";
 
 describe("household attendance", () => {
@@ -56,5 +57,20 @@ describe("household attendance", () => {
     ).toBe(2);
     expect(clampWelcomeGuestCount(99, 4)).toBe(4);
     expect(clampWelcomeGuestCount(0, 4)).toBe(4);
+  });
+
+  it("derives household RSVP status from ceremony and welcome answers", () => {
+    expect(
+      deriveHouseholdRsvpStatus({
+        ceremonyAttending: "yes",
+        welcomeAttending: "yes",
+      }),
+    ).toBe("complete");
+    expect(
+      deriveHouseholdRsvpStatus({
+        ceremonyAttending: "no",
+        welcomeAttending: "no",
+      }),
+    ).toBe("declined");
   });
 });

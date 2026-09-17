@@ -322,10 +322,21 @@ export function RsvpGuestListAdmin() {
               placeholder="Household or guest name"
             />
           </label>
-          <p className={`shrink-0 text-xs ${adminMutedClass}`}>
-            {filtered.length} invitation{filtered.length === 1 ? "" : "s"} ·{" "}
-            {filtered.reduce((n, h) => n + h.guests.length, 0)} guests
-          </p>
+          <div className="flex shrink-0 items-center gap-2 self-end">
+            <Button
+              type="button"
+              variant="secondary"
+              className={tableBtnClass}
+              disabled={pending}
+              onClick={() => void load()}
+            >
+              Refresh
+            </Button>
+            <p className={`text-xs ${adminMutedClass}`}>
+              {filtered.length} invitation{filtered.length === 1 ? "" : "s"} ·{" "}
+              {filtered.reduce((n, h) => n + h.guests.length, 0)} guests
+            </p>
+          </div>
         </div>
 
         <div className="overflow-x-auto">

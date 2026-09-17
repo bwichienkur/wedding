@@ -91,6 +91,17 @@ export function initialWelcomeGuestCount(options: {
   return max;
 }
 
+/** Household answered both events — not derived from per-guest welcome head count. */
+export function deriveHouseholdRsvpStatus(options: {
+  ceremonyAttending: "yes" | "no";
+  welcomeAttending: "yes" | "no";
+}): "complete" | "declined" {
+  if (options.ceremonyAttending === "no" && options.welcomeAttending === "no") {
+    return "declined";
+  }
+  return "complete";
+}
+
 export function householdRsvpSummary(options: {
   ceremonyAttending: HouseholdYesNo;
   welcomeAttending: HouseholdYesNo;
