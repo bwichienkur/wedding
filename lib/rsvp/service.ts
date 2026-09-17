@@ -332,32 +332,45 @@ export async function getAdminRsvpSummary() {
 }
 
 export async function exportRsvpCsv(): Promise<string> {
-  const summary = await getAdminRsvpSummary();
+  const { listAdminGuestHouseholds } = await import("@/lib/rsvp/guest-admin");
+  const households = await listAdminGuestHouseholds();
   const header = [
     "household",
     "status",
     "email",
-    "guests",
+    "welcome_attending_count",
+    "ceremony_attending_count",
+    "ceremony_guest_names",
+    "listed_guests",
     "dietary",
     "accessibility",
     "song",
     "message",
     "updatedAt",
   ];
-  const rows = summary.households.map((household) =>
-    [
+  const rows = households.map((household) => {
+    const dietary = household.guests
+      .map((guest) => guest.dietaryNotes)
+      .filter(Boolean);
+    const accessibility = household.guests
+      .map((guest) => guest.accessibilityNotes)
+      .filter(Boolean);
+    return [
       household.displayName,
       household.rsvpStatus,
       household.email ?? "",
-      String(household.guestCount),
-      household.dietary.join(" | "),
-      household.accessibility.join(" | "),
+      String(household.welcomeAttendingCount),
+      String(household.ceremonyAttendingCount),
+      household.ceremonyGuestNames.join("; "),
+      String(household.guests.length),
+      dietary.join(" | "),
+      accessibility.join(" | "),
       household.songRequest,
       household.messageToCouple,
       household.updatedAt,
     ]
       .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-      .join(","),
-  );
+      .join(",");
+  });
   return [header.join(","), ...rows].join("\n");
 }

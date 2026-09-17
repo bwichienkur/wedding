@@ -2,6 +2,11 @@ import "server-only";
 
 import { hashInvitationCode } from "@/lib/rsvp/crypto";
 import { filterStandardEvents, STANDARD_EVENT_IDS } from "@/lib/rsvp/event-config";
+import {
+  ceremonyGuestCount,
+  ceremonyGuestNames,
+  welcomeGuestCount,
+} from "@/lib/rsvp/admin-attendance";
 import { normalizeGuestName } from "@/lib/rsvp/normalize";
 import {
   appendAudit,
@@ -35,6 +40,9 @@ export interface AdminHouseholdWithGuests {
   messageToCouple: string;
   songRequest: string;
   submittedAt: string | null;
+  welcomeAttendingCount: number;
+  ceremonyAttendingCount: number;
+  ceremonyGuestNames: string[];
   guests: Array<{
     id: string;
     fullName: string;
@@ -61,6 +69,29 @@ export async function listAdminGuestHouseholds(): Promise<AdminHouseholdWithGues
         .filter((submission) => submission.householdId === household.id)
         .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))[0];
 
+      const guests = householdGuests.map((guest) => {
+        const guestResponses = db.responses.filter(
+          (response) => response.guestId === guest.id,
+        );
+        const sample = guestResponses[0];
+        return {
+          id: guest.id,
+          fullName: guest.fullName,
+          isChild: guest.isChild,
+          isPlusOne: guest.isPlusOne,
+          sortOrder: guest.sortOrder,
+          events: standardEvents.map((event) => ({
+            eventId: event.id,
+            eventTitle: event.title,
+            attending:
+              guestResponses.find((response) => response.eventId === event.id)
+                ?.attending ?? "unknown",
+          })),
+          dietaryNotes: sample?.dietaryNotes ?? "",
+          accessibilityNotes: sample?.accessibilityNotes ?? "",
+        };
+      });
+
       return {
         id: household.id,
         displayName: household.displayName,
@@ -74,28 +105,10 @@ export async function listAdminGuestHouseholds(): Promise<AdminHouseholdWithGues
         messageToCouple: latest?.messageToCouple ?? "",
         songRequest: latest?.songRequest ?? "",
         submittedAt: latest?.submittedAt ?? null,
-        guests: householdGuests.map((guest) => {
-          const guestResponses = db.responses.filter(
-            (response) => response.guestId === guest.id,
-          );
-          const sample = guestResponses[0];
-          return {
-            id: guest.id,
-            fullName: guest.fullName,
-            isChild: guest.isChild,
-            isPlusOne: guest.isPlusOne,
-            sortOrder: guest.sortOrder,
-            events: standardEvents.map((event) => ({
-              eventId: event.id,
-              eventTitle: event.title,
-              attending:
-                guestResponses.find((response) => response.eventId === event.id)
-                  ?.attending ?? "unknown",
-            })),
-            dietaryNotes: sample?.dietaryNotes ?? "",
-            accessibilityNotes: sample?.accessibilityNotes ?? "",
-          };
-        }),
+        welcomeAttendingCount: welcomeGuestCount(guests),
+        ceremonyAttendingCount: ceremonyGuestCount(guests),
+        ceremonyGuestNames: ceremonyGuestNames(guests),
+        guests,
       };
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName));

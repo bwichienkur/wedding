@@ -1,5 +1,7 @@
 /** Shared Tailwind classes for admin panels (navy / gold theme). */
 
+import { cn } from "@/lib/cn";
+
 export const adminEyebrowClass =
   "font-sans text-xs uppercase tracking-[0.22em] text-[var(--admin-gold,#e8c872)]";
 
@@ -36,7 +38,7 @@ export const adminTableShellClass =
   "admin-glass-card overflow-hidden rounded-sm";
 
 export const adminTableClass =
-  "w-full border-collapse text-xs max-sm:table-auto sm:table-fixed sm:max-w-xl";
+  "w-full border-collapse text-xs max-sm:table-auto sm:table-fixed";
 
 export const adminThClass =
   "whitespace-nowrap border-b border-[rgb(212_175_55/0.22)] bg-[rgb(4_10_20/0.85)] px-2 py-1.5 text-left font-sans text-[0.625rem] font-medium uppercase tracking-[0.12em] text-[var(--admin-gold,#e8c872)]";
@@ -46,3 +48,12 @@ export const adminTdClass =
 
 export const adminTableFootClass =
   "flex flex-col gap-3 border-t border-white/10 bg-[rgb(4_10_20/0.5)] px-3 py-3 sm:flex-row sm:items-center sm:justify-between";
+
+/** Compact controls for admin toolbars (matches select height). */
+export const adminToolbarControlClass =
+  "admin-input inline-flex h-9 min-h-9 w-full items-center justify-center rounded-sm px-3 text-xs outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--admin-gold,#e8c872)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto";
+
+export const adminToolbarSelectClass = cn(
+  adminToolbarControlClass,
+  "cursor-pointer justify-start bg-[rgb(4_10_20/0.65)] py-1.5",
+);
