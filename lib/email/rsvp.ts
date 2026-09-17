@@ -26,7 +26,7 @@ export async function sendRsvpConfirmationEmail(options: {
   }
 
   const from =
-    process.env.EMAIL_FROM || "Bright & Lexi <onboarding@resend.dev>";
+    process.env.EMAIL_FROM || "Lexi & Bright <onboarding@resend.dev>";
   const subject = options.isUpdate
     ? `RSVP updated · ${wedding.couple.displayName}`
     : `RSVP received · ${wedding.couple.displayName}`;
@@ -84,7 +84,7 @@ export async function sendAdminRsvpNotification(options: {
   if (!resend || !adminTo) return;
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "Bright & Lexi <onboarding@resend.dev>",
+    from: process.env.EMAIL_FROM || "Lexi & Bright <onboarding@resend.dev>",
     to: adminTo,
     subject: `RSVP ${options.status}: ${options.householdName}`,
     text: `${options.householdName} submitted an RSVP (${options.status}).`,

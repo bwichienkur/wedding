@@ -75,7 +75,7 @@ export function InviteGallerySection({
   cards,
   eyebrow = "Gallery",
   title = "Our moments",
-  description = "A few favorites from Bright and Lexi’s story.",
+  description = "A few favorites from Lexi and Bright’s story.",
 }: {
   cards: MemoryCard[];
   eyebrow?: string;

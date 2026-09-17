@@ -1,6 +1,6 @@
-# Bright & Lexi — Wedding Website
+# Lexi & Bright — Wedding Website
 
-Editorial wedding experience for **Bright & Lexi** · May 15, 2027 · Bella Cosa, Lake Wales, Florida.
+Editorial wedding experience for **Lexi & Bright** · May 15, 2027 · Bella Cosa, Lake Wales, Florida.
 
 Concept: **The Golden Thread** — an interactive love story that remains a practical guest guide.
 

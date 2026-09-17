@@ -158,7 +158,7 @@ export function MemoryGallerySection({
   cards,
   eyebrow = "Memories",
   title = "Moments we treasure",
-  description = "Selected photographs from Bright and Lexi’s story — a calm timeline you can browse at your own pace.",
+  description = "Selected photographs from Lexi and Bright’s story — a calm timeline you can browse at your own pace.",
 }: {
   cards: MemoryCard[];
   eyebrow?: string;

@@ -59,7 +59,7 @@ export const storyMilestones: StoryMilestone[] = [
     locationLabel: `${wedding.wedding.venueName} · ${wedding.wedding.city}, ${wedding.wedding.region}`,
     image: {
       src: "/images/story/wedding.jpg",
-      alt: "Bright and Lexi smiling together in golden light before their wedding day",
+      alt: "Lexi and Bright smiling together in golden light before their wedding day",
       width: 2400,
       height: 1600,
       focalPoint: { x: 52, y: 42 },

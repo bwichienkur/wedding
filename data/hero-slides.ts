@@ -15,10 +15,10 @@ export interface HeroSlide {
 export const heroSlides: HeroSlide[] = [
   {
     id: "hero-1",
-    label: "Bright and Lexi — photograph coming soon",
+    label: "Lexi and Bright — photograph coming soon",
     image: {
       src: "/images/placeholders/story-met.svg",
-      alt: "Placeholder for a photograph of Bright and Lexi together",
+      alt: "Placeholder for a photograph of Lexi and Bright together",
       width: 1600,
       height: 2000,
       focalPoint: { x: 50, y: 40 },
@@ -30,7 +30,7 @@ export const heroSlides: HeroSlide[] = [
     label: "A moment from the relationship — photograph coming soon",
     image: {
       src: "/images/placeholders/story-anniversary.svg",
-      alt: "Placeholder for a photograph around Bright and Lexi’s dating anniversary",
+      alt: "Placeholder for a photograph around Lexi and Bright’s dating anniversary",
       width: 1600,
       height: 1067,
       focalPoint: { x: 50, y: 45 },
@@ -42,7 +42,7 @@ export const heroSlides: HeroSlide[] = [
     label: "Another favorite — photograph coming soon",
     image: {
       src: "/images/placeholders/story-chapter.svg",
-      alt: "Placeholder for a favorite photograph of Bright and Lexi",
+      alt: "Placeholder for a favorite photograph of Lexi and Bright",
       width: 1600,
       height: 1067,
       focalPoint: { x: 50, y: 50 },

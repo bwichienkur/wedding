@@ -28,7 +28,7 @@ export function AdminPageShell({
           <Link href="/admin" className="block">
             <p className={adminEyebrowClass}>Administration</p>
             <p className="mt-1 font-display text-xl text-[var(--admin-gold-bright,#f5e6a8)]">
-              Bright &amp; Lexi
+              Lexi &amp; Bright
             </p>
           </Link>
           <nav

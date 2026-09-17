@@ -62,7 +62,7 @@ export function Envelope({ phase, reduceMotion, onActivate }: EnvelopeProps) {
             draggable={false}
           />
           <div className="intro-envelope-copy pointer-events-none absolute inset-0 z-[4]">
-            <p className="intro-envelope-names">For Bright and Lexi</p>
+            <p className="intro-envelope-names">For Lexi and Bright</p>
             <p className="intro-envelope-tap">Tap to open</p>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}

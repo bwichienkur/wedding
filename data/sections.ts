@@ -54,7 +54,7 @@ export const siteSectionDefinitions: SiteSectionDefinition[] = [
     defaultEyebrow: "Gallery",
     defaultTitle: "Our moments",
     defaultDescription:
-      "Photographs from Bright and Lexi’s story.",
+      "Photographs from Lexi and Bright’s story.",
     hasDescription: true,
   },
   {

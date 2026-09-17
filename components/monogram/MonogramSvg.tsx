@@ -8,7 +8,7 @@ export interface MonogramSvgProps {
 }
 
 /**
- * Static monogram — interlaced hairline strokes with B & L.
+ * Static monogram — interlaced hairline strokes with L & B.
  * Prefer this over metallic TubeGeometry; reads as print/embroidery, not CGI.
  */
 export function MonogramSvg({

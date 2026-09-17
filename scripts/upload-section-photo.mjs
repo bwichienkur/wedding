@@ -104,7 +104,7 @@ async function main() {
         : placementKey === "story.how-we-met"
           ? "Bright dipping Lexi on an outdoor promenade when they met"
           : placementKey === "story.wedding"
-            ? "Bright and Lexi smiling together in golden light before their wedding day"
+            ? "Lexi and Bright smiling together in golden light before their wedding day"
             : title,
     width: 2400,
     height: 1600,

@@ -7,10 +7,10 @@ import type { WeddingConfig } from "./types";
  */
 export const wedding: WeddingConfig = {
   couple: {
-    partnerOne: "Bright",
-    partnerTwo: "Lexi",
-    displayName: "Bright & Lexi",
-    monogramLetters: ["B", "L"],
+    partnerOne: "Lexi",
+    partnerTwo: "Bright",
+    displayName: "Lexi & Bright",
+    monogramLetters: ["L", "B"],
   },
   wedding: {
     dateISO: "2027-05-15",
@@ -46,9 +46,9 @@ export const wedding: WeddingConfig = {
     skipDetailsLabel: "Skip to wedding details",
     rsvpLabel: "RSVP",
     inviteHeadline:
-      "You’re cordially invited to the wedding of Bright & Lexi",
+      "You’re cordially invited to the wedding of Lexi & Bright",
     invitePreamble: "You’re cordially invited to the wedding of",
-    inviteNames: "Bright & Lexi",
+    inviteNames: "Lexi & Bright",
     inviteSubline: "May 15, 2027 · Bella Cosa · Lake Wales, Florida",
     tapHint: "Tap to open",
     /** Minimal on-screen cue on the video opening (full-screen tap still opens). */
@@ -57,7 +57,7 @@ export const wedding: WeddingConfig = {
   },
   closing: {
     message:
-      "Add a short closing message from Bright and Lexi to their guests.",
+      "Add a short closing message from Lexi and Bright to their guests.",
     messageIsPlaceholder: true,
   },
   proposal: {
@@ -82,9 +82,9 @@ export const wedding: WeddingConfig = {
   site: {
     mode: "public",
     canonicalUrl: "https://example.com",
-    title: "Bright & Lexi · May 15, 2027",
+    title: "Lexi & Bright · May 15, 2027",
     description:
-      "Bright and Lexi are getting married on May 15, 2027 at Bella Cosa in Lake Wales, Florida.",
+      "Lexi and Bright are getting married on May 15, 2027 at Bella Cosa in Lake Wales, Florida.",
   },
   featureFlags: {
     cinematicEntry: true,

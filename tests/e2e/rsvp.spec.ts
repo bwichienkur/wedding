@@ -10,7 +10,7 @@ test.describe("RSVP", () => {
   }) => {
     await page.goto("/rsvp");
     await expect(
-      page.getByRole("heading", { name: "Bright & Lexi" }),
+      page.getByRole("heading", { name: "Lexi & Bright" }),
     ).toBeVisible();
 
     await page

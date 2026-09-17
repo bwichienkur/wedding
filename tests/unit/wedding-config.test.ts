@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 describe("wedding config", () => {
   it("includes confirmed couple and ceremony facts only", () => {
-    expect(wedding.couple.displayName).toBe("Bright & Lexi");
+    expect(wedding.couple.displayName).toBe("Lexi & Bright");
     expect(wedding.wedding.dateISO).toBe("2027-05-15");
     expect(wedding.wedding.venueName).toBe("Bella Cosa");
     expect(wedding.anniversary.dating.dateISO).toBe("2025-03-20");

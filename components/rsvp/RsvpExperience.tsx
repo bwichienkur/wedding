@@ -727,7 +727,7 @@ function InvitationFormStep({
           })}
           <label className="block text-sm">
             <span className="mb-2 block font-sans text-xs uppercase tracking-[0.16em] text-invite-gold">
-              Message to Bright & Lexi
+              Message to {wedding.couple.displayName}
             </span>
             <textarea
               className="invite-faq-input min-h-28 resize-y"

@@ -15,7 +15,7 @@ export const travel: TravelInfo = {
       bookingCode: "BLW",
       bookingDeadline: "April 10, 2027",
       notes:
-        "Use discount code BLW when booking. Mention Bright & Lexi’s wedding. Reserve by April 10, 2027.",
+        "Use discount code BLW when booking. Mention Lexi & Bright’s wedding. Reserve by April 10, 2027.",
     },
   ],
   transportation:
