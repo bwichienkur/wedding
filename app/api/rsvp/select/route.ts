@@ -5,6 +5,7 @@ import {
   resolveHouseholdFromToken,
 } from "@/lib/rsvp/service";
 import { z } from "zod";
+import { rsvpUnavailableResponse } from "@/lib/rsvp/api-errors";
 
 const selectSchema = z.object({
   confirmationToken: z.string().min(1),
@@ -41,9 +42,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ workspace });
   } catch (error) {
     console.error("rsvp.select failed", error);
-    return NextResponse.json(
-      { error: "Unable to open invitation right now." },
-      { status: 503 },
-    );
+    const body = rsvpUnavailableResponse(error);
+    return NextResponse.json({ error: body.error }, { status: body.status });
   }
 }

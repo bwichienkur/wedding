@@ -17,6 +17,7 @@ import { RsvpStepper } from "@/components/rsvp/RsvpStepper";
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import type { Attending, EventRecord, HouseholdCandidate } from "@/lib/rsvp/types";
+import { fetchRsvpJson, RSVP_TRY_AGAIN_MESSAGE } from "@/lib/rsvp/fetch-rsvp";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface WorkspaceGuest {
@@ -179,17 +180,16 @@ export function RsvpExperience() {
     setSearching(true);
     setError(null);
     try {
-      const response = await fetch("/api/rsvp/lookup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-      });
-      const data = (await response.json()) as {
+      const { response, data } = await fetchRsvpJson<{
         candidates?: HouseholdCandidate[];
         workspace?: Workspace;
         message?: string;
         error?: string;
-      };
+      }>("/api/rsvp/lookup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
       if (!response.ok) {
         setError(data.error ?? "Unable to look up invitation.");
         return;
@@ -215,7 +215,7 @@ export function RsvpExperience() {
         setStep("select");
       }
     } catch {
-      setError("Unable to look up invitation right now.");
+      setError(RSVP_TRY_AGAIN_MESSAGE);
     } finally {
       setSearching(false);
     }
@@ -225,15 +225,14 @@ export function RsvpExperience() {
     setOpening(true);
     setError(null);
     try {
-      const response = await fetch("/api/rsvp/select", {
+      const { response, data } = await fetchRsvpJson<{
+        workspace?: Workspace;
+        error?: string;
+      }>("/api/rsvp/select", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ confirmationToken: candidate.confirmationToken }),
       });
-      const data = (await response.json()) as {
-        workspace?: Workspace;
-        error?: string;
-      };
       if (!response.ok || !data.workspace) {
         setError(data.error ?? "Unable to open invitation.");
         return;
@@ -241,7 +240,7 @@ export function RsvpExperience() {
       applyWorkspace(data.workspace);
       setStep("form");
     } catch {
-      setError("Unable to open invitation.");
+      setError(RSVP_TRY_AGAIN_MESSAGE);
     } finally {
       setOpening(false);
     }

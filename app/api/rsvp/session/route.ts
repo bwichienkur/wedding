@@ -4,6 +4,7 @@ import {
   parseHouseholdSession,
 } from "@/lib/rsvp/crypto";
 import { getHouseholdWorkspace } from "@/lib/rsvp/service";
+import { rsvpUnavailableResponse } from "@/lib/rsvp/api-errors";
 import { cookies } from "next/headers";
 
 export async function GET() {
@@ -17,7 +18,8 @@ export async function GET() {
     return NextResponse.json({ workspace });
   } catch (error) {
     console.error("rsvp.session failed", error);
-    return NextResponse.json({ workspace: null }, { status: 503 });
+    const body = rsvpUnavailableResponse(error);
+    return NextResponse.json({ workspace: null, error: body.error }, { status: body.status });
   }
 }
 
