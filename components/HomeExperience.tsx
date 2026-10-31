@@ -96,13 +96,8 @@ export function HomeExperience({
     link.rel = "prefetch";
     link.href = INVITE_SCROLL_BG_VIDEO;
     document.head.appendChild(link);
-    const songLink = document.createElement("link");
-    songLink.rel = "prefetch";
-    songLink.href = "/api/media/our-song";
-    document.head.appendChild(songLink);
     return () => {
       link.remove();
-      songLink.remove();
     };
   }, []);
 
@@ -114,7 +109,7 @@ export function HomeExperience({
         onRevealStart={beginReveal}
         onUserActivate={startOurSongFromGesture}
       />
-      <AmbientBackground active={siteRevealed} warm />
+      <AmbientBackground active={introDone && siteRevealed} warm={siteRevealed} />
       <div
         className={cn(
           "invite-experience relative z-[1] transition-opacity duration-700 ease-out",
