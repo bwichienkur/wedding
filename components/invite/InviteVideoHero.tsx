@@ -1,6 +1,7 @@
 "use client";
 
 import { InviteDivider } from "@/components/invite/InviteDecor";
+import { OurSongPlayer } from "@/components/invite/OurSongPlayer";
 import { wedding } from "@/data/wedding";
 
 /** Hero copy over the fixed scroll background (no separate hero video). */
@@ -24,6 +25,7 @@ export function InviteVideoHero() {
             <p className="invite-hero-stack-occasion">Wedding Day</p>
             <InviteDivider className="invite-hero-stack-divider my-0 w-40" />
             <p className="invite-hero-stack-date">{dateUpper}</p>
+            <OurSongPlayer className="mt-6" />
           </div>
         </div>
       </div>

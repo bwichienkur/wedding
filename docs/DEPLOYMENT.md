@@ -47,6 +47,7 @@ See [`docs/TESTING.md`](./TESTING.md).
 | `WEDDING_ADMIN_SESSION_SECRET` | Signed admin sessions |
 | `BLOB_READ_WRITE_TOKEN` | Persistent photo uploads (Vercel Blob) |
 | `RSVP_SESSION_SECRET` | Household RSVP sessions |
+| `OUR_SONG_BLOB_PATH` or `OUR_SONG_BLOB_URL` | Hero “Play · Ordinary” from Vercel Blob |
 | `MUX_TOKEN_ID` / `MUX_TOKEN_SECRET` | Video uploads |
 | `MUX_WEBHOOK_SECRET` | Webhook verification |
 | `MUX_SIGNING_KEY_*` | Private video playback |

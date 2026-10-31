@@ -20,6 +20,8 @@ Replace placeholders with approved photography and films. Never commit large ori
 | Handwritten notes | — | — | 2x display | PNG/WebP/SVG | ≤150KB | — | Transcript in text |
 | Optional audio | — | — | — | AAC/MP3 | Short clips | — | Explicit play only |
 
+Host the hero **Play · Ordinary** button via **Vercel Blob** (`OUR_SONG_BLOB_PATH` / `OUR_SONG_BLOB_URL`) or local **`public/music/ordinary.mp3`**.
+
 ## Status
 
 All current public images are intentional editorial placeholders under `public/images/placeholders/`.
