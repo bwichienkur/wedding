@@ -79,30 +79,21 @@ export function HomeExperience({
   const showRsvp = show("rsvp");
 
   useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "prefetch";
-    link.href = INVITE_SCROLL_BG_VIDEO;
-    document.head.appendChild(link);
+    const videoLink = document.createElement("link");
+    videoLink.rel = "prefetch";
+    videoLink.href = INVITE_SCROLL_BG_VIDEO;
+    document.head.appendChild(videoLink);
     const songLink = document.createElement("link");
-    songLink.rel = "prefetch";
+    songLink.rel = "preload";
+    songLink.as = "fetch";
     songLink.href = "/api/media/our-song";
+    songLink.type = "audio/mpeg";
     document.head.appendChild(songLink);
     return () => {
-      link.remove();
+      videoLink.remove();
       songLink.remove();
     };
   }, []);
-
-  useEffect(() => {
-    const onFirstGesture = () => startOurSongFromGesture();
-    window.addEventListener("pointerdown", onFirstGesture, {
-      once: true,
-      capture: true,
-    });
-    return () => {
-      window.removeEventListener("pointerdown", onFirstGesture, { capture: true });
-    };
-  }, [startOurSongFromGesture]);
 
   return (
     <>

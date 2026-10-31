@@ -104,8 +104,9 @@ export function CinematicEntry({
   });
 
   const activate = useCallback(() => {
+    onUserActivate?.();
     activateIntro();
-  }, [activateIntro]);
+  }, [activateIntro, onUserActivate]);
 
   useEffect(() => {
     if (!isClient || removed) return;
@@ -134,13 +135,14 @@ export function CinematicEntry({
   useEffect(() => {
     if (!isClient) return;
     if (!wedding.featureFlags.cinematicEntry || forceSkip) {
+      onUserActivate?.();
       startReveal();
       if (!completedRef.current) {
         completedRef.current = true;
         onComplete();
       }
     }
-  }, [isClient, forceSkip, onComplete, startReveal]);
+  }, [isClient, forceSkip, onComplete, onUserActivate, startReveal]);
 
   function skipToDetails() {
     onUserActivate?.();
