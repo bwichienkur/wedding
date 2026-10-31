@@ -2,6 +2,7 @@ import "server-only";
 
 import { getSupabaseAdmin } from "@/lib/rsvp/supabase-client";
 import { ensureSupabaseRsvpSeed } from "@/lib/rsvp/seed-supabase";
+import { invalidateRsvpLookupIndexCache } from "@/lib/rsvp/lookup-index-cache";
 import {
   type ReadRsvpDbOptions,
   resolveReadRsvpDbOptions,
@@ -306,6 +307,8 @@ export async function saveHouseholdResponsesSupabase(options: {
     created_at: options.audit.createdAt,
   });
   if (auditError) throw new Error(auditError.message);
+
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function appendAuditSupabase(
@@ -393,6 +396,7 @@ export async function createHouseholdAdminSupabase(options: {
     );
     if (gErr) throw new Error(gErr.message);
   }
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function deleteHouseholdAdminSupabase(
@@ -404,6 +408,7 @@ export async function deleteHouseholdAdminSupabase(
     .delete()
     .eq("id", householdId);
   if (error) throw new Error(error.message);
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function createGuestAdminSupabase(guest: Guest): Promise<void> {
@@ -428,12 +433,14 @@ export async function createGuestAdminSupabase(guest: Guest): Promise<void> {
     .from("households")
     .update({ updated_at: new Date().toISOString() })
     .eq("id", guest.householdId);
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function deleteGuestAdminSupabase(guestId: string): Promise<void> {
   const supabase = getSupabaseAdmin();
   const { error } = await supabase.from("guests").delete().eq("id", guestId);
   if (error) throw new Error(error.message);
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function updateHouseholdAdminRecordSupabase(
@@ -471,6 +478,7 @@ export async function updateHouseholdAdminRecordSupabase(
     .update(row)
     .eq("id", householdId);
   if (error) throw new Error(error.message);
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function replaceHouseholdGuestsSupabase(
@@ -537,6 +545,7 @@ export async function replaceHouseholdGuestsSupabase(
     .from("households")
     .update({ updated_at: new Date().toISOString() })
     .eq("id", householdId);
+  invalidateRsvpLookupIndexCache();
 }
 
 export async function updateGuestAdminSupabase(
@@ -550,4 +559,5 @@ export async function updateGuestAdminSupabase(
   if (patch.isChild !== undefined) row.is_child = patch.isChild;
   const { error } = await supabase.from("guests").update(row).eq("id", guestId);
   if (error) throw new Error(error.message);
+  invalidateRsvpLookupIndexCache();
 }

@@ -19,26 +19,36 @@ import { deriveHouseholdRsvpStatus } from "@/components/rsvp/attendance-plan";
 import { scoreGuestNameMatch } from "@/lib/rsvp/matching";
 import { namesMatch, normalizeGuestName, sanitizeText } from "@/lib/rsvp/normalize";
 import {
+  readHouseholdWorkspaceSliceSupabase,
+  readRsvpLookupIndexSupabase,
+} from "@/lib/rsvp/lookup-supabase";
+import {
   readRsvpDb,
   RSVP_GUEST_READ_OPTIONS,
   RSVP_LOOKUP_READ_OPTIONS,
   replaceHouseholdGuests,
   saveHouseholdResponses,
 } from "@/lib/rsvp/store";
+import { isSupabaseRsvpConfigured } from "@/lib/rsvp/supabase-env";
 import type {
   GuestResponse,
   HouseholdCandidate,
+  RsvpDatabase,
   RsvpStatus,
 } from "@/lib/rsvp/types";
 import { submitRsvpSchema } from "@/lib/rsvp/types";
 import { wedding } from "@/data/wedding";
 import type { z } from "zod";
 
-export async function lookupHouseholds(query: string): Promise<{
+type LookupDbSlice = Pick<RsvpDatabase, "events" | "households" | "guests">;
+
+export function lookupHouseholdsInDatabase(
+  db: LookupDbSlice,
+  query: string,
+): {
   candidates: HouseholdCandidate[];
   ambiguous: boolean;
-}> {
-  const db = await readRsvpDb(RSVP_LOOKUP_READ_OPTIONS);
+} {
   const trimmed = query.trim();
   const normalized = normalizeGuestName(trimmed);
   const maybeCode = trimmed.toUpperCase().replace(/\s+/g, "");
@@ -101,14 +111,25 @@ export async function lookupHouseholds(query: string): Promise<{
   return { candidates, ambiguous: candidates.length > 1 };
 }
 
-export async function resolveHouseholdFromToken(
-  token: string,
-): Promise<string | null> {
-  return parseConfirmationToken(token);
+export async function lookupHouseholds(query: string): Promise<{
+  candidates: HouseholdCandidate[];
+  ambiguous: boolean;
+}> {
+  if (isSupabaseRsvpConfigured()) {
+    const index = await readRsvpLookupIndexSupabase();
+    return lookupHouseholdsInDatabase(index, query);
+  }
+  const db = await readRsvpDb(RSVP_LOOKUP_READ_OPTIONS);
+  return lookupHouseholdsInDatabase(db, query);
 }
 
-export async function getHouseholdWorkspace(householdId: string) {
-  const db = await readRsvpDb(RSVP_GUEST_READ_OPTIONS);
+function buildHouseholdWorkspace(
+  householdId: string,
+  db: Pick<
+    RsvpDatabase,
+    "events" | "mealOptions" | "households" | "guests" | "responses"
+  >,
+) {
   const household = db.households.find((item) => item.id === householdId);
   if (!household) return null;
 
@@ -155,6 +176,22 @@ export async function getHouseholdWorkspace(householdId: string) {
     deadlineLabel: wedding.rsvp.deadlineLabel,
     deadlineIsPlaceholder: wedding.rsvp.deadlineIsPlaceholder,
   };
+}
+
+export async function resolveHouseholdFromToken(
+  token: string,
+): Promise<string | null> {
+  return parseConfirmationToken(token);
+}
+
+export async function getHouseholdWorkspace(householdId: string) {
+  if (isSupabaseRsvpConfigured()) {
+    const slice = await readHouseholdWorkspaceSliceSupabase(householdId);
+    if (!slice) return null;
+    return buildHouseholdWorkspace(householdId, slice);
+  }
+  const db = await readRsvpDb(RSVP_GUEST_READ_OPTIONS);
+  return buildHouseholdWorkspace(householdId, db);
 }
 
 function isPastDeadline(): boolean {

@@ -9,6 +9,8 @@ import {
 import { lookupRequestSchema } from "@/lib/rsvp/types";
 import { appendAudit } from "@/lib/rsvp/store";
 
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
