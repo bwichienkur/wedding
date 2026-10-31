@@ -104,9 +104,8 @@ export function CinematicEntry({
   });
 
   const activate = useCallback(() => {
-    onUserActivate?.();
     activateIntro();
-  }, [activateIntro, onUserActivate]);
+  }, [activateIntro]);
 
   useEffect(() => {
     if (!isClient || removed) return;
@@ -216,6 +215,7 @@ export function CinematicEntry({
         phase={phase}
         reduceMotion={Boolean(reduceMotion)}
         onActivate={activate}
+        onActivatePointerDown={onUserActivate}
         videoRef={videoRef}
         openingVideoPlaying={openingVideoPlaying}
       />

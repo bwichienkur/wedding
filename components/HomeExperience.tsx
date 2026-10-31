@@ -57,17 +57,15 @@ export function HomeExperience({
   const [introDone, setIntroDone] = useState(false);
   const [siteRevealed, setSiteRevealed] = useState(false);
   const ourSongRef = useRef<OurSongBackgroundHandle>(null);
-  const ourSongStartedRef = useRef(false);
 
   const startOurSongFromGesture = useCallback(() => {
-    if (ourSongStartedRef.current) return;
-    ourSongStartedRef.current = true;
     ourSongRef.current?.playFromUserGesture();
   }, []);
 
   const beginReveal = useCallback(() => {
     setSiteRevealed(true);
     document.body.classList.add("invite-revealed");
+    ourSongRef.current?.playFromUserGesture();
   }, []);
 
   const completeIntro = useCallback(() => {
@@ -81,6 +79,21 @@ export function HomeExperience({
   const showRsvp = show("rsvp");
 
   useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = INVITE_SCROLL_BG_VIDEO;
+    document.head.appendChild(link);
+    const songLink = document.createElement("link");
+    songLink.rel = "prefetch";
+    songLink.href = "/api/media/our-song";
+    document.head.appendChild(songLink);
+    return () => {
+      link.remove();
+      songLink.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     const onFirstGesture = () => startOurSongFromGesture();
     window.addEventListener("pointerdown", onFirstGesture, {
       once: true,
@@ -90,16 +103,6 @@ export function HomeExperience({
       window.removeEventListener("pointerdown", onFirstGesture, { capture: true });
     };
   }, [startOurSongFromGesture]);
-
-  useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "prefetch";
-    link.href = INVITE_SCROLL_BG_VIDEO;
-    document.head.appendChild(link);
-    return () => {
-      link.remove();
-    };
-  }, []);
 
   return (
     <>

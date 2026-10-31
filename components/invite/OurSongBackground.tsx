@@ -3,6 +3,7 @@
 import { ourSong } from "@/data/our-song";
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -23,66 +24,66 @@ export const OurSongBackground = forwardRef<
   object
 >(function OurSongBackground(_props, ref) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const enabledRef = useRef<boolean>(ourSong.enabled);
+  const wantsPlayRef = useRef(false);
+  const srcRef = useRef(DEFAULT_SRC);
+
+  const tryPlay = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || !ourSong.enabled || !wantsPlayRef.current) return;
+    if (!audio.paused && audio.currentTime > 0.02) return;
+
+    audio.volume = 0.55;
+    void audio.play().catch(() => {
+      /* Retry when enough data is buffered (common on mobile). */
+    });
+  }, []);
+
+  const armPlaybackRetries = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onReady = () => {
+      if (wantsPlayRef.current) tryPlay();
+    };
+    audio.addEventListener("canplay", onReady, { once: true });
+    audio.addEventListener("loadeddata", onReady, { once: true });
+  }, [tryPlay]);
 
   useEffect(() => {
-    if (!ourSong.enabled) {
-      enabledRef.current = false;
-      return;
-    }
+    if (!ourSong.enabled) return;
     let cancelled = false;
     void (async () => {
       try {
         const response = await fetch("/api/media/our-song/config");
+        if (!response.ok) return;
         const data = (await response.json()) as {
           enabled?: boolean;
           src?: string | null;
         };
-        if (cancelled) return;
-        enabledRef.current = Boolean(data.enabled && data.src);
-        if (!enabledRef.current) {
-          const audio = audioRef.current;
-          if (audio) {
-            audio.pause();
-            audio.removeAttribute("src");
-            audio.load();
-          }
+        if (cancelled || !data.enabled || !data.src) return;
+        srcRef.current = data.src;
+        const audio = audioRef.current;
+        if (audio && audio.src !== new URL(data.src, window.location.origin).href) {
+          audio.src = data.src;
+        }
+        if (wantsPlayRef.current) {
+          tryPlay();
+          armPlaybackRetries();
         }
       } catch {
-        if (!cancelled) enabledRef.current = false;
+        /* Keep default API src — never block playback on config errors. */
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  const tryPlay = () => {
-    const audio = audioRef.current;
-    if (!audio || !enabledRef.current) return;
-    if (!audio.paused && audio.currentTime > 0.05) return;
-
-    audio.volume = 0.55;
-
-    const playAttempt = () => {
-      if (!enabledRef.current) return;
-      if (!audio.paused && audio.currentTime > 0.05) return;
-      void audio.play().catch(() => {});
-    };
-
-    if (audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
-      playAttempt();
-      return;
-    }
-
-    playAttempt();
-    audio.addEventListener("canplay", playAttempt, { once: true });
-  };
+  }, [armPlaybackRetries, tryPlay]);
 
   useImperativeHandle(ref, () => ({
     playFromUserGesture() {
       if (!ourSong.enabled) return;
+      wantsPlayRef.current = true;
       tryPlay();
+      armPlaybackRetries();
     },
   }));
 
@@ -94,7 +95,7 @@ export const OurSongBackground = forwardRef<
       src={DEFAULT_SRC}
       loop
       preload="auto"
-      className="pointer-events-none fixed size-0 opacity-0"
+      className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
       aria-hidden
       playsInline
     />
