@@ -27,6 +27,12 @@ import type {
   RsvpUpdateHistory,
 } from "@/lib/rsvp/types";
 import { withRsvpDbCache, invalidateRsvpDbCache } from "@/lib/rsvp/db-cache";
+import type { ReadRsvpDbOptions } from "@/lib/rsvp/read-options";
+export type { ReadRsvpDbOptions } from "@/lib/rsvp/read-options";
+export {
+  RSVP_GUEST_READ_OPTIONS,
+  RSVP_LOOKUP_READ_OPTIONS,
+} from "@/lib/rsvp/read-options";
 import { randomUUID } from "crypto";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -45,9 +51,11 @@ async function ensureStore(): Promise<void> {
   }
 }
 
-export async function readRsvpDb(): Promise<RsvpDatabase> {
+export async function readRsvpDb(
+  options?: ReadRsvpDbOptions,
+): Promise<RsvpDatabase> {
   if (isSupabaseRsvpConfigured()) {
-    return readRsvpDbSupabase();
+    return readRsvpDbSupabase(options);
   }
   return withRsvpDbCache(async () => {
     await ensureStore();
