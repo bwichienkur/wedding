@@ -11,6 +11,8 @@ interface VideoOpeningIntroProps {
   phase: IntroPhase;
   reduceMotion: boolean;
   onActivate: () => void;
+  /** Sync with opening tap — required for mobile audio unlock */
+  onActivatePointerDown?: () => void;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   openingVideoPlaying?: boolean;
 }
@@ -20,6 +22,7 @@ export function VideoOpeningIntro({
   phase,
   reduceMotion,
   onActivate,
+  onActivatePointerDown,
   videoRef,
   openingVideoPlaying = false,
 }: VideoOpeningIntroProps) {
@@ -63,6 +66,10 @@ export function VideoOpeningIntro({
       <button
         type="button"
         disabled={!interactive}
+        onPointerDown={(event) => {
+          if (!interactive || event.button !== 0) return;
+          onActivatePointerDown?.();
+        }}
         onClick={(e) => {
           e.preventDefault();
           if (interactive) onActivate();
