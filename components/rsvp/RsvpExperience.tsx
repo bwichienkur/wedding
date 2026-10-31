@@ -347,7 +347,10 @@ export function RsvpExperience() {
       <RsvpStepper step={step} />
 
       {error ? (
-        <p className="invite-rsvp-error mt-6 text-sm" role="alert">
+        <p
+          className="invite-rsvp-error mt-6 text-sm font-medium leading-relaxed"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}
