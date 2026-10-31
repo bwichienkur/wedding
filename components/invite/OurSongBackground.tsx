@@ -10,71 +10,125 @@ import {
 } from "react";
 
 export type OurSongBackgroundHandle = {
-  /** Call from a user gesture (intro tap) so playback is allowed. */
   playFromUserGesture: () => void;
 };
 
 const DEFAULT_SRC = "/api/media/our-song";
 
+function resolveAudioSrc(): string {
+  if (typeof window === "undefined") return DEFAULT_SRC;
+  return new URL(DEFAULT_SRC, window.location.origin).href;
+}
+
 /**
- * Hidden looping background track — no UI. Start via ref from the intro tap.
+ * Hidden looping background track. Audio lives on `document.body` so intro
+ * gestures can call `play()` synchronously without ref timing issues.
  */
 export const OurSongBackground = forwardRef<
   OurSongBackgroundHandle,
   object
 >(function OurSongBackground(_props, ref) {
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const wantsPlayRef = useRef(false);
-  const srcRef = useRef(DEFAULT_SRC);
+  const unlockedRef = useRef(false);
 
-  const tryPlay = useCallback(() => {
+  const tryPlay = useCallback((fromGesture: boolean) => {
     const audio = audioRef.current;
     if (!audio || !ourSong.enabled || !wantsPlayRef.current) return;
     if (!audio.paused && audio.currentTime > 0.02) return;
 
     audio.volume = 0.55;
-    void audio.play().catch(() => {
-      /* Retry when enough data is buffered (common on mobile). */
-    });
+
+    const finishUnmute = () => {
+      audio.muted = false;
+      audio.volume = 0.55;
+      unlockedRef.current = true;
+    };
+
+    const attempt = () => {
+      void audio.play().then(finishUnmute).catch(() => {
+        if (fromGesture && !unlockedRef.current) {
+          audio.muted = true;
+          void audio
+            .play()
+            .then(finishUnmute)
+            .catch(() => {
+              audio.muted = false;
+            });
+        }
+      });
+    };
+
+    if (fromGesture && !unlockedRef.current) {
+      audio.muted = true;
+    }
+
+    attempt();
   }, []);
 
   const armPlaybackRetries = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const onReady = () => {
-      if (wantsPlayRef.current) tryPlay();
+      if (wantsPlayRef.current) tryPlay(false);
     };
+    audio.addEventListener("canplaythrough", onReady, { once: true });
     audio.addEventListener("canplay", onReady, { once: true });
     audio.addEventListener("loadeddata", onReady, { once: true });
   }, [tryPlay]);
 
   useEffect(() => {
     if (!ourSong.enabled) return;
-    let cancelled = false;
-    void (async () => {
-      try {
-        const response = await fetch("/api/media/our-song/config");
-        if (!response.ok) return;
-        const data = (await response.json()) as {
-          enabled?: boolean;
-          src?: string | null;
-        };
-        if (cancelled || !data.enabled || !data.src) return;
-        srcRef.current = data.src;
-        const audio = audioRef.current;
-        if (audio && audio.src !== new URL(data.src, window.location.origin).href) {
-          audio.src = data.src;
+
+    const audio = document.createElement("audio");
+    audio.src = resolveAudioSrc();
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
+    audio.className =
+      "pointer-events-none fixed left-0 top-0 h-px w-px opacity-[0.01]";
+    audio.setAttribute("aria-hidden", "true");
+    document.body.appendChild(audio);
+    audioRef.current = audio;
+
+    void fetch("/api/media/our-song/config")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { enabled?: boolean; src?: string | null } | null) => {
+        if (!data?.enabled || !data.src || !audioRef.current) return;
+        const next = new URL(data.src, window.location.origin).href;
+        if (audioRef.current.src !== next) {
+          audioRef.current.src = next;
         }
         if (wantsPlayRef.current) {
-          tryPlay();
+          tryPlay(false);
           armPlaybackRetries();
         }
-      } catch {
-        /* Keep default API src — never block playback on config errors. */
-      }
-    })();
+      })
+      .catch(() => {});
+
     return () => {
-      cancelled = true;
+      audio.pause();
+      audio.remove();
+      audioRef.current = null;
+    };
+  }, [armPlaybackRetries, tryPlay]);
+
+  useEffect(() => {
+    if (!ourSong.enabled) return;
+
+    const retryOnTouch = () => {
+      if (!wantsPlayRef.current) return;
+      const audio = audioRef.current;
+      if (!audio || !audio.paused) return;
+      tryPlay(true);
+      armPlaybackRetries();
+    };
+
+    window.addEventListener("pointerdown", retryOnTouch, { capture: true });
+    window.addEventListener("touchend", retryOnTouch, { capture: true });
+    return () => {
+      window.removeEventListener("pointerdown", retryOnTouch, { capture: true });
+      window.removeEventListener("touchend", retryOnTouch, { capture: true });
     };
   }, [armPlaybackRetries, tryPlay]);
 
@@ -82,22 +136,10 @@ export const OurSongBackground = forwardRef<
     playFromUserGesture() {
       if (!ourSong.enabled) return;
       wantsPlayRef.current = true;
-      tryPlay();
+      tryPlay(true);
       armPlaybackRetries();
     },
   }));
 
-  if (!ourSong.enabled) return null;
-
-  return (
-    <audio
-      ref={audioRef}
-      src={DEFAULT_SRC}
-      loop
-      preload="auto"
-      className="pointer-events-none absolute -left-[9999px] h-px w-px opacity-0"
-      aria-hidden
-      playsInline
-    />
-  );
+  return null;
 });
