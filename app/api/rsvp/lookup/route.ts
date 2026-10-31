@@ -8,6 +8,7 @@ import {
 } from "@/lib/rsvp/service";
 import { lookupRequestSchema } from "@/lib/rsvp/types";
 import { appendAudit } from "@/lib/rsvp/store";
+import { rsvpUnavailableResponse } from "@/lib/rsvp/api-errors";
 
 export const maxDuration = 60;
 
@@ -57,10 +58,8 @@ export async function POST(request: Request) {
     result = await lookupHouseholds(parsed.data.query);
   } catch (error) {
     console.error("rsvp.lookup failed", error);
-    return NextResponse.json(
-      { error: "Unable to look up invitation right now." },
-      { status: 503 },
-    );
+    const body = rsvpUnavailableResponse(error);
+    return NextResponse.json({ error: body.error }, { status: body.status });
   }
 
   if (result.candidates.length === 0) {
@@ -98,10 +97,8 @@ export async function POST(request: Request) {
         }
       } catch (error) {
         console.error("rsvp.lookup workspace failed", error);
-        return NextResponse.json(
-          { error: "Unable to look up invitation right now." },
-          { status: 503 },
-        );
+        const body = rsvpUnavailableResponse(error);
+        return NextResponse.json({ error: body.error }, { status: body.status });
       }
     }
   }
