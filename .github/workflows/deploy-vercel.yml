@@ -33,7 +33,10 @@ jobs:
 
       - name: Require Vercel secrets
         run: |
-          test -n "${{ secrets.VERCEL_TOKEN }}" || (echo "Missing VERCEL_TOKEN secret" && exit 1)
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "::error::Missing VERCEL_TOKEN. Add VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID under GitHub repo secrets, then set repository variable VERCEL_DEPLOY_ENABLED=true."
+            exit 1
+          fi
           test -n "${{ secrets.VERCEL_ORG_ID }}" || (echo "Missing VERCEL_ORG_ID secret" && exit 1)
           test -n "${{ secrets.VERCEL_PROJECT_ID }}" || (echo "Missing VERCEL_PROJECT_ID secret" && exit 1)
 

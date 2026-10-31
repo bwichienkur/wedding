@@ -79,3 +79,9 @@ If **`npm run qa` passes in GitHub Actions** but the Vercel GitHub check says **
 5. **Redeploy** after fixing settings, or push a new commit to `main`.
 
 If logs show **`@vercel/next` does not support the version of Next.js**, remove any custom **`builds`** / **`functions`** overrides in the Vercel dashboard that pin an old builder; rely on the Next.js framework preset and this repo’s `vercel.json` only.
+
+### Hobby plan: deployment rate limit
+
+The Vercel GitHub check can show **Deployment has failed** within seconds when the Hobby **100 deployments per day** limit is reached (`api-deployments-free-per-day`), often after many Preview builds from agent branches. This repo’s `vercel.json` **`ignoreCommand`** skips Vercel builds for every branch except **`main`**, so only production pushes consume the quota. After the limit resets (~24 hours), push to `main` again or click **Redeploy** in the Vercel dashboard.
+
+To deploy previews for a feature branch anyway, run a manual **Redeploy** from the Vercel UI or temporarily adjust the ignored-build command in Project Settings.
