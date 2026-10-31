@@ -1,7 +1,6 @@
 import "server-only";
 
 import {
-  invalidateRsvpLookupIndexCache,
   withRsvpLookupIndexCache,
   type RsvpLookupIndex,
 } from "@/lib/rsvp/lookup-index-cache";

@@ -67,3 +67,15 @@ File-backed `.data/*.json` stores work for local development only. For productio
 4. Schedule ICS download works
 5. FAQ search and deep links work
 6. `robots.txt` / `sitemap.xml` reflect site mode
+
+## Vercel deployment failed (GitHub shows red X)
+
+If **`npm run qa` passes in GitHub Actions** but the Vercel GitHub check says **Deployment has failed**:
+
+1. Open the deployment in Vercel → **Build logs** (link from the failed GitHub commit status).
+2. Confirm **Build and Deployment → Node.js Version** is **22.x** (this repo pins `"engines": { "node": "22.x" }` in `package.json`).
+3. Confirm **Root Directory** is empty (this is a single Next.js app, not a monorepo).
+4. Production builds use **`npm run build:vercel`** (`next build --webpack`) via `vercel.json` so the platform builder accepts the output (Next.js 16 defaults to Turbopack, which can fail the post-build deploy step on some builder versions).
+5. **Redeploy** after fixing settings, or push a new commit to `main`.
+
+If logs show **`@vercel/next` does not support the version of Next.js**, remove any custom **`builds`** / **`functions`** overrides in the Vercel dashboard that pin an old builder; rely on the Next.js framework preset and this repo’s `vercel.json` only.

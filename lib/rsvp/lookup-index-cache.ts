@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { EventRecord, Guest, Household, RsvpDatabase } from "@/lib/rsvp/types";
+import type { RsvpDatabase } from "@/lib/rsvp/types";
 
 export type RsvpLookupIndex = Pick<RsvpDatabase, "events" | "households" | "guests">;
 
