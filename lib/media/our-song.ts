@@ -16,9 +16,15 @@ function trimEnv(name: string): string | null {
   return value || null;
 }
 
-/** Full blob URL from the Vercel Blob dashboard (optional). */
+/** Full blob URL from the Vercel Blob dashboard (optional). Prefer OUR_SONG_BLOB_PATH — signed URLs expire. */
 export function getOurSongBlobUrl(): string | null {
-  return trimEnv("OUR_SONG_BLOB_URL") ?? trimEnv("NEXT_PUBLIC_OUR_SONG_URL");
+  const raw =
+    trimEnv("OUR_SONG_BLOB_URL") ?? trimEnv("NEXT_PUBLIC_OUR_SONG_URL");
+  if (!raw) return null;
+  if (raw.includes("vercel-blob-delegation=")) {
+    return null;
+  }
+  return raw;
 }
 
 /** Pathname in the blob store, e.g. `music/ordinary.mp3`. */
@@ -29,9 +35,10 @@ export function getOurSongBlobPath(): string | null {
 /** Default pathname when the file lives in a `music/` folder on Blob. */
 export function defaultOurSongBlobPathCandidates(): string[] {
   return [
+    "wedding/music/Alex Warren - 01. Ordinary.mp3",
+    "wedding/music/ordinary.mp3",
     "music/ordinary.mp3",
     "music/ordinary.mo3",
-    "wedding/music/ordinary.mp3",
   ];
 }
 
