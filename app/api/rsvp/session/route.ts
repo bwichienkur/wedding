@@ -12,8 +12,13 @@ export async function GET() {
   if (!householdId) {
     return NextResponse.json({ workspace: null });
   }
-  const workspace = await getHouseholdWorkspace(householdId);
-  return NextResponse.json({ workspace });
+  try {
+    const workspace = await getHouseholdWorkspace(householdId);
+    return NextResponse.json({ workspace });
+  } catch (error) {
+    console.error("rsvp.session failed", error);
+    return NextResponse.json({ workspace: null }, { status: 503 });
+  }
 }
 
 /** Clears the guest session so they can look up a different invitation. */

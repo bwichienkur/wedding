@@ -23,19 +23,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid selection" }, { status: 400 });
   }
 
-  const householdId = await resolveHouseholdFromToken(
-    parsed.data.confirmationToken,
-  );
-  if (!householdId) {
-    return NextResponse.json({ error: "Invalid selection" }, { status: 400 });
+  try {
+    const householdId = await resolveHouseholdFromToken(
+      parsed.data.confirmationToken,
+    );
+    if (!householdId) {
+      return NextResponse.json({ error: "Invalid selection" }, { status: 400 });
+    }
+
+    const workspace = await getHouseholdWorkspace(householdId);
+    if (!workspace) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await setHouseholdSessionCookie(householdId);
+
+    return NextResponse.json({ workspace });
+  } catch (error) {
+    console.error("rsvp.select failed", error);
+    return NextResponse.json(
+      { error: "Unable to open invitation right now." },
+      { status: 503 },
+    );
   }
-
-  const workspace = await getHouseholdWorkspace(householdId);
-  if (!workspace) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  await setHouseholdSessionCookie(householdId);
-
-  return NextResponse.json({ workspace });
 }
