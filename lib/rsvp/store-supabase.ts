@@ -2,6 +2,10 @@ import "server-only";
 
 import { getSupabaseAdmin } from "@/lib/rsvp/supabase-client";
 import { ensureSupabaseRsvpSeed } from "@/lib/rsvp/seed-supabase";
+import {
+  type ReadRsvpDbOptions,
+  resolveReadRsvpDbOptions,
+} from "@/lib/rsvp/read-options";
 import type {
   AuditLog,
   Guest,
@@ -84,9 +88,12 @@ function mapResponse(row: Record<string, unknown>): GuestResponse {
   };
 }
 
-export async function readRsvpDbSupabase(): Promise<RsvpDatabase> {
+export async function readRsvpDbSupabase(
+  options?: ReadRsvpDbOptions,
+): Promise<RsvpDatabase> {
   await ensureSupabaseRsvpSeed();
   const supabase = getSupabaseAdmin();
+  const read = resolveReadRsvpDbOptions(options);
 
   const [
     eventsRes,
@@ -104,10 +111,18 @@ export async function readRsvpDbSupabase(): Promise<RsvpDatabase> {
     supabase.from("households").select("*"),
     supabase.from("household_event_invitations").select("*"),
     supabase.from("guests").select("*").is("archived_at", null),
-    supabase.from("guest_responses").select("*"),
-    supabase.from("rsvp_submissions").select("*"),
-    supabase.from("rsvp_update_history").select("*"),
-    supabase.from("audit_logs").select("*"),
+    read.includeResponses
+      ? supabase.from("guest_responses").select("*")
+      : Promise.resolve({ data: [], error: null }),
+    read.includeSubmissions
+      ? supabase.from("rsvp_submissions").select("*")
+      : Promise.resolve({ data: [], error: null }),
+    read.includeHistory
+      ? supabase.from("rsvp_update_history").select("*")
+      : Promise.resolve({ data: [], error: null }),
+    read.includeAuditLogs
+      ? supabase.from("audit_logs").select("*")
+      : Promise.resolve({ data: [], error: null }),
   ]);
 
   const firstError =
@@ -116,10 +131,10 @@ export async function readRsvpDbSupabase(): Promise<RsvpDatabase> {
     householdsRes.error ||
     invitationsRes.error ||
     guestsRes.error ||
-    responsesRes.error ||
-    submissionsRes.error ||
-    historyRes.error ||
-    auditRes.error;
+    (read.includeResponses ? responsesRes.error : null) ||
+    (read.includeSubmissions ? submissionsRes.error : null) ||
+    (read.includeHistory ? historyRes.error : null) ||
+    (read.includeAuditLogs ? auditRes.error : null);
 
   if (firstError) {
     throw new Error(`Supabase RSVP read failed: ${firstError.message}`);

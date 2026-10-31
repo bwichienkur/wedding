@@ -50,7 +50,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await lookupHouseholds(parsed.data.query);
+  let result: Awaited<ReturnType<typeof lookupHouseholds>>;
+  try {
+    result = await lookupHouseholds(parsed.data.query);
+  } catch (error) {
+    console.error("rsvp.lookup failed", error);
+    return NextResponse.json(
+      { error: "Unable to look up invitation right now." },
+      { status: 503 },
+    );
+  }
 
   if (result.candidates.length === 0) {
     return NextResponse.json({
@@ -75,14 +84,22 @@ export async function POST(request: Request) {
     const token = result.candidates[0]!.confirmationToken;
     const householdId = await resolveHouseholdFromToken(token);
     if (householdId) {
-      const workspace = await getHouseholdWorkspace(householdId);
-      if (workspace) {
-        await setHouseholdSessionCookie(householdId);
-        return NextResponse.json({
-          candidates: result.candidates,
-          ambiguous: result.ambiguous,
-          workspace,
-        });
+      try {
+        const workspace = await getHouseholdWorkspace(householdId);
+        if (workspace) {
+          await setHouseholdSessionCookie(householdId);
+          return NextResponse.json({
+            candidates: result.candidates,
+            ambiguous: result.ambiguous,
+            workspace,
+          });
+        }
+      } catch (error) {
+        console.error("rsvp.lookup workspace failed", error);
+        return NextResponse.json(
+          { error: "Unable to look up invitation right now." },
+          { status: 503 },
+        );
       }
     }
   }

@@ -20,6 +20,8 @@ import { scoreGuestNameMatch } from "@/lib/rsvp/matching";
 import { namesMatch, normalizeGuestName, sanitizeText } from "@/lib/rsvp/normalize";
 import {
   readRsvpDb,
+  RSVP_GUEST_READ_OPTIONS,
+  RSVP_LOOKUP_READ_OPTIONS,
   replaceHouseholdGuests,
   saveHouseholdResponses,
 } from "@/lib/rsvp/store";
@@ -36,7 +38,7 @@ export async function lookupHouseholds(query: string): Promise<{
   candidates: HouseholdCandidate[];
   ambiguous: boolean;
 }> {
-  const db = await readRsvpDb();
+  const db = await readRsvpDb(RSVP_LOOKUP_READ_OPTIONS);
   const trimmed = query.trim();
   const normalized = normalizeGuestName(trimmed);
   const maybeCode = trimmed.toUpperCase().replace(/\s+/g, "");
@@ -106,7 +108,7 @@ export async function resolveHouseholdFromToken(
 }
 
 export async function getHouseholdWorkspace(householdId: string) {
-  const db = await readRsvpDb();
+  const db = await readRsvpDb(RSVP_GUEST_READ_OPTIONS);
   const household = db.households.find((item) => item.id === householdId);
   if (!household) return null;
 
