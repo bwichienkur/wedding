@@ -1,10 +1,11 @@
 # Our song (optional local fallback)
 
-Production should use **Vercel Blob** (see `.env.example`):
+Production uses **Vercel Blob** (private store is supported):
 
-- `OUR_SONG_BLOB_PATH=music/ordinary.mp3` — pathname in your Blob store  
-- or `OUR_SONG_BLOB_URL=https://….public.blob.vercel-storage.com/…`
+```bash
+OUR_SONG_BLOB_PATH=wedding/music/Alex Warren - 01. Ordinary.mp3
+```
 
-Local dev fallback: **`ordinary.mp3`** here → served at `/music/ordinary.mp3`.
+Use the **pathname** from the Blob dashboard — not a signed URL with `vercel-blob-delegation` (those expire).
 
-Rename `.mo3` to `.mp3` if needed.
+Local dev fallback: **`ordinary.mp3`** here → `/music/ordinary.mp3`.
