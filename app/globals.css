@@ -1758,6 +1758,18 @@
     color: #6b1f1f;
   }
 
+  /* Glass card sets light gold on all `p` tags — override for lookup errors */
+  .invite-glass-card p.invite-rsvp-error,
+  .invite-readable-panel p.invite-rsvp-error {
+    border: 1px solid rgb(120 36 36 / 0.55);
+    background: rgb(255 252 252 / 0.98);
+    color: #4a1212;
+    -webkit-text-fill-color: #4a1212;
+    font-weight: 500;
+    line-height: 1.5;
+    text-shadow: none;
+  }
+
   .invite-rsvp-roster {
     padding: 1.25rem 1.15rem;
     border: 1px solid rgb(212 175 55 / 0.32);
