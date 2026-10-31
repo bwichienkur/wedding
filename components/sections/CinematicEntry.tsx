@@ -25,6 +25,8 @@ interface CinematicEntryProps {
   onComplete: () => void;
   /** Fired when the opening video ends and the homepage should begin fading in */
   onRevealStart?: () => void;
+  /** Fired on intro tap / skip — use to start background audio under autoplay rules */
+  onUserActivate?: () => void;
 }
 
 function subscribeNoop() {
@@ -49,6 +51,7 @@ function useForceSkipIntro() {
 export function CinematicEntry({
   onComplete,
   onRevealStart,
+  onUserActivate,
 }: CinematicEntryProps) {
   const reduceMotion = useReducedMotion();
   const isClient = useIsClient();
@@ -91,7 +94,7 @@ export function CinematicEntry({
     });
   }, [finish, startReveal]);
 
-  const { activate, skip, onVideoEnded } = useVideoIntroPhase({
+  const { activate: activateIntro, skip, onVideoEnded } = useVideoIntroPhase({
     phase,
     setPhase,
     reduceMotion: Boolean(reduceMotion),
@@ -99,6 +102,11 @@ export function CinematicEntry({
     onComplete: finish,
     onPlayVideo: playOpeningVideo,
   });
+
+  const activate = useCallback(() => {
+    onUserActivate?.();
+    activateIntro();
+  }, [activateIntro, onUserActivate]);
 
   useEffect(() => {
     if (!isClient || removed) return;
@@ -136,6 +144,7 @@ export function CinematicEntry({
   }, [isClient, forceSkip, onComplete, startReveal]);
 
   function skipToDetails() {
+    onUserActivate?.();
     document.body.classList.remove("intro-active");
     skip();
     setRemoved(true);
@@ -148,6 +157,7 @@ export function CinematicEntry({
   }
 
   function handleRsvp() {
+    onUserActivate?.();
     document.body.classList.remove("intro-active");
     skip();
     setRemoved(true);
