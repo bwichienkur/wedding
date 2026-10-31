@@ -6,7 +6,6 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 
 export type OurSongBackgroundHandle = {
@@ -24,13 +23,13 @@ export const OurSongBackground = forwardRef<
   object
 >(function OurSongBackground(_props, ref) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const pendingPlayRef = useRef(false);
-  const [src, setSrc] = useState<string | null>(
-    ourSong.enabled ? DEFAULT_SRC : null,
-  );
+  const enabledRef = useRef<boolean>(ourSong.enabled);
 
   useEffect(() => {
-    if (!ourSong.enabled) return;
+    if (!ourSong.enabled) {
+      enabledRef.current = false;
+      return;
+    }
     let cancelled = false;
     void (async () => {
       try {
@@ -40,14 +39,17 @@ export const OurSongBackground = forwardRef<
           src?: string | null;
         };
         if (cancelled) return;
-        if (!data.enabled || !data.src) {
-          setSrc(null);
-          pendingPlayRef.current = false;
-          return;
+        enabledRef.current = Boolean(data.enabled && data.src);
+        if (!enabledRef.current) {
+          const audio = audioRef.current;
+          if (audio) {
+            audio.pause();
+            audio.removeAttribute("src");
+            audio.load();
+          }
         }
-        setSrc(data.src);
       } catch {
-        if (!cancelled) setSrc(null);
+        if (!cancelled) enabledRef.current = false;
       }
     })();
     return () => {
@@ -57,35 +59,39 @@ export const OurSongBackground = forwardRef<
 
   const tryPlay = () => {
     const audio = audioRef.current;
-    if (!audio || !src) return;
+    if (!audio || !enabledRef.current) return;
+    if (!audio.paused && audio.currentTime > 0.05) return;
+
     audio.volume = 0.55;
-    void audio.play().catch(() => {
-      pendingPlayRef.current = false;
-    });
+
+    const playAttempt = () => {
+      if (!enabledRef.current) return;
+      if (!audio.paused && audio.currentTime > 0.05) return;
+      void audio.play().catch(() => {});
+    };
+
+    if (audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      playAttempt();
+      return;
+    }
+
+    playAttempt();
+    audio.addEventListener("canplay", playAttempt, { once: true });
   };
 
   useImperativeHandle(ref, () => ({
     playFromUserGesture() {
-      if (!ourSong.enabled || !src) {
-        pendingPlayRef.current = true;
-        return;
-      }
-      pendingPlayRef.current = true;
+      if (!ourSong.enabled) return;
       tryPlay();
     },
   }));
 
-  useEffect(() => {
-    if (!pendingPlayRef.current || !src) return;
-    tryPlay();
-  }, [src]);
-
-  if (!ourSong.enabled || !src) return null;
+  if (!ourSong.enabled) return null;
 
   return (
     <audio
       ref={audioRef}
-      src={src}
+      src={DEFAULT_SRC}
       loop
       preload="auto"
       className="pointer-events-none fixed size-0 opacity-0"
