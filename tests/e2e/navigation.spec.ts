@@ -2,46 +2,33 @@ import { expect, test } from "@playwright/test";
 import { gotoHome } from "./helpers";
 
 test.describe("navigation", () => {
-  test("desktop primary nav reaches venue and FAQ", async ({ page }) => {
-    test.skip(
-      test.info().project.name !== "chromium-desktop",
-      "Desktop nav project only",
-    );
+  test("invite section drawer reaches venue and FAQ", async ({ page }) => {
     await gotoHome(page);
+    await page.getByRole("button", { name: "Open page menu" }).click();
+    await expect(
+      page.getByRole("navigation", { name: "Page sections" }),
+    ).toBeVisible();
     await page
-      .getByRole("navigation", { name: "Primary" })
-      .getByRole("link", { name: "Venue" })
+      .getByRole("navigation", { name: "Page sections" })
+      .getByRole("link", { name: /venue/i })
       .click();
-    await expect(page.locator("#venue")).toBeVisible();
+    await expect(page.locator("#venue")).toBeInViewport();
+    await page.getByRole("button", { name: "Open page menu" }).click();
     await page
-      .getByRole("navigation", { name: "Primary" })
+      .getByRole("navigation", { name: "Page sections" })
       .getByRole("link", { name: "FAQ" })
       .click();
-    await expect(page.locator("#faq")).toBeVisible();
+    await expect(page.locator("#faq")).toBeInViewport();
   });
 
-  test("mobile menu opens with grouped sections and RSVP remains available", async ({
-    page,
-  }) => {
-    test.skip(
-      test.info().project.name !== "chromium-mobile",
-      "Mobile project only",
-    );
+  test("music mute control toggles aria state", async ({ page }) => {
     await gotoHome(page);
-    await expect(page.getByRole("link", { name: "RSVP" }).first()).toBeVisible();
+    const mute = page.getByRole("button", { name: "Mute background music" });
+    await expect(mute).toBeVisible();
+    await mute.click();
     await expect(
-      page.getByRole("navigation", { name: "Sections" }),
+      page.getByRole("button", { name: "Unmute background music" }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Open menu" }).click();
-    await expect(page.getByRole("navigation", { name: "Mobile" })).toBeVisible();
-    await expect(
-      page.getByRole("navigation", { name: "Mobile" }).getByText("The wedding"),
-    ).toBeVisible();
-    await page
-      .getByRole("navigation", { name: "Mobile" })
-      .getByRole("link", { name: "Travel" })
-      .click();
-    await expect(page.locator("#travel")).toBeVisible();
   });
 
   test("homepage carousel exposes photo controls", async ({ page }) => {

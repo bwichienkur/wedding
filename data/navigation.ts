@@ -1,4 +1,5 @@
 import type { NavItem } from "./types";
+import type { SiteSectionId } from "./sections";
 
 /**
  * Compact primary destinations — labels stay short so the centered bar
@@ -65,6 +66,19 @@ export const rsvpNav: NavItem = {
 export const weddingDetailsHref = "#wedding-day";
 export const storyHref = "#story";
 export const mainContentId = "main-content";
+
+/** Section order on the invite homepage (matches `HomeExperience`). */
+export const inviteHomeSectionOrder: SiteSectionId[] = [
+  "venue",
+  "wedding-day",
+  "travel",
+  "story",
+  "gallery",
+  "party",
+  "rsvp",
+  "faq",
+  "registry",
+];
 
 export function filterNavItems(
   items: NavItem[],
