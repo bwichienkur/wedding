@@ -31,6 +31,8 @@ import {
   OurSongBackground,
   type OurSongBackgroundHandle,
 } from "@/components/invite/OurSongBackground";
+import { OurSongAudioProvider } from "@/components/invite/our-song-audio-context";
+import { InviteFloatingChrome } from "@/components/invite/InviteFloatingChrome";
 import { INVITE_SCROLL_BG_VIDEO } from "@/lib/media/invite-scroll-background";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -96,7 +98,7 @@ export function HomeExperience({
   }, []);
 
   return (
-    <>
+    <OurSongAudioProvider>
       <OurSongBackground ref={ourSongRef} />
       <CinematicEntry
         onComplete={completeIntro}
@@ -104,6 +106,7 @@ export function HomeExperience({
         onUserActivate={startOurSongFromGesture}
       />
       <AmbientBackground active={introDone && siteRevealed} warm={siteRevealed} />
+      <InviteFloatingChrome visible={siteRevealed} sections={sections} />
       <div
         className={cn(
           "invite-experience relative z-[1] transition-opacity duration-700 ease-out",
@@ -205,6 +208,6 @@ export function HomeExperience({
           Welcome experience loading
         </span>
       )}
-    </>
+    </OurSongAudioProvider>
   );
 }
