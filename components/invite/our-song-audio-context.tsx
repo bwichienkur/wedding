@@ -5,15 +5,14 @@ import {
   ourSongFeatureEnabled,
   playOurSongFromUserGesture,
   setOurSongUserMuted,
-  subscribeOurSongUnlock,
+  subscribeOurSongMuted,
 } from "@/lib/media/our-song-engine";
 import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
@@ -37,19 +36,14 @@ export function useOurSongAudio(): OurSongAudioContextValue {
 }
 
 export function OurSongAudioProvider({ children }: { children: ReactNode }) {
-  const [muted, setMuted] = useState(false);
-
-  useEffect(() => {
-    setMuted(getOurSongUserMuted());
-    return subscribeOurSongUnlock(() => {
-      setMuted(getOurSongUserMuted());
-    });
-  }, []);
+  const muted = useSyncExternalStore(
+    subscribeOurSongMuted,
+    getOurSongUserMuted,
+    () => false,
+  );
 
   const toggleMute = useCallback(() => {
-    const next = !getOurSongUserMuted();
-    setOurSongUserMuted(next);
-    setMuted(next);
+    setOurSongUserMuted(!getOurSongUserMuted());
   }, []);
 
   const playFromUserGesture = useCallback(() => {
