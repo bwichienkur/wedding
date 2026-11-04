@@ -11,6 +11,7 @@ import {
 } from "@/lib/media/our-song";
 import { ourSongMissingHtml } from "@/lib/media/our-song-error-page";
 import { probeOurSongBlob } from "@/lib/media/our-song-probe";
+import { upstreamRangeHeader } from "@/lib/media/our-song-range";
 
 /** Origin must not cache ranged vs full responses interchangeably on the edge. */
 export const dynamic = "force-dynamic";
@@ -142,18 +143,18 @@ export async function GET(request: Request) {
     return songErrorResponse(request, 503, probe.detail);
   }
 
-  const range = request.headers.get("range");
+  const rangeHeader = upstreamRangeHeader(request.headers.get("range"), request);
   const pathsToTry = ourSongBlobPathsToTry();
 
   for (const pathname of pathsToTry) {
-    const response = await streamFromBlobPath(pathname, range);
+    const response = await streamFromBlobPath(pathname, rangeHeader);
     if (response) return response;
   }
 
   if (directUrl) {
     try {
       const upstream = await fetch(directUrl, {
-        headers: range ? { Range: range } : undefined,
+        headers: rangeHeader ? { Range: rangeHeader } : undefined,
       });
       if (!upstream.ok || !upstream.body) {
         const probe = await probeOurSongBlob();
@@ -164,7 +165,7 @@ export async function GET(request: Request) {
         "Content-Type",
         upstream.headers.get("Content-Type") ?? "audio/mpeg",
       );
-      const partial = Boolean(range && upstream.headers.get("Content-Range"));
+      const partial = Boolean(rangeHeader && upstream.headers.get("Content-Range"));
       applyStreamCacheHeaders(headers, partial);
       const contentLength = upstream.headers.get("Content-Length");
       const contentRange = upstream.headers.get("Content-Range");
