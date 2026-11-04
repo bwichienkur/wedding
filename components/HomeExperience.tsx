@@ -27,14 +27,10 @@ import type { StoryImage, StoryMilestone } from "@/data/types";
 import { mainContentId } from "@/data/navigation";
 import type { ResolvedSiteSections } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
-import {
-  OurSongBackground,
-  type OurSongBackgroundHandle,
-} from "@/components/invite/OurSongBackground";
-import { OurSongAudioProvider } from "@/components/invite/our-song-audio-context";
+import { OurSongAudioProvider, useOurSongAudio } from "@/components/invite/our-song-audio-context";
 import { InviteFloatingChrome } from "@/components/invite/InviteFloatingChrome";
 import { INVITE_SCROLL_BG_VIDEO } from "@/lib/media/invite-scroll-background";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface HomeMediaBundle {
   heroSlides: HeroSlide[];
@@ -56,19 +52,33 @@ export function HomeExperience({
   media: HomeMediaBundle;
   sections: ResolvedSiteSections;
 }) {
+  return (
+    <OurSongAudioProvider>
+      <HomeExperienceInner media={media} sections={sections} />
+    </OurSongAudioProvider>
+  );
+}
+
+function HomeExperienceInner({
+  media,
+  sections,
+}: {
+  media: HomeMediaBundle;
+  sections: ResolvedSiteSections;
+}) {
+  const { playFromUserGesture } = useOurSongAudio();
   const [introDone, setIntroDone] = useState(false);
   const [siteRevealed, setSiteRevealed] = useState(false);
-  const ourSongRef = useRef<OurSongBackgroundHandle>(null);
 
   const startOurSongFromGesture = useCallback(() => {
-    ourSongRef.current?.playFromUserGesture();
-  }, []);
+    playFromUserGesture();
+  }, [playFromUserGesture]);
 
   const beginReveal = useCallback(() => {
     setSiteRevealed(true);
     document.body.classList.add("invite-revealed");
-    ourSongRef.current?.playFromUserGesture();
-  }, []);
+    playFromUserGesture();
+  }, [playFromUserGesture]);
 
   const completeIntro = useCallback(() => {
     setSiteRevealed(true);
@@ -98,8 +108,7 @@ export function HomeExperience({
   }, []);
 
   return (
-    <OurSongAudioProvider>
-      <OurSongBackground ref={ourSongRef} />
+    <>
       <CinematicEntry
         onComplete={completeIntro}
         onRevealStart={beginReveal}
@@ -208,6 +217,6 @@ export function HomeExperience({
           Welcome experience loading
         </span>
       )}
-    </OurSongAudioProvider>
+    </>
   );
 }

@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -45,42 +46,71 @@ export function OurSongAudioProvider({ children }: { children: ReactNode }) {
   const userMutedRef = useRef(false);
   const [muted, setMuted] = useState(false);
 
-  const tryPlay = useCallback((fromGesture: boolean) => {
-    const audio = audioRef.current;
-    if (!audio || !ourSong.enabled || !wantsPlayRef.current) return;
-    if (!audio.paused && audio.currentTime > 0.02) return;
+  const ensureAudio = useCallback((): HTMLAudioElement | null => {
+    if (typeof document === "undefined" || !ourSong.enabled) return null;
+    if (audioRef.current) return audioRef.current;
 
-    audio.volume = 0.55;
-    if (userMutedRef.current) {
-      audio.muted = true;
-    }
-
-    const finishUnmute = () => {
-      audio.muted = userMutedRef.current;
-      audio.volume = 0.55;
-      unlockedRef.current = true;
-    };
-
-    const attempt = () => {
-      void audio.play().then(finishUnmute).catch(() => {
-        if (fromGesture && !unlockedRef.current) {
-          audio.muted = true;
-          void audio
-            .play()
-            .then(finishUnmute)
-            .catch(() => {
-              audio.muted = userMutedRef.current;
-            });
-        }
-      });
-    };
-
-    if (fromGesture && !unlockedRef.current) {
-      audio.muted = true;
-    }
-
-    attempt();
+    const audio = document.createElement("audio");
+    audio.src = resolveAudioSrc();
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
+    audio.className =
+      "pointer-events-none fixed left-0 top-0 h-px w-px opacity-[0.01]";
+    audio.setAttribute("aria-hidden", "true");
+    document.body.appendChild(audio);
+    audioRef.current = audio;
+    return audio;
   }, []);
+
+  const applyAudibleState = useCallback((audio: HTMLAudioElement) => {
+    audio.volume = 0.55;
+    audio.muted = userMutedRef.current;
+  }, []);
+
+  const tryPlay = useCallback(
+    (fromGesture: boolean) => {
+      const audio = ensureAudio();
+      if (!audio || !ourSong.enabled || !wantsPlayRef.current) return;
+      if (!audio.paused && audio.currentTime > 0.02) return;
+
+      applyAudibleState(audio);
+
+      const onPlaying = () => {
+        unlockedRef.current = true;
+        applyAudibleState(audio);
+      };
+
+      const attempt = (useMutedUnlock: boolean) => {
+        if (useMutedUnlock && !userMutedRef.current && !unlockedRef.current) {
+          audio.muted = true;
+        }
+        void audio
+          .play()
+          .then(onPlaying)
+          .catch(() => {
+            if (
+              useMutedUnlock &&
+              !unlockedRef.current &&
+              !userMutedRef.current
+            ) {
+              audio.muted = true;
+              void audio
+                .play()
+                .then(onPlaying)
+                .catch(() => {
+                  audio.muted = userMutedRef.current;
+                });
+              return;
+            }
+            audio.muted = userMutedRef.current;
+          });
+      };
+
+      attempt(fromGesture);
+    },
+    [applyAudibleState, ensureAudio],
+  );
 
   const armPlaybackRetries = useCallback(() => {
     const audio = audioRef.current;
@@ -101,28 +131,30 @@ export function OurSongAudioProvider({ children }: { children: ReactNode }) {
   }, [armPlaybackRetries, tryPlay]);
 
   const toggleMute = useCallback(() => {
-    const audio = audioRef.current;
+    const audio = ensureAudio();
     setMuted((prev) => {
       const next = !prev;
       userMutedRef.current = next;
       if (audio) audio.muted = next;
       return next;
     });
-  }, []);
+  }, [ensureAudio]);
+
+  useLayoutEffect(() => {
+    if (!ourSong.enabled) return;
+    ensureAudio();
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.remove();
+        audioRef.current = null;
+      }
+    };
+  }, [ensureAudio]);
 
   useEffect(() => {
     if (!ourSong.enabled) return;
-
-    const audio = document.createElement("audio");
-    audio.src = resolveAudioSrc();
-    audio.loop = true;
-    audio.preload = "auto";
-    audio.setAttribute("playsinline", "true");
-    audio.className =
-      "pointer-events-none fixed left-0 top-0 h-px w-px opacity-[0.01]";
-    audio.setAttribute("aria-hidden", "true");
-    document.body.appendChild(audio);
-    audioRef.current = audio;
 
     void fetch("/api/media/our-song/config")
       .then((response) => (response.ok ? response.json() : null))
@@ -138,12 +170,6 @@ export function OurSongAudioProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => {});
-
-    return () => {
-      audio.pause();
-      audio.remove();
-      audioRef.current = null;
-    };
   }, [armPlaybackRetries, tryPlay]);
 
   useEffect(() => {
@@ -152,16 +178,14 @@ export function OurSongAudioProvider({ children }: { children: ReactNode }) {
     const retryOnTouch = () => {
       if (!wantsPlayRef.current) return;
       const audio = audioRef.current;
-      if (!audio || !audio.paused) return;
+      if (!audio || (!audio.paused && audio.currentTime > 0.02)) return;
       tryPlay(true);
       armPlaybackRetries();
     };
 
     window.addEventListener("pointerdown", retryOnTouch, { capture: true });
-    window.addEventListener("touchend", retryOnTouch, { capture: true });
     return () => {
       window.removeEventListener("pointerdown", retryOnTouch, { capture: true });
-      window.removeEventListener("touchend", retryOnTouch, { capture: true });
     };
   }, [armPlaybackRetries, tryPlay]);
 
