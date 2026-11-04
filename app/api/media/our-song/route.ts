@@ -31,7 +31,13 @@ function responseHeadersFromBlob(
   const headers = new Headers();
   headers.set("Content-Type", contentTypeForPath(pathname));
   headers.set("Accept-Ranges", "bytes");
-  headers.set("Cache-Control", "public, max-age=3600");
+  headers.set("Vary", "Range");
+  headers.set(
+    "Cache-Control",
+    result.statusCode !== 200
+      ? "public, max-age=3600, must-revalidate"
+      : "public, max-age=86400, stale-while-revalidate=86400",
+  );
 
   for (const [key, value] of result.headers.entries()) {
     const lower = key.toLowerCase();
@@ -47,9 +53,14 @@ function responseHeadersFromBlob(
 
   if (
     !headers.has("Content-Length") &&
-    result.blob.size != null
+    result.blob.size != null &&
+    result.statusCode === 200
   ) {
     headers.set("Content-Length", String(result.blob.size));
+  }
+
+  if (result.statusCode === 200) {
+    headers.delete("Content-Range");
   }
 
   return headers;
@@ -129,7 +140,8 @@ export async function GET(request: Request) {
         upstream.headers.get("Content-Type") ?? "audio/mpeg",
       );
       headers.set("Accept-Ranges", "bytes");
-      headers.set("Cache-Control", "public, max-age=3600");
+      headers.set("Vary", "Range");
+      headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=86400");
       const contentLength = upstream.headers.get("Content-Length");
       const contentRange = upstream.headers.get("Content-Range");
       if (contentLength) headers.set("Content-Length", contentLength);
