@@ -63,6 +63,8 @@ export function MediaAdminPanel() {
   const [blobConfigured, setBlobConfigured] = useState(false);
   const [blobAccess, setBlobAccess] = useState<"public" | "private">("public");
   const [storageHints, setStorageHints] = useState<string[]>([]);
+  const [ourSongReady, setOurSongReady] = useState<boolean | null>(null);
+  const [ourSongDetail, setOurSongDetail] = useState<string | null>(null);
 
   const placement = useMemo(
     () =>
@@ -124,12 +126,15 @@ export function MediaAdminPanel() {
           blobConfigured?: boolean;
           blobAccess?: "public" | "private";
           hints?: string[];
+          ourSong?: { ready?: boolean; detail?: string; playbackSrc?: string };
         };
         if (!cancelled) {
           setStorageReady(status.photoUploadReady ?? null);
           setBlobConfigured(Boolean(status.blobConfigured));
           setBlobAccess(status.blobAccess === "private" ? "private" : "public");
           setStorageHints(status.hints ?? []);
+          setOurSongReady(status.ourSong?.ready ?? null);
+          setOurSongDetail(status.ourSong?.detail ?? null);
         }
       }
     })();
@@ -441,6 +446,29 @@ export function MediaAdminPanel() {
           <p className="mt-4 text-sm text-ink-muted" role="status">
             Photo storage is connected. Uploads appear on the site immediately
             when published.
+          </p>
+        ) : null}
+
+        {ourSongReady === false ? (
+          <div
+            className="mt-4 border border-amber-400/40 bg-amber-950/30 p-4 text-sm text-amber-100/90"
+            role="alert"
+          >
+            <p className="font-medium">Background music file is not available.</p>
+            <p className="mt-2 text-amber-100/80">
+              {ourSongDetail ??
+                "Upload Ordinary to Vercel Blob and set OUR_SONG_BLOB_PATH, then redeploy."}
+            </p>
+            <p className="mt-2 text-amber-100/70">
+              Test: open <code className="text-amber-50">/api/media/our-song</code>{" "}
+              in a browser — you should hear the track, not an empty player.
+            </p>
+          </div>
+        ) : null}
+
+        {ourSongReady === true ? (
+          <p className="mt-4 text-sm text-emerald-200/85" role="status">
+            Background music is ready in Blob ({ourSongDetail ?? "probe OK"}).
           </p>
         ) : null}
 
