@@ -81,7 +81,7 @@ export const wedding: WeddingConfig = {
   },
   site: {
     mode: "public",
-    canonicalUrl: "https://example.com",
+    canonicalUrl: "https://lexiandbright.vercel.app",
     title: "Lexi & Bright · May 15, 2027",
     description:
       "Lexi and Bright are getting married on May 15, 2027 at Bella Cosa in Lake Wales, Florida.",
