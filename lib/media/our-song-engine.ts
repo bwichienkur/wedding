@@ -7,7 +7,8 @@ const DEFAULT_PATH = "/api/media/our-song";
 let audio: HTMLAudioElement | null = null;
 let wantsPlay = false;
 let userMuted = false;
-let unlockListeners = new Set<() => void>();
+const unlockListeners = new Set<() => void>();
+const muteListeners = new Set<() => void>();
 
 function resolveSrc(): string {
   if (typeof window === "undefined") return DEFAULT_PATH;
@@ -111,11 +112,17 @@ export function setOurSongUserMuted(muted: boolean): void {
       void tryPlay(false);
     }
   }
+  muteListeners.forEach((listener) => listener());
 }
 
 export function subscribeOurSongUnlock(listener: () => void): () => void {
   unlockListeners.add(listener);
   return () => unlockListeners.delete(listener);
+}
+
+export function subscribeOurSongMuted(listener: () => void): () => void {
+  muteListeners.add(listener);
+  return () => muteListeners.delete(listener);
 }
 
 export function ourSongFeatureEnabled(): boolean {
