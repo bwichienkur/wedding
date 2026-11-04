@@ -7,6 +7,7 @@ import { resolveBlobAccess } from "@/lib/media/blob-access";
 import { MAX_IMAGE_MB } from "@/lib/media/types";
 import { isSupabaseRsvpConfigured } from "@/lib/rsvp/supabase-env";
 import { pingSupabaseRsvp } from "@/lib/rsvp/supabase-client";
+import { probeOurSongBlob } from "@/lib/media/our-song-probe";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,7 @@ export async function GET() {
   const isProduction = process.env.NODE_ENV === "production";
   const supabaseConfigured = isSupabaseRsvpConfigured();
   const rsvpPing = supabaseConfigured ? await pingSupabaseRsvp() : null;
+  const ourSong = await probeOurSongBlob();
 
   return NextResponse.json({
     authConfigured: isAdminAuthConfigured(),
@@ -27,6 +29,7 @@ export async function GET() {
     blobAccess: resolveBlobAccess(),
     production: isProduction,
     photoUploadReady: !isProduction || blobConfigured,
+    ourSong,
     maxImageMb: MAX_IMAGE_MB,
     rsvp: {
       backend: supabaseConfigured ? "supabase" : "file",
@@ -42,6 +45,9 @@ export async function GET() {
         : null,
       isProduction && !blobConfigured
         ? "Connect Vercel Blob (Storage → Blob) to add BLOB_READ_WRITE_TOKEN, then redeploy."
+        : null,
+      isProduction && !ourSong.ready
+        ? `Background music: ${ourSong.detail}`
         : null,
       isProduction && !supabaseConfigured
         ? "Connect Supabase in Vercel Storage so RSVP uses Postgres (not ephemeral .data/rsvp.json)."

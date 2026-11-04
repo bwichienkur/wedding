@@ -37,7 +37,6 @@ export function defaultOurSongBlobPathCandidates(): string[] {
     "wedding/music/Alex Warren - 01. Ordinary.mp3",
     "wedding/music/ordinary.mp3",
     "music/ordinary.mp3",
-    "music/ordinary.mo3",
   ];
 }
 
@@ -48,6 +47,17 @@ export function resolvedOurSongBlobPath(): string | null {
     return defaultOurSongBlobPathCandidates()[0] ?? null;
   }
   return null;
+}
+
+/** Paths tried in order when streaming the song from Blob. */
+export function ourSongBlobPathsToTry(): string[] {
+  return [
+    getOurSongBlobPath(),
+    resolvedOurSongBlobPath(),
+    ...defaultOurSongBlobPathCandidates(),
+  ].filter((value, index, list): value is string => {
+    return Boolean(value) && list.indexOf(value) === index;
+  });
 }
 
 /** URL passed to `<audio src>` — always same-origin so mobile unlock is not lost to a late src swap. */
