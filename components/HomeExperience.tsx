@@ -97,8 +97,16 @@ function HomeExperienceInner({
     videoLink.rel = "prefetch";
     videoLink.href = INVITE_SCROLL_BG_VIDEO;
     document.head.appendChild(videoLink);
+
+    const songLink = document.createElement("link");
+    songLink.rel = "preload";
+    songLink.as = "fetch";
+    songLink.href = "/api/media/our-song";
+    document.head.appendChild(songLink);
+
     return () => {
       videoLink.remove();
+      songLink.remove();
     };
   }, []);
 
