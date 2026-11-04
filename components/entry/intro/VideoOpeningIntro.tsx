@@ -70,6 +70,11 @@ export function VideoOpeningIntro({
           if (!interactive || event.button !== 0) return;
           onActivatePointerDown?.();
         }}
+        onTouchStart={(event) => {
+          if (!interactive) return;
+          if (event.touches.length !== 1) return;
+          onActivatePointerDown?.();
+        }}
         onClick={(e) => {
           e.preventDefault();
           if (interactive) onActivate();
