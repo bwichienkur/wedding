@@ -77,7 +77,7 @@ function isAudiblyPlaying(element: HTMLAudioElement): boolean {
     !element.ended &&
     !element.muted &&
     !userMuted &&
-    element.currentTime > 0.02
+    element.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
   );
 }
 
@@ -235,6 +235,29 @@ export function getOurSongIsAudiblyPlaying(): boolean {
   return isAudiblyPlaying(audio);
 }
 
+/** Attach until background music is actually playing (iOS needs a gesture after the intro video). */
+export function bindOurSongResumeUntilPlaying(): () => void {
+  const onGesture = () => {
+    if (getOurSongIsAudiblyPlaying()) {
+      detach();
+      return;
+    }
+    playOurSongFromUserGesture();
+  };
+
+  function detach() {
+    window.removeEventListener("pointerdown", onGesture, true);
+    window.removeEventListener("touchend", onGesture, true);
+    window.removeEventListener("click", onGesture, true);
+  }
+
+  window.addEventListener("pointerdown", onGesture, { capture: true });
+  window.addEventListener("touchend", onGesture, { capture: true });
+  window.addEventListener("click", onGesture, { capture: true });
+
+  return detach;
+}
+
 export function getOurSongUserMuted(): boolean {
   return userMuted;
 }
@@ -260,6 +283,11 @@ export function subscribeOurSongUnlock(listener: () => void): () => void {
 export function subscribeOurSongMuted(listener: () => void): () => void {
   muteListeners.add(listener);
   return () => muteListeners.delete(listener);
+}
+
+export function subscribeOurSongPlaying(listener: () => void): () => void {
+  playingListeners.add(listener);
+  return () => playingListeners.delete(listener);
 }
 
 export function ourSongFeatureEnabled(): boolean {

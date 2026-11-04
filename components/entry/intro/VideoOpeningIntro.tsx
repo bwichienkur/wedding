@@ -3,6 +3,7 @@
 import { wedding } from "@/data/wedding";
 import { cn } from "@/lib/cn";
 import { playOurSongFromUserGesture } from "@/lib/media/our-song-engine";
+import { useRef } from "react";
 import type { IntroPhase } from "./types";
 
 const OPENING_VIDEO = "/videos/opening-animation.mp4";
@@ -32,11 +33,15 @@ export function VideoOpeningIntro({
   const exiting = phase === "opening" || phase === "opened";
   const showPosterCover = !openingVideoPlaying && !exiting;
   const showCue = interactive || (glowing && showPosterCover);
+  const openingRef = useRef(false);
 
-  const startMusic = () => {
+  function openFromUserGesture() {
+    if (!interactive || openingRef.current) return;
+    openingRef.current = true;
     playOurSongFromUserGesture();
     onActivatePointerDown?.();
-  };
+    onActivate();
+  }
 
   return (
     <div
@@ -74,19 +79,16 @@ export function VideoOpeningIntro({
         disabled={!interactive}
         onPointerDown={(event) => {
           if (!interactive || event.button !== 0) return;
-          startMusic();
+          openFromUserGesture();
         }}
         onTouchStart={(event) => {
           if (!interactive) return;
           if (event.touches.length !== 1) return;
-          startMusic();
+          openFromUserGesture();
         }}
         onClick={(e) => {
           e.preventDefault();
-          if (interactive) {
-            startMusic();
-            onActivate();
-          }
+          openFromUserGesture();
         }}
         aria-label={wedding.entry.beginLabel}
         className={cn(
