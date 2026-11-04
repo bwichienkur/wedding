@@ -17,6 +17,8 @@ let gestureUnlockActive = false;
 let gestureUnlockTimer: ReturnType<typeof setTimeout> | null = null;
 const unlockListeners = new Set<() => void>();
 const muteListeners = new Set<() => void>();
+const playingListeners = new Set<() => void>();
+let retryInterval: ReturnType<typeof setInterval> | null = null;
 
 function resolveSrc(): string {
   if (typeof window === "undefined") return DEFAULT_PATH;
@@ -38,7 +40,9 @@ function beginGestureUnlock(): void {
   gestureUnlockTimer = setTimeout(() => {
     gestureUnlockActive = false;
     gestureUnlockTimer = null;
+    stopRetryInterval();
   }, UNLOCK_HOLD_MS);
+  startRetryInterval();
 }
 
 function endGestureUnlock(): void {
@@ -47,6 +51,7 @@ function endGestureUnlock(): void {
     clearTimeout(gestureUnlockTimer);
     gestureUnlockTimer = null;
   }
+  stopRetryInterval();
 }
 
 function mayUnlock(): boolean {
@@ -75,8 +80,35 @@ function isAudiblyPlaying(element: HTMLAudioElement): boolean {
   );
 }
 
+function notifyPlaying(): void {
+  playingListeners.forEach((listener) => listener());
+}
+
+function stopRetryInterval(): void {
+  if (retryInterval) {
+    clearInterval(retryInterval);
+    retryInterval = null;
+  }
+}
+
+function startRetryInterval(): void {
+  stopRetryInterval();
+  retryInterval = setInterval(() => {
+    if (!wantsPlay || !audio || !gestureUnlockActive) {
+      stopRetryInterval();
+      return;
+    }
+    if (isAudiblyPlaying(audio)) {
+      stopRetryInterval();
+      return;
+    }
+    attemptPlayFromGesture(audio);
+  }, 2500);
+}
+
 function notifyUnlock(): void {
   unlockListeners.forEach((listener) => listener());
+  notifyPlaying();
 }
 
 function applyMuteState(element: HTMLAudioElement) {
@@ -163,8 +195,10 @@ export function getOurSongAudio(): HTMLAudioElement | null {
   document.body.appendChild(audio);
 
   audio.addEventListener("playing", () => {
+    notifyPlaying();
     if (isAudiblyPlaying(audio!)) endGestureUnlock();
   });
+  audio.addEventListener("pause", () => notifyPlaying());
 
   audio.addEventListener("error", () => {
     if (wantsPlay && mayUnlock() && audio) {
@@ -189,10 +223,15 @@ export function playOurSongFromUserGesture(): void {
 
 export function retryOurSongAfterGesture(): void {
   if (!wantsPlay) return;
-  markUserGesture();
+  beginGestureUnlock();
   const element = getOurSongAudio();
   if (!element || isAudiblyPlaying(element)) return;
-  if (mayUnlock()) attemptPlayFromGesture(element);
+  attemptPlayFromGesture(element);
+}
+
+export function getOurSongIsAudiblyPlaying(): boolean {
+  if (!audio) return false;
+  return isAudiblyPlaying(audio);
 }
 
 export function getOurSongUserMuted(): boolean {
@@ -209,6 +248,7 @@ export function setOurSongUserMuted(muted: boolean): void {
     }
   }
   muteListeners.forEach((listener) => listener());
+  notifyPlaying();
 }
 
 export function subscribeOurSongUnlock(listener: () => void): () => void {

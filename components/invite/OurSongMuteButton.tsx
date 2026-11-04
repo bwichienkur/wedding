@@ -1,6 +1,7 @@
 "use client";
 
 import { useOurSongAudio } from "@/components/invite/our-song-audio-context";
+import { getOurSongIsAudiblyPlaying } from "@/lib/media/our-song-engine";
 import { cn } from "@/lib/cn";
 
 function SpeakerOnIcon({ className }: { className?: string }) {
@@ -42,18 +43,35 @@ export function OurSongMuteButton({ className }: { className?: string }) {
 
   if (!enabled) return null;
 
+  function handleClick() {
+    if (muted) {
+      toggleMute();
+      return;
+    }
+    if (getOurSongIsAudiblyPlaying()) {
+      toggleMute();
+      return;
+    }
+    playFromUserGesture();
+  }
+
   return (
     <button
       type="button"
-      onPointerDown={() => playFromUserGesture()}
-      onClick={() => toggleMute()}
+      onClick={handleClick}
       className={cn(
         "invite-chrome-fab",
         className,
       )}
       aria-pressed={muted}
       aria-label={muted ? "Unmute background music" : "Mute background music"}
-      title={muted ? "Unmute music" : "Mute music"}
+      title={
+        muted
+          ? "Unmute music"
+          : getOurSongIsAudiblyPlaying()
+            ? "Mute music"
+            : "Start background music"
+      }
     >
       {muted ? (
         <SpeakerOffIcon className="h-5 w-5" />
