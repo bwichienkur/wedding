@@ -28,5 +28,15 @@ describe("buildInviteSectionNavItems", () => {
       "rsvp",
       "faq",
     ]);
+    expect(items.find((item) => item.id === "party")?.label).toBe(
+      "Wedding Party",
+    );
+    expect(items.find((item) => item.id === "rsvp")?.label).toBe("RSVP");
+    expect(items.find((item) => item.id === "faq")?.label).toBe("FAQ");
+    expect(items.find((item) => item.id === "wedding-day")?.label).toBe(
+      "Schedule",
+    );
+    expect(items.find((item) => item.id === "gallery")?.label).toBe("Gallery");
+    expect(items.find((item) => item.id === "venue")?.label).toBe("Venue");
   });
 });
