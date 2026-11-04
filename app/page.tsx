@@ -3,6 +3,7 @@ import { WeddingEventJsonLd } from "@/components/seo/WeddingEventJsonLd";
 import { wedding } from "@/data/wedding";
 import { getResolvedSiteSections } from "@/lib/content/store";
 import { getResolvedLogistics } from "@/lib/logistics/store";
+import { resolveOurSongPlaybackSrc } from "@/lib/media/our-song";
 import {
   resolveClosingImage,
   resolveHeroSlides,
@@ -63,7 +64,11 @@ export default async function HomePage() {
   return (
     <>
       <WeddingEventJsonLd />
-      <HomeExperience media={media} sections={sections} />
+      <HomeExperience
+        media={media}
+        sections={sections}
+        ourSongPlaybackSrc={resolveOurSongPlaybackSrc()}
+      />
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  configureOurSongPlayback,
   getOurSongUserMuted,
   ourSongFeatureEnabled,
   playOurSongFromUserGesture,
@@ -11,6 +12,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
   type ReactNode,
@@ -35,7 +37,17 @@ export function useOurSongAudio(): OurSongAudioContextValue {
   return ctx;
 }
 
-export function OurSongAudioProvider({ children }: { children: ReactNode }) {
+export function OurSongAudioProvider({
+  children,
+  playbackSrc,
+}: {
+  children: ReactNode;
+  playbackSrc: string;
+}) {
+  useLayoutEffect(() => {
+    configureOurSongPlayback(playbackSrc);
+  }, [playbackSrc]);
+
   const muted = useSyncExternalStore(
     subscribeOurSongMuted,
     getOurSongUserMuted,
@@ -43,7 +55,12 @@ export function OurSongAudioProvider({ children }: { children: ReactNode }) {
   );
 
   const toggleMute = useCallback(() => {
-    setOurSongUserMuted(!getOurSongUserMuted());
+    if (getOurSongUserMuted()) {
+      setOurSongUserMuted(false);
+      playOurSongFromUserGesture();
+    } else {
+      setOurSongUserMuted(true);
+    }
   }, []);
 
   const playFromUserGesture = useCallback(() => {
