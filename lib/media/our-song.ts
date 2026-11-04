@@ -1,6 +1,7 @@
 import "server-only";
 
 import { isBlobStorageEnabled } from "@/lib/media/blob-env";
+import { OUR_SONG_PLAYBACK_PATH } from "@/lib/media/our-song-playback-path";
 
 export const ourSongMeta = {
   enabled: true,
@@ -63,11 +64,11 @@ export function ourSongBlobPathsToTry(): string[] {
 /** URL passed to `<audio src>` — always same-origin so mobile unlock is not lost to a late src swap. */
 export function resolveOurSongPlaybackSrc(): string {
   if (getOurSongBlobUrl() || resolvedOurSongBlobPath()) {
-    return "/api/media/our-song";
+    return OUR_SONG_PLAYBACK_PATH;
   }
   return LOCAL_FALLBACK_SRC;
 }
 
 export function ourSongIsBlobBacked(): boolean {
-  return resolveOurSongPlaybackSrc() === "/api/media/our-song";
+  return resolveOurSongPlaybackSrc() === OUR_SONG_PLAYBACK_PATH;
 }

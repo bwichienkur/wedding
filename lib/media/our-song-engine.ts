@@ -1,8 +1,9 @@
 "use client";
 
 import { ourSong } from "@/data/our-song";
+import { OUR_SONG_PLAYBACK_PATH } from "@/lib/media/our-song-playback-path";
 
-const DEFAULT_PATH = "/api/media/our-song";
+const DEFAULT_PATH = OUR_SONG_PLAYBACK_PATH;
 /** Short window for extra pointer events; primary unlock uses `gestureUnlockActive`. */
 const GESTURE_WINDOW_MS = 4000;
 /** Keep retrying play after the envelope tap until audio starts or this elapses. */
