@@ -1619,7 +1619,7 @@
     font-family: var(--font-display-family), Georgia, serif;
     font-size: 1.15rem;
     line-height: 1.25;
-    color: color-mix(in srgb, var(--invite-ivory) 92%, white);
+    color: color-mix(in srgb, var(--invite-cream) 88%, white);
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
