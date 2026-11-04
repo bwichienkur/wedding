@@ -12,6 +12,9 @@ import {
 import { ourSongMissingHtml } from "@/lib/media/our-song-error-page";
 import { probeOurSongBlob } from "@/lib/media/our-song-probe";
 
+/** Origin must not cache ranged vs full responses interchangeably on the edge. */
+export const dynamic = "force-dynamic";
+
 export const runtime = "nodejs";
 
 function contentTypeForPath(pathname: string): string {
@@ -22,22 +25,27 @@ function contentTypeForPath(pathname: string): string {
   return "audio/mpeg";
 }
 
+function applyStreamCacheHeaders(headers: Headers, partial: boolean): void {
+  headers.set("Accept-Ranges", "bytes");
+  headers.set("Vary", "Range");
+  headers.set(
+    "Cache-Control",
+    partial
+      ? "public, max-age=3600, must-revalidate"
+      : "public, max-age=604800, stale-while-revalidate=86400",
+  );
+  headers.set("CDN-Cache-Control", "no-store");
+}
+
 function responseHeadersFromBlob(
   pathname: string,
   result: NonNullable<Awaited<ReturnType<typeof get>>> & {
     stream: ReadableStream<Uint8Array>;
   },
+  hasRangeRequest: boolean,
 ): Headers {
   const headers = new Headers();
   headers.set("Content-Type", contentTypeForPath(pathname));
-  headers.set("Accept-Ranges", "bytes");
-  headers.set("Vary", "Range");
-  headers.set(
-    "Cache-Control",
-    result.statusCode !== 200
-      ? "public, max-age=3600, must-revalidate"
-      : "public, max-age=86400, stale-while-revalidate=86400",
-  );
 
   for (const [key, value] of result.headers.entries()) {
     const lower = key.toLowerCase();
@@ -51,19 +59,33 @@ function responseHeadersFromBlob(
     }
   }
 
+  const partial = hasRangeRequest && headers.has("content-range");
+  applyStreamCacheHeaders(headers, partial);
+
   if (
     !headers.has("Content-Length") &&
     result.blob.size != null &&
-    result.statusCode === 200
+    !partial
   ) {
     headers.set("Content-Length", String(result.blob.size));
   }
 
-  if (result.statusCode === 200) {
+  if (!partial) {
     headers.delete("Content-Range");
   }
 
   return headers;
+}
+
+function responseStatus(
+  result: NonNullable<Awaited<ReturnType<typeof get>>>,
+  hasRangeRequest: boolean,
+  headers: Headers,
+): number {
+  if (hasRangeRequest && headers.has("content-range")) {
+    return 206;
+  }
+  return result.statusCode;
 }
 
 async function streamFromBlobPath(
@@ -79,9 +101,12 @@ async function streamFromBlobPath(
     return null;
   }
 
+  const headers = responseHeadersFromBlob(pathname, result, Boolean(range));
+  const status = responseStatus(result, Boolean(range), headers);
+
   return new NextResponse(result.stream, {
-    status: result.statusCode,
-    headers: responseHeadersFromBlob(pathname, result),
+    status,
+    headers,
   });
 }
 
@@ -139,16 +164,15 @@ export async function GET(request: Request) {
         "Content-Type",
         upstream.headers.get("Content-Type") ?? "audio/mpeg",
       );
-      headers.set("Accept-Ranges", "bytes");
-      headers.set("Vary", "Range");
-      headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=86400");
+      const partial = Boolean(range && upstream.headers.get("Content-Range"));
+      applyStreamCacheHeaders(headers, partial);
       const contentLength = upstream.headers.get("Content-Length");
       const contentRange = upstream.headers.get("Content-Range");
       if (contentLength) headers.set("Content-Length", contentLength);
       if (contentRange) headers.set("Content-Range", contentRange);
 
       return new NextResponse(upstream.body, {
-        status: upstream.status,
+        status: partial ? 206 : upstream.status,
         headers,
       });
     } catch {

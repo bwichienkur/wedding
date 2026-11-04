@@ -12,7 +12,7 @@ describe("our song playback src", () => {
     process.env.OUR_SONG_BLOB_PATH = "wedding/music/ordinary.mp3";
     process.env.BLOB_READ_WRITE_TOKEN = "test-token";
     const { resolveOurSongPlaybackSrc } = await import("@/lib/media/our-song");
-    expect(resolveOurSongPlaybackSrc()).toBe("/api/media/our-song?v=2");
+    expect(resolveOurSongPlaybackSrc()).toBe("/api/media/our-song?v=3");
   });
 
   it("uses the API route for public blob URLs instead of a cross-origin src", async () => {
@@ -20,7 +20,7 @@ describe("our song playback src", () => {
       "https://example.public.blob.vercel-storage.com/ordinary.mp3";
     process.env.BLOB_ACCESS = "public";
     const { resolveOurSongPlaybackSrc } = await import("@/lib/media/our-song");
-    expect(resolveOurSongPlaybackSrc()).toBe("/api/media/our-song?v=2");
+    expect(resolveOurSongPlaybackSrc()).toBe("/api/media/our-song?v=3");
   });
 
   it("falls back to local public file when blob is not configured", async () => {
