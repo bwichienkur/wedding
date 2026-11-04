@@ -1,6 +1,5 @@
 import "server-only";
 
-import { resolveBlobAccess } from "@/lib/media/blob-access";
 import { isBlobStorageEnabled } from "@/lib/media/blob-env";
 
 export const ourSongMeta = {
@@ -51,13 +50,9 @@ export function resolvedOurSongBlobPath(): string | null {
   return null;
 }
 
-/** URL passed to `<audio src>` — may be a blob URL or same-origin API route. */
+/** URL passed to `<audio src>` — always same-origin so mobile unlock is not lost to a late src swap. */
 export function resolveOurSongPlaybackSrc(): string {
-  const blobUrl = getOurSongBlobUrl();
-  if (blobUrl && resolveBlobAccess() === "public") {
-    return blobUrl;
-  }
-  if (blobUrl || resolvedOurSongBlobPath()) {
+  if (getOurSongBlobUrl() || resolvedOurSongBlobPath()) {
     return "/api/media/our-song";
   }
   return LOCAL_FALLBACK_SRC;

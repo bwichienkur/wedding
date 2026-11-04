@@ -3,16 +3,48 @@
 import { ourSong } from "@/data/our-song";
 
 const DEFAULT_PATH = "/api/media/our-song";
+/** iOS/Safari allow play() shortly after the tap that set wantsPlay. */
+const GESTURE_WINDOW_MS = 4000;
 
 let audio: HTMLAudioElement | null = null;
+let playbackPath = DEFAULT_PATH;
 let wantsPlay = false;
 let userMuted = false;
+let lastUserGestureAt = 0;
 const unlockListeners = new Set<() => void>();
 const muteListeners = new Set<() => void>();
 
 function resolveSrc(): string {
   if (typeof window === "undefined") return DEFAULT_PATH;
-  return new URL(DEFAULT_PATH, window.location.origin).href;
+  return new URL(playbackPath, window.location.origin).href;
+}
+
+function withinGestureWindow(): boolean {
+  return Date.now() - lastUserGestureAt < GESTURE_WINDOW_MS;
+}
+
+function markUserGesture(): void {
+  lastUserGestureAt = Date.now();
+}
+
+/** Same-origin path from the server (`/api/media/our-song` or local fallback). */
+export function configureOurSongPlayback(path: string): void {
+  if (!path.startsWith("/")) return;
+  playbackPath = path;
+  if (!audio) return;
+  const href = resolveSrc();
+  if (audio.src !== href) {
+    audio.src = href;
+  }
+}
+
+function isAudiblyPlaying(element: HTMLAudioElement): boolean {
+  return (
+    !element.paused &&
+    !element.ended &&
+    element.currentTime > 0.04 &&
+    !element.muted
+  );
 }
 
 export function getOurSongAudio(): HTMLAudioElement | null {
@@ -30,21 +62,15 @@ export function getOurSongAudio(): HTMLAudioElement | null {
   audio.setAttribute("aria-hidden", "true");
   document.body.appendChild(audio);
 
-  void fetch("/api/media/our-song/config")
-    .then((response) => (response.ok ? response.json() : null))
-    .then((data: { enabled?: boolean; src?: string | null } | null) => {
-      if (!data?.enabled || !data.src || !audio) return;
-      const next = new URL(data.src, window.location.origin).href;
-      if (audio.src !== next) audio.src = next;
-      if (wantsPlay) void tryPlay(true);
-    })
-    .catch(() => {});
-
   const onReady = () => {
     if (wantsPlay) void tryPlay(false);
   };
   audio.addEventListener("canplaythrough", onReady);
   audio.addEventListener("canplay", onReady);
+  audio.addEventListener("loadeddata", onReady);
+  audio.addEventListener("error", () => {
+    if (wantsPlay) void tryPlay(withinGestureWindow());
+  });
 
   return audio;
 }
@@ -57,8 +83,9 @@ function applyMuteState(element: HTMLAudioElement) {
 async function tryPlay(fromGesture: boolean): Promise<void> {
   const element = getOurSongAudio();
   if (!element || !ourSong.enabled || !wantsPlay) return;
-  if (!element.paused && element.currentTime > 0.02) return;
+  if (isAudiblyPlaying(element)) return;
 
+  const mayUnlock = fromGesture || withinGestureWindow();
   applyMuteState(element);
 
   const playAudible = () => {
@@ -71,7 +98,7 @@ async function tryPlay(fromGesture: boolean): Promise<void> {
     playAudible();
     return;
   } catch {
-    if (!fromGesture || userMuted) {
+    if (!mayUnlock || userMuted) {
       return;
     }
   }
@@ -90,6 +117,7 @@ async function tryPlay(fromGesture: boolean): Promise<void> {
 /** Call synchronously from envelope tap / touch handlers. */
 export function playOurSongFromUserGesture(): void {
   if (!ourSong.enabled) return;
+  markUserGesture();
   wantsPlay = true;
   getOurSongAudio();
   void tryPlay(true);
@@ -97,6 +125,7 @@ export function playOurSongFromUserGesture(): void {
 
 export function retryOurSongAfterGesture(): void {
   if (!wantsPlay) return;
+  markUserGesture();
   void tryPlay(true);
 }
 
@@ -109,7 +138,7 @@ export function setOurSongUserMuted(muted: boolean): void {
   if (audio) {
     audio.muted = muted;
     if (!muted && wantsPlay && audio.paused) {
-      void tryPlay(false);
+      void tryPlay(withinGestureWindow());
     }
   }
   muteListeners.forEach((listener) => listener());

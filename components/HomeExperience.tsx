@@ -48,12 +48,14 @@ export interface HomeMediaBundle {
 export function HomeExperience({
   media,
   sections,
+  ourSongPlaybackSrc,
 }: {
   media: HomeMediaBundle;
   sections: ResolvedSiteSections;
+  ourSongPlaybackSrc: string;
 }) {
   return (
-    <OurSongAudioProvider>
+    <OurSongAudioProvider playbackSrc={ourSongPlaybackSrc}>
       <HomeExperienceInner media={media} sections={sections} />
     </OurSongAudioProvider>
   );
