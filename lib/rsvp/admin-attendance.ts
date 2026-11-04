@@ -67,3 +67,63 @@ export function sumCeremonyAcrossHouseholds(
     0,
   );
 }
+
+export interface AcceptedGuestListRow {
+  guestId: string;
+  fullName: string;
+  householdId: string;
+  householdName: string;
+  ceremonyAttending: string;
+  welcomeAttending: string;
+  dietaryNotes: string;
+  accessibilityNotes: string;
+  submittedAt: string | null;
+}
+
+export interface HouseholdForAcceptedList {
+  id: string;
+  displayName: string;
+  submittedAt: string | null;
+  guests: Array<
+    GuestWithEvents & {
+      id: string;
+      dietaryNotes?: string;
+      accessibilityNotes?: string;
+    }
+  >;
+}
+
+/** One row per guest who said yes to ceremony and/or welcome party. */
+export function flattenAcceptedGuestRows(
+  households: HouseholdForAcceptedList[],
+): AcceptedGuestListRow[] {
+  const rows: AcceptedGuestListRow[] = [];
+
+  for (const household of households) {
+    for (const guest of household.guests) {
+      const ceremonyAttending = guestAttendingForEvent(guest, CEREMONY_EVENT_ID);
+      const welcomeAttending = guestAttendingForEvent(
+        guest,
+        WELCOME_PARTY_EVENT_ID,
+      );
+      if (ceremonyAttending !== "yes" && welcomeAttending !== "yes") {
+        continue;
+      }
+      rows.push({
+        guestId: guest.id,
+        fullName: guest.fullName.trim(),
+        householdId: household.id,
+        householdName: household.displayName,
+        ceremonyAttending,
+        welcomeAttending,
+        dietaryNotes: guest.dietaryNotes?.trim() ?? "",
+        accessibilityNotes: guest.accessibilityNotes?.trim() ?? "",
+        submittedAt: household.submittedAt,
+      });
+    }
+  }
+
+  return rows.sort((a, b) =>
+    a.fullName.localeCompare(b.fullName, undefined, { sensitivity: "base" }),
+  );
+}

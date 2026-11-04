@@ -15,6 +15,7 @@ import {
   adminToolbarSelectClass,
 } from "@/components/admin/admin-styles";
 import {
+  flattenAcceptedGuestRows,
   sumCeremonyAcrossHouseholds,
   sumWelcomeAcrossHouseholds,
 } from "@/lib/rsvp/admin-attendance";
@@ -66,6 +67,13 @@ const STATUS_FILTERS = [
 
 type StatusFilter = (typeof STATUS_FILTERS)[number]["value"];
 
+const VIEW_MODES = [
+  { value: "invitations", label: "By invitation" },
+  { value: "accepted", label: "Accepted guests" },
+] as const;
+
+type ViewMode = (typeof VIEW_MODES)[number]["value"];
+
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 function guestAllowance(household: Pick<HouseholdRow, "guests" | "maxPlusOnes">) {
@@ -107,6 +115,7 @@ export function RsvpGuestListAdmin() {
   const [households, setHouseholds] = useState<HouseholdRow[]>([]);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [viewMode, setViewMode] = useState<ViewMode>("invitations");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -166,7 +175,17 @@ export function RsvpGuestListAdmin() {
     });
   }, [households, query, statusFilter]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const acceptedRows = useMemo(
+    () => flattenAcceptedGuestRows(filtered),
+    [filtered],
+  );
+
+  const listForPagination =
+    viewMode === "accepted" ? acceptedRows : filtered;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(listForPagination.length / pageSize),
+  );
   const pageIndex = Math.min(page, totalPages);
 
   const pageRows = useMemo(() => {
@@ -174,8 +193,14 @@ export function RsvpGuestListAdmin() {
     return filtered.slice(start, start + pageSize);
   }, [filtered, pageIndex, pageSize]);
 
-  const rangeStart = filtered.length === 0 ? 0 : (pageIndex - 1) * pageSize + 1;
-  const rangeEnd = Math.min(pageIndex * pageSize, filtered.length);
+  const pageAcceptedRows = useMemo(() => {
+    const start = (pageIndex - 1) * pageSize;
+    return acceptedRows.slice(start, start + pageSize);
+  }, [acceptedRows, pageIndex, pageSize]);
+
+  const rangeStart =
+    listForPagination.length === 0 ? 0 : (pageIndex - 1) * pageSize + 1;
+  const rangeEnd = Math.min(pageIndex * pageSize, listForPagination.length);
 
   const attendanceTotals = useMemo(
     () => ({
@@ -398,6 +423,32 @@ export function RsvpGuestListAdmin() {
 
       <div className={`${adminTableShellClass} w-full`}>
         <div className="flex flex-col gap-3 border-b border-white/10 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-end">
+          <div
+            className="flex w-full flex-wrap gap-1 sm:w-auto"
+            role="tablist"
+            aria-label="Guest list view"
+          >
+            {VIEW_MODES.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                role="tab"
+                aria-selected={viewMode === value}
+                className={cn(
+                  adminToolbarControlClass,
+                  viewMode === value &&
+                    "border-[var(--admin-gold,#e8c872)]/55 bg-[var(--admin-gold,#e8c872)]/12 text-[var(--admin-gold-bright,#f5e6a8)]",
+                )}
+                onClick={() => {
+                  setViewMode(value);
+                  setPage(1);
+                }}
+              >
+                {label}
+                {value === "accepted" ? ` (${acceptedRows.length})` : ""}
+              </button>
+            ))}
+          </div>
           <label className="block min-w-0 flex-1 text-sm sm:min-w-[12rem]">
             <span className={`mb-1 block ${adminLabelClass}`}>Search</span>
             <input
@@ -467,11 +518,94 @@ export function RsvpGuestListAdmin() {
         </div>
 
         <p className={`border-b border-white/10 px-3 py-2 text-xs ${adminMutedClass}`}>
-          Expand a row to edit guest names and view full RSVP detail. Ceremony names
-          column lists everyone marked attending the ceremony.
+          {viewMode === "accepted"
+            ? "One row per guest who RSVP’d yes to the welcome party and/or ceremony. Use search and RSVP status to narrow invitations first."
+            : "Expand a row to edit guest names and view full RSVP detail. Ceremony names column lists everyone marked attending the ceremony."}
         </p>
 
         <div className="overflow-x-auto">
+          {viewMode === "accepted" ? (
+            <table className={adminTableClass}>
+              <thead>
+                <tr>
+                  <th className={`${adminThClass} min-w-[9rem]`} scope="col">
+                    Guest
+                  </th>
+                  <th className={`${adminThClass} min-w-[8rem]`} scope="col">
+                    Invitation
+                  </th>
+                  <th className={`${adminThClass} w-16 text-center`} scope="col">
+                    Welcome
+                  </th>
+                  <th className={`${adminThClass} w-16 text-center`} scope="col">
+                    Ceremony
+                  </th>
+                  <th className={`${adminThClass} hidden min-w-[7rem] sm:table-cell`} scope="col">
+                    Dietary
+                  </th>
+                  <th className={`${adminThClass} hidden min-w-[7rem] md:table-cell`} scope="col">
+                    Accessibility
+                  </th>
+                  <th className={`${adminThClass} hidden lg:table-cell w-28`} scope="col">
+                    Submitted
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageAcceptedRows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className={`${adminTdClass} py-10 text-center ${adminMutedClass}`}
+                    >
+                      No accepted guests match your filters.
+                    </td>
+                  </tr>
+                ) : (
+                  pageAcceptedRows.map((row) => (
+                    <tr
+                      key={row.guestId}
+                      className="transition-colors hover:bg-white/[0.035]"
+                    >
+                      <td className={adminTdClass}>{row.fullName}</td>
+                      <td className={`${adminTdClass} text-[var(--admin-muted,#9aa8bc)]`}>
+                        {row.householdName}
+                      </td>
+                      <td
+                        className={cn(
+                          adminTdClass,
+                          "text-center tabular-nums",
+                          attendingClass(row.welcomeAttending),
+                        )}
+                      >
+                        {formatAttending(row.welcomeAttending)}
+                      </td>
+                      <td
+                        className={cn(
+                          adminTdClass,
+                          "text-center tabular-nums",
+                          attendingClass(row.ceremonyAttending),
+                        )}
+                      >
+                        {formatAttending(row.ceremonyAttending)}
+                      </td>
+                      <td className={`${adminTdClass} hidden max-w-[10rem] truncate sm:table-cell`}>
+                        {row.dietaryNotes || "—"}
+                      </td>
+                      <td className={`${adminTdClass} hidden max-w-[10rem] truncate md:table-cell`}>
+                        {row.accessibilityNotes || "—"}
+                      </td>
+                      <td className={`${adminTdClass} hidden text-[0.625rem] tabular-nums lg:table-cell ${adminMutedClass}`}>
+                        {row.submittedAt
+                          ? new Date(row.submittedAt).toLocaleDateString()
+                          : "—"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          ) : (
           <table className={adminTableClass}>
             <thead>
               <tr>
@@ -538,6 +672,7 @@ export function RsvpGuestListAdmin() {
               )}
             </tbody>
           </table>
+          )}
         </div>
 
         <div className={`${adminTableFootClass} px-2 py-2`}>
@@ -548,7 +683,7 @@ export function RsvpGuestListAdmin() {
             </span>{" "}
             of{" "}
             <span className="tabular-nums text-[var(--admin-body,#d4dce8)]">
-              {filtered.length}
+              {listForPagination.length}
             </span>
           </p>
           <div className="flex flex-wrap items-center gap-2">
