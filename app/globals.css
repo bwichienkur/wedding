@@ -1567,6 +1567,23 @@
     outline-offset: 3px;
   }
 
+  .invite-chrome-fab--attention {
+    animation: invite-chrome-fab-pulse 1.6s ease-in-out infinite;
+    box-shadow:
+      0 0 0 2px rgb(201 162 77 / 0.45),
+      0 0 18px rgb(212 175 55 / 0.35);
+  }
+
+  @keyframes invite-chrome-fab-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.06);
+    }
+  }
+
   .invite-chrome-fab--compact {
     min-height: 2.35rem;
     min-width: 2.35rem;

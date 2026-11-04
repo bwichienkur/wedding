@@ -1,8 +1,13 @@
 "use client";
 
 import { useOurSongAudio } from "@/components/invite/our-song-audio-context";
-import { getOurSongIsAudiblyPlaying } from "@/lib/media/our-song-engine";
+import {
+  getOurSongIsAudiblyPlaying,
+  getOurSongUserMuted,
+  subscribeOurSongPlaying,
+} from "@/lib/media/our-song-engine";
 import { cn } from "@/lib/cn";
+import { useSyncExternalStore } from "react";
 
 function SpeakerOnIcon({ className }: { className?: string }) {
   return (
@@ -40,15 +45,22 @@ function SpeakerOffIcon({ className }: { className?: string }) {
 /** Fixed mute control for background music — stays visible while scrolling. */
 export function OurSongMuteButton({ className }: { className?: string }) {
   const { enabled, muted, toggleMute, playFromUserGesture } = useOurSongAudio();
+  const playing = useSyncExternalStore(
+    subscribeOurSongPlaying,
+    getOurSongIsAudiblyPlaying,
+    () => false,
+  );
 
   if (!enabled) return null;
+
+  const needsTap = !muted && !playing;
 
   function handleClick() {
     if (muted) {
       toggleMute();
       return;
     }
-    if (getOurSongIsAudiblyPlaying()) {
+    if (playing) {
       toggleMute();
       return;
     }
@@ -61,16 +73,23 @@ export function OurSongMuteButton({ className }: { className?: string }) {
       onClick={handleClick}
       className={cn(
         "invite-chrome-fab",
+        needsTap && "invite-chrome-fab--attention",
         className,
       )}
       aria-pressed={muted}
-      aria-label={muted ? "Unmute background music" : "Mute background music"}
+      aria-label={
+        muted
+          ? "Unmute background music"
+          : needsTap
+            ? "Tap to start background music"
+            : "Mute background music"
+      }
       title={
         muted
           ? "Unmute music"
-          : getOurSongIsAudiblyPlaying()
-            ? "Mute music"
-            : "Start background music"
+          : needsTap
+            ? "Tap to start music"
+            : "Mute music"
       }
     >
       {muted ? (

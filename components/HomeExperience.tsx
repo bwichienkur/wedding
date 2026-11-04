@@ -29,7 +29,9 @@ import type { ResolvedSiteSections } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
 import { OurSongAudioProvider, useOurSongAudio } from "@/components/invite/our-song-audio-context";
 import { InviteFloatingChrome } from "@/components/invite/InviteFloatingChrome";
+import { OurSongResumeOnInteraction } from "@/components/invite/OurSongResumeOnInteraction";
 import { INVITE_SCROLL_BG_VIDEO } from "@/lib/media/invite-scroll-background";
+import { OUR_SONG_PLAYBACK_PATH } from "@/lib/media/our-song-playback-path";
 import { useCallback, useEffect, useState } from "react";
 
 export interface HomeMediaBundle {
@@ -86,7 +88,8 @@ function HomeExperienceInner({
     setSiteRevealed(true);
     setIntroDone(true);
     document.body.classList.add("invite-revealed");
-  }, []);
+    playFromUserGesture();
+  }, [playFromUserGesture]);
 
   const show = (id: keyof ResolvedSiteSections) => sections[id]?.visible;
 
@@ -98,8 +101,16 @@ function HomeExperienceInner({
     videoLink.href = INVITE_SCROLL_BG_VIDEO;
     document.head.appendChild(videoLink);
 
+    const songLink = document.createElement("link");
+    songLink.rel = "preload";
+    songLink.as = "audio";
+    songLink.href = OUR_SONG_PLAYBACK_PATH;
+    songLink.type = "audio/mpeg";
+    document.head.appendChild(songLink);
+
     return () => {
       videoLink.remove();
+      songLink.remove();
     };
   }, []);
 
@@ -110,6 +121,7 @@ function HomeExperienceInner({
         onRevealStart={beginReveal}
         onUserActivate={startOurSongFromGesture}
       />
+      <OurSongResumeOnInteraction active={siteRevealed} />
       <AmbientBackground active={introDone && siteRevealed} warm={siteRevealed} />
       <InviteFloatingChrome visible={siteRevealed} sections={sections} />
       <div

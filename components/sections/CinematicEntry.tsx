@@ -69,6 +69,7 @@ export function CinematicEntry({
     revealedRef.current = true;
     document.body.classList.remove("intro-active");
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    playOurSongFromUserGesture();
     onRevealStart?.();
   }, [onRevealStart]);
 
