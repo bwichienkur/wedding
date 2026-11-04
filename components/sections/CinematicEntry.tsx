@@ -6,6 +6,7 @@ import type { IntroPhase } from "@/components/entry/intro/types";
 import { useVideoIntroPhase } from "@/components/entry/intro/useVideoIntroPhase";
 import { VideoOpeningIntro } from "@/components/entry/intro/VideoOpeningIntro";
 import { wedding } from "@/data/wedding";
+import { playOurSongFromUserGesture } from "@/lib/media/our-song-engine";
 import {
   isIntroForceSkipped,
   markIntroSeen,
@@ -135,6 +136,7 @@ export function CinematicEntry({
   useEffect(() => {
     if (!isClient) return;
     if (!wedding.featureFlags.cinematicEntry || forceSkip) {
+      playOurSongFromUserGesture();
       onUserActivate?.();
       startReveal();
       if (!completedRef.current) {
@@ -145,6 +147,7 @@ export function CinematicEntry({
   }, [isClient, forceSkip, onComplete, onUserActivate, startReveal]);
 
   function skipToDetails() {
+    playOurSongFromUserGesture();
     onUserActivate?.();
     document.body.classList.remove("intro-active");
     skip();
@@ -158,6 +161,7 @@ export function CinematicEntry({
   }
 
   function handleRsvp() {
+    playOurSongFromUserGesture();
     onUserActivate?.();
     document.body.classList.remove("intro-active");
     skip();
