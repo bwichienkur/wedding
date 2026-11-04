@@ -38,14 +38,15 @@ function SpeakerOffIcon({ className }: { className?: string }) {
 
 /** Fixed mute control for background music — stays visible while scrolling. */
 export function OurSongMuteButton({ className }: { className?: string }) {
-  const { enabled, muted, toggleMute } = useOurSongAudio();
+  const { enabled, muted, toggleMute, playFromUserGesture } = useOurSongAudio();
 
   if (!enabled) return null;
 
   return (
     <button
       type="button"
-      onClick={toggleMute}
+      onPointerDown={() => playFromUserGesture()}
+      onClick={() => toggleMute()}
       className={cn(
         "invite-chrome-fab",
         className,
