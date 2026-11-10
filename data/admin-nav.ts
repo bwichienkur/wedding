@@ -1,4 +1,10 @@
-export type AdminNavId = "home" | "sections" | "content" | "media" | "rsvp";
+export type AdminNavId =
+  | "home"
+  | "sections"
+  | "content"
+  | "media"
+  | "rsvp"
+  | "lodging";
 
 export interface AdminNavItem {
   id: AdminNavId;
@@ -38,6 +44,12 @@ export const adminNavItems: AdminNavItem[] = [
     href: "/admin/rsvp",
     label: "RSVP",
     description: "Guest responses and invitation codes",
+  },
+  {
+    id: "lodging",
+    href: "/admin/lodging",
+    label: "Lodging",
+    description: "Bella Cosa room assignments for on-site guests",
   },
 ];
 
@@ -88,6 +100,12 @@ export const adminDashboardGroups: AdminDashboardGroup[] = [
         title: "RSVP management",
         body: "Look up households, export responses, and manage invitation codes.",
         navId: "rsvp",
+      },
+      {
+        href: "/admin/lodging",
+        title: "Room assignments",
+        body: "Place accepted guests in Bella Cosa rooms 1–10 and the honeymoon suite.",
+        navId: "lodging",
       },
     ],
   },
