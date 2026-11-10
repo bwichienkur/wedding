@@ -19,7 +19,7 @@ export default async function AdminLodgingPage() {
       activeNav="lodging"
       wide
       title="Lodging"
-      description="Assign accepted guests to Bella Cosa rooms (capacities from the venue guide)."
+      description="Floor plan and room assignments for on-site Bella Cosa lodging."
     >
       <LodgingAssignmentsPanel />
     </AdminPageShell>

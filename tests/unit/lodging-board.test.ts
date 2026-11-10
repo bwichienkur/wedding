@@ -3,9 +3,37 @@ import {
   buildLodgingBoard,
   wouldExceedCapacity,
 } from "@/lib/lodging/board";
+import type { LodgingGuestPoolRow } from "@/lib/rsvp/lodging-guest-pool";
 
 describe("buildLodgingBoard", () => {
   it("groups guests by room and flags over-capacity", () => {
+    const pool: LodgingGuestPoolRow[] = [
+      {
+        guestId: "g1",
+        fullName: "Alex",
+        householdId: "h1",
+        householdName: "Alex",
+        ceremonyAttending: "yes",
+        welcomeAttending: "no",
+      },
+      {
+        guestId: "g2",
+        fullName: "Blair",
+        householdId: "h2",
+        householdName: "Blair",
+        ceremonyAttending: "no",
+        welcomeAttending: "no",
+      },
+      {
+        guestId: "g3",
+        fullName: "Casey",
+        householdId: "h3",
+        householdName: "Casey",
+        ceremonyAttending: "unknown",
+        welcomeAttending: "unknown",
+      },
+    ];
+
     const board = buildLodgingBoard({
       updatedAt: "2026-01-01T00:00:00.000Z",
       assignments: {
@@ -13,44 +41,10 @@ describe("buildLodgingBoard", () => {
         g2: "room-3",
         g3: "room-3",
       },
-      acceptedGuests: [
-        {
-          guestId: "g1",
-          fullName: "Alex",
-          householdId: "h1",
-          householdName: "Alex",
-          ceremonyAttending: "yes",
-          welcomeAttending: "no",
-          dietaryNotes: "",
-          accessibilityNotes: "",
-          submittedAt: null,
-        },
-        {
-          guestId: "g2",
-          fullName: "Blair",
-          householdId: "h2",
-          householdName: "Blair",
-          ceremonyAttending: "yes",
-          welcomeAttending: "yes",
-          dietaryNotes: "",
-          accessibilityNotes: "",
-          submittedAt: null,
-        },
-        {
-          guestId: "g3",
-          fullName: "Casey",
-          householdId: "h3",
-          householdName: "Casey",
-          ceremonyAttending: "yes",
-          welcomeAttending: "unknown",
-          dietaryNotes: "",
-          accessibilityNotes: "",
-          submittedAt: null,
-        },
-      ],
+      poolGuests: pool,
     });
 
-    expect(board.totalOnSiteGuests).toBe(3);
+    expect(board.totalGuests).toBe(3);
     expect(board.unassigned).toHaveLength(0);
     const room3 = board.rooms.find((room) => room.id === "room-3");
     expect(room3?.assignedCount).toBe(3);
