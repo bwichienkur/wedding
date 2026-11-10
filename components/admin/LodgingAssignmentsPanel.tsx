@@ -132,9 +132,9 @@ export function LodgingAssignmentsPanel() {
       <section className={adminCardClass}>
         <p className={adminLabelClass}>Bella Cosa on-site rooms</p>
         <p className={cn(adminMutedClass, "mt-2 max-w-3xl")}>
-          Use the floor plan from the lodging guide to place guests in rooms 1–10
-          and the honeymoon suite. You can assign anyone on your invitation list
-          — RSVP acceptance is shown as a hint only, not a requirement.
+          Interactive map based on the Bella Cosa lodging guide PDF (lakeside at
+          top, front at bottom, rooms 1–10 and honeymoon). Assign anyone on your
+          invitation list — RSVP status is a hint only.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--admin-body,#d4dce8)]">
           <span>
