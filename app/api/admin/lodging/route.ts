@@ -9,10 +9,8 @@ import {
   replaceAssignments,
   unassignGuest,
 } from "@/lib/lodging/store";
-import {
-  flattenAcceptedGuestRows,
-} from "@/lib/rsvp/admin-attendance";
 import { listAdminGuestHouseholds } from "@/lib/rsvp/guest-admin";
+import { flattenLodgingGuestPool } from "@/lib/rsvp/lodging-guest-pool";
 
 export async function GET() {
   try {
@@ -26,9 +24,9 @@ export async function GET() {
     listAdminGuestHouseholds(),
   ]);
 
-  const acceptedGuests = flattenAcceptedGuestRows(households);
+  const poolGuests = flattenLodgingGuestPool(households);
   const board = buildLodgingBoard({
-    acceptedGuests,
+    poolGuests,
     assignments: doc.assignments,
     updatedAt: doc.updatedAt,
   });
@@ -70,9 +68,9 @@ export async function PATCH(request: Request) {
     }
 
     const households = await listAdminGuestHouseholds();
-    const acceptedGuests = flattenAcceptedGuestRows(households);
+    const poolGuests = flattenLodgingGuestPool(households);
     const board = buildLodgingBoard({
-      acceptedGuests,
+      poolGuests,
       assignments: doc.assignments,
       updatedAt: doc.updatedAt,
     });

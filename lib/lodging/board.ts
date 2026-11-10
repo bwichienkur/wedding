@@ -3,13 +3,15 @@ import {
   getBellaCosaRoom,
   type BellaCosaRoom,
 } from "@/data/bella-cosa-rooms";
-import type { AcceptedGuestListRow } from "@/lib/rsvp/admin-attendance";
+import type { LodgingGuestPoolRow } from "@/lib/rsvp/lodging-guest-pool";
 
 export interface LodgingBoardGuest {
   guestId: string;
   fullName: string;
   householdName: string;
   roomId: string | null;
+  ceremonyAttending: string;
+  welcomeAttending: string;
 }
 
 export interface LodgingBoardRoom extends BellaCosaRoom {
@@ -22,14 +24,14 @@ export interface LodgingBoardRoom extends BellaCosaRoom {
 export interface LodgingBoard {
   rooms: LodgingBoardRoom[];
   unassigned: LodgingBoardGuest[];
-  totalOnSiteGuests: number;
+  totalGuests: number;
   assignedCount: number;
   overCapacityRoomIds: string[];
   updatedAt: string;
 }
 
 export function buildLodgingBoard(input: {
-  acceptedGuests: AcceptedGuestListRow[];
+  poolGuests: LodgingGuestPoolRow[];
   assignments: Record<string, string>;
   updatedAt: string;
 }): LodgingBoard {
@@ -40,12 +42,31 @@ export function buildLodgingBoard(input: {
     }
   }
 
-  const guests: LodgingBoardGuest[] = input.acceptedGuests.map((guest) => ({
+  const poolById = new Map(
+    input.poolGuests.map((guest) => [guest.guestId, guest]),
+  );
+
+  const boardGuests: LodgingBoardGuest[] = input.poolGuests.map((guest) => ({
     guestId: guest.guestId,
     fullName: guest.fullName,
     householdName: guest.householdName,
     roomId: guestRoom.get(guest.guestId) ?? null,
+    ceremonyAttending: guest.ceremonyAttending,
+    welcomeAttending: guest.welcomeAttending,
   }));
+
+  for (const [guestId, roomId] of guestRoom) {
+    if (!poolById.has(guestId)) {
+      boardGuests.push({
+        guestId,
+        fullName: `(Unknown guest ${guestId.slice(0, 8)}…)`,
+        householdName: "—",
+        roomId,
+        ceremonyAttending: "unknown",
+        welcomeAttending: "unknown",
+      });
+    }
+  }
 
   const byRoom = new Map<string, LodgingBoardGuest[]>();
   for (const room of BELLA_COSA_LODGING_ROOMS) {
@@ -53,7 +74,7 @@ export function buildLodgingBoard(input: {
   }
 
   const unassigned: LodgingBoardGuest[] = [];
-  for (const guest of guests) {
+  for (const guest of boardGuests) {
     if (!guest.roomId) {
       unassigned.push(guest);
       continue;
@@ -83,14 +104,14 @@ export function buildLodgingBoard(input: {
     };
   });
 
-  const assignedCount = guests.filter((g) => g.roomId).length;
+  const assignedCount = boardGuests.filter((g) => g.roomId).length;
 
   return {
     rooms,
     unassigned: unassigned.sort((a, b) =>
       a.fullName.localeCompare(b.fullName, undefined, { sensitivity: "base" }),
     ),
-    totalOnSiteGuests: guests.length,
+    totalGuests: input.poolGuests.length,
     assignedCount,
     overCapacityRoomIds,
     updatedAt: input.updatedAt,

@@ -1,5 +1,7 @@
 "use client";
 
+import { LodgingFloorPlan } from "@/components/admin/LodgingFloorPlan";
+import { LodgingRoomPanel } from "@/components/admin/LodgingRoomPanel";
 import { Button } from "@/components/ui/Button";
 import {
   adminAlertErrorClass,
@@ -13,6 +15,13 @@ import type { LodgingBoard, LodgingBoardRoom } from "@/lib/lodging/board";
 import { cn } from "@/lib/cn";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+const VIEW_MODES = [
+  { value: "floor", label: "Floor plan" },
+  { value: "list", label: "Room list" },
+] as const;
+
+type ViewMode = (typeof VIEW_MODES)[number]["value"];
+
 function wingLabel(wing: LodgingBoardRoom["wing"]): string | null {
   if (wing === "lakeside") return "Lakeside";
   if (wing === "front") return "Front of building";
@@ -25,6 +34,9 @@ export function LodgingAssignmentsPanel() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [query, setQuery] = useState("");
+  const [roomGuestQuery, setRoomGuestQuery] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("floor");
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [pickGuestForRoom, setPickGuestForRoom] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -99,26 +111,37 @@ export function LodgingAssignmentsPanel() {
     );
   }, [board, query]);
 
+  const selectedRoom = useMemo(
+    () => board?.rooms.find((room) => room.id === selectedRoomId) ?? null,
+    [board, selectedRoomId],
+  );
+
   const totalCapacity = useMemo(
     () => board?.rooms.reduce((sum, room) => sum + room.capacity, 0) ?? 0,
     [board],
   );
+
+  const handleSelectRoom = (roomId: string) => {
+    setSelectedRoomId(roomId);
+    setRoomGuestQuery("");
+    setViewMode("floor");
+  };
 
   return (
     <div className="flex flex-col gap-6">
       <section className={adminCardClass}>
         <p className={adminLabelClass}>Bella Cosa on-site rooms</p>
         <p className={cn(adminMutedClass, "mt-2 max-w-3xl")}>
-          Assign each guest who accepted the wedding or welcome party to a venue
-          room. Capacities match the Bella Cosa lodging guide (rooms 1–10 plus
-          honeymoon suite). Only accepted RSVPs appear below.
+          Use the floor plan from the lodging guide to place guests in rooms 1–10
+          and the honeymoon suite. You can assign anyone on your invitation list
+          — RSVP acceptance is shown as a hint only, not a requirement.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-[var(--admin-body,#d4dce8)]">
           <span>
             <strong className="text-[var(--admin-gold-bright,#f5e6a8)]">
               {board?.assignedCount ?? "—"}
             </strong>
-            /{board?.totalOnSiteGuests ?? "—"} guests assigned
+            /{board?.totalGuests ?? "—"} invited guests assigned
           </span>
           <span className="text-[var(--admin-muted,#9aa8bc)]">·</span>
           <span>{totalCapacity} total beds on site</span>
@@ -133,103 +156,169 @@ export function LodgingAssignmentsPanel() {
             </>
           ) : null}
         </div>
+        <div
+          className="mt-4 flex flex-wrap gap-2"
+          role="tablist"
+          aria-label="Lodging view"
+        >
+          {VIEW_MODES.map((mode) => (
+            <button
+              key={mode.value}
+              type="button"
+              role="tab"
+              aria-selected={viewMode === mode.value}
+              className={cn(
+                "min-h-9 rounded-sm px-3 py-1.5 text-xs uppercase tracking-[0.12em]",
+                viewMode === mode.value
+                  ? "bg-[rgb(212_175_55/0.18)] text-[var(--admin-gold-bright,#f5e6a8)]"
+                  : "text-[var(--admin-muted,#9aa8bc)] hover:bg-white/5",
+              )}
+              onClick={() => setViewMode(mode.value)}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
       </section>
 
       {error ? <div className={adminAlertErrorClass}>{error}</div> : null}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        <section className={adminCardClass}>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className={adminLabelClass}>Unassigned</p>
-              <p className={cn(adminMutedClass, "mt-1 text-xs")}>
-                {filteredUnassigned.length} guest
-                {filteredUnassigned.length === 1 ? "" : "s"}
-              </p>
-            </div>
-            <input
-              type="search"
-              placeholder="Search name or invitation"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              className={cn(adminToolbarControlClass, "max-w-[14rem]")}
-              aria-label="Search unassigned guests"
-            />
-          </div>
-          <ul className="mt-4 max-h-[28rem] space-y-2 overflow-y-auto">
-            {filteredUnassigned.length === 0 ? (
-              <li className={adminMutedClass}>Everyone is assigned.</li>
+      {viewMode === "floor" ? (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <section className={adminCardClass}>
+            {board ? (
+              <LodgingFloorPlan
+                rooms={board.rooms}
+                selectedRoomId={selectedRoomId}
+                onSelectRoom={handleSelectRoom}
+              />
             ) : (
-              filteredUnassigned.map((guest) => (
-                <li
-                  key={guest.guestId}
-                  className="rounded-sm border border-white/10 bg-white/[0.03] px-3 py-2"
-                >
-                  <p className="text-sm text-[var(--admin-body,#d4dce8)]">
-                    {guest.fullName}
-                  </p>
-                  <p className="text-xs text-[var(--admin-muted,#9aa8bc)]">
-                    {guest.householdName}
-                  </p>
-                  <label className="mt-2 flex flex-col gap-1">
-                    <span className="sr-only">Assign {guest.fullName}</span>
-                    <select
-                      className={adminToolbarSelectClass}
-                      disabled={pending}
-                      defaultValue=""
-                      onChange={(event) => {
-                        const roomId = event.target.value;
-                        if (!roomId) return;
-                        void mutate({
-                          action: "assign",
-                          guestId: guest.guestId,
-                          roomId,
-                        });
-                        event.target.value = "";
-                      }}
-                    >
-                      <option value="">Add to room…</option>
-                      {board?.rooms.map((room) => (
-                        <option
-                          key={room.id}
-                          value={room.id}
-                          disabled={room.bedsRemaining === 0}
-                        >
-                          {room.label} ({room.bedsRemaining} bed
-                          {room.bedsRemaining === 1 ? "" : "s"} left)
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </li>
-              ))
+              <p className={adminMutedClass}>Loading floor plan…</p>
             )}
-          </ul>
-        </section>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
-          {board?.rooms.map((room) => (
-            <RoomCard
-              key={room.id}
-              room={room}
+          </section>
+          {selectedRoom ? (
+            <LodgingRoomPanel
+              room={selectedRoom}
+              unassigned={board?.unassigned ?? []}
               pending={pending}
-              picking={pickGuestForRoom === room.id}
-              unassigned={filteredUnassigned}
-              onPick={() =>
-                setPickGuestForRoom((current) =>
-                  current === room.id ? null : room.id,
-                )
-              }
+              guestQuery={roomGuestQuery}
+              onGuestQueryChange={setRoomGuestQuery}
+              onClose={() => setSelectedRoomId(null)}
               onAssign={(guestId) =>
-                void mutate({ action: "assign", guestId, roomId: room.id })
+                void mutate({
+                  action: "assign",
+                  guestId,
+                  roomId: selectedRoom.id,
+                })
               }
               onUnassign={(guestId) =>
                 void mutate({ action: "unassign", guestId })
               }
             />
-          ))}
+          ) : (
+            <section className={cn(adminCardClass, "flex items-center justify-center !py-12")}>
+              <p className={cn(adminMutedClass, "text-center text-sm")}>
+                Select a room on the floor plan to add or remove guests.
+              </p>
+            </section>
+          )}
         </div>
-      </div>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+          <section className={adminCardClass}>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className={adminLabelClass}>Unassigned</p>
+                <p className={cn(adminMutedClass, "mt-1 text-xs")}>
+                  {filteredUnassigned.length} guest
+                  {filteredUnassigned.length === 1 ? "" : "s"}
+                </p>
+              </div>
+              <input
+                type="search"
+                placeholder="Search name or invitation"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                className={cn(adminToolbarControlClass, "max-w-[14rem]")}
+                aria-label="Search unassigned guests"
+              />
+            </div>
+            <ul className="mt-4 max-h-[28rem] space-y-2 overflow-y-auto">
+              {filteredUnassigned.length === 0 ? (
+                <li className={adminMutedClass}>Everyone is assigned.</li>
+              ) : (
+                filteredUnassigned.map((guest) => (
+                  <li
+                    key={guest.guestId}
+                    className="rounded-sm border border-white/10 bg-white/[0.03] px-3 py-2"
+                  >
+                    <p className="text-sm text-[var(--admin-body,#d4dce8)]">
+                      {guest.fullName}
+                    </p>
+                    <p className="text-xs text-[var(--admin-muted,#9aa8bc)]">
+                      {guest.householdName}
+                    </p>
+                    <label className="mt-2 flex flex-col gap-1">
+                      <span className="sr-only">Assign {guest.fullName}</span>
+                      <select
+                        className={adminToolbarSelectClass}
+                        disabled={pending}
+                        defaultValue=""
+                        onChange={(event) => {
+                          const roomId = event.target.value;
+                          if (!roomId) return;
+                          void mutate({
+                            action: "assign",
+                            guestId: guest.guestId,
+                            roomId,
+                          });
+                          event.target.value = "";
+                        }}
+                      >
+                        <option value="">Add to room…</option>
+                        {board?.rooms.map((room) => (
+                          <option
+                            key={room.id}
+                            value={room.id}
+                            disabled={room.bedsRemaining === 0}
+                          >
+                            {room.label} ({room.bedsRemaining} bed
+                            {room.bedsRemaining === 1 ? "" : "s"} left)
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </li>
+                ))
+              )}
+            </ul>
+          </section>
+
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+            {board?.rooms.map((room) => (
+              <RoomCard
+                key={room.id}
+                room={room}
+                pending={pending}
+                picking={pickGuestForRoom === room.id}
+                unassigned={filteredUnassigned}
+                onOpen={() => handleSelectRoom(room.id)}
+                onPick={() =>
+                  setPickGuestForRoom((current) =>
+                    current === room.id ? null : room.id,
+                  )
+                }
+                onAssign={(guestId) =>
+                  void mutate({ action: "assign", guestId, roomId: room.id })
+                }
+                onUnassign={(guestId) =>
+                  void mutate({ action: "unassign", guestId })
+                }
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <Button
@@ -250,6 +339,7 @@ function RoomCard({
   pending,
   picking,
   unassigned,
+  onOpen,
   onPick,
   onAssign,
   onUnassign,
@@ -258,6 +348,7 @@ function RoomCard({
   pending: boolean;
   picking: boolean;
   unassigned: LodgingBoard["unassigned"];
+  onOpen: () => void;
   onPick: () => void;
   onAssign: (guestId: string) => void;
   onUnassign: (guestId: string) => void;
@@ -274,9 +365,13 @@ function RoomCard({
     >
       <header>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="font-display text-lg text-[var(--admin-gold-bright,#f5e6a8)]">
+          <button
+            type="button"
+            className="text-left font-display text-lg text-[var(--admin-gold-bright,#f5e6a8)] hover:underline"
+            onClick={onOpen}
+          >
             {room.label}
-          </h3>
+          </button>
           <span
             className={cn(
               "text-xs uppercase tracking-[0.12em]",
