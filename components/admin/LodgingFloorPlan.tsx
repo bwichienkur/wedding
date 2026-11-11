@@ -1,30 +1,14 @@
 "use client";
 
 import {
-  BELLA_COSA_FLOOR_RECTS,
-  BELLA_COSA_FLOOR_VIEWBOX,
-  FLOOR_PLAN_COURTYARD,
-  FLOOR_PLAN_LABELS,
-  FLOOR_PLAN_OUTLINE,
-  type FloorPlanRect,
+  BELLA_COSA_FLOOR_HOTSPOTS,
+  BELLA_COSA_FLOOR_IMAGE,
+  BELLA_COSA_FLOOR_IMAGE_SIZE,
+  type FloorPlanHotspot,
 } from "@/data/bella-cosa-floor-plan";
 import type { LodgingBoardRoom } from "@/lib/lodging/board";
 import { cn } from "@/lib/cn";
-
-const LABEL_FILL = "#f5e6a8";
-const BODY_FILL = "#d4dce8";
-const MUTED_FILL = "#9aa8bc";
-
-function handleRoomKeyDown(
-  event: React.KeyboardEvent,
-  roomId: string,
-  onSelectRoom: (id: string) => void,
-) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    onSelectRoom(roomId);
-  }
-}
+import Image from "next/image";
 
 export function LodgingFloorPlan({
   rooms,
@@ -36,151 +20,74 @@ export function LodgingFloorPlan({
   onSelectRoom: (roomId: string) => void;
 }) {
   const roomById = new Map(rooms.map((room) => [room.id, room]));
+  const aspect =
+    BELLA_COSA_FLOOR_IMAGE_SIZE.width / BELLA_COSA_FLOOR_IMAGE_SIZE.height;
 
   return (
     <figure className="w-full">
-      <svg
-        viewBox={`0 0 ${BELLA_COSA_FLOOR_VIEWBOX.width} ${BELLA_COSA_FLOOR_VIEWBOX.height}`}
-        role="img"
-        aria-label="Bella Cosa lodging floor plan"
-        className="h-auto min-h-[14rem] w-full rounded-sm border border-white/12 bg-[rgb(4_12_24/0.85)] touch-manipulation"
+      <div
+        className="relative w-full overflow-hidden rounded-sm border border-white/12 bg-white shadow-sm touch-manipulation"
+        style={{ aspectRatio: aspect }}
       >
-        <text
-          x={FLOOR_PLAN_LABELS.lakeside.x}
-          y={FLOOR_PLAN_LABELS.lakeside.y}
-          textAnchor="middle"
-          fill={MUTED_FILL}
-          fontSize={7}
-          letterSpacing="0.12em"
-        >
-          {FLOOR_PLAN_LABELS.lakeside.text.toUpperCase()}
-        </text>
-
-        <rect
-          x={FLOOR_PLAN_OUTLINE.x}
-          y={FLOOR_PLAN_OUTLINE.y}
-          width={FLOOR_PLAN_OUTLINE.w}
-          height={FLOOR_PLAN_OUTLINE.h}
-          rx={FLOOR_PLAN_OUTLINE.rx}
-          fill="rgb(8 18 32 / 0.6)"
-          stroke="rgb(232 200 114 / 0.25)"
-          strokeWidth={0.75}
+        <Image
+          src={BELLA_COSA_FLOOR_IMAGE}
+          alt="Bella Cosa room layout from the venue lodging guide"
+          fill
+          sizes="(max-width: 1024px) 100vw, 640px"
+          className="object-cover object-top"
+          priority
         />
 
-        <rect
-          x={FLOOR_PLAN_COURTYARD.x}
-          y={FLOOR_PLAN_COURTYARD.y}
-          width={FLOOR_PLAN_COURTYARD.w}
-          height={FLOOR_PLAN_COURTYARD.h}
-          fill="rgb(4 12 24 / 0.35)"
-          stroke="rgb(255 255 255 / 0.08)"
-          strokeWidth={0.5}
-          strokeDasharray="2 1.5"
-        />
+        {BELLA_COSA_FLOOR_HOTSPOTS.map((hotspot: FloorPlanHotspot) => {
+          const room = roomById.get(hotspot.id);
+          if (!room || hotspot.assignable === false) return null;
 
-        {BELLA_COSA_FLOOR_RECTS.map((rect: FloorPlanRect) => {
-          const room = roomById.get(rect.id);
-          const assignable = rect.assignable !== false && Boolean(room);
-          const isSelected = selectedRoomId === rect.id;
-          const over = room?.isOverCapacity;
-
-          const fill = !assignable
-            ? "rgb(42 52 68 / 0.85)"
-            : over
-              ? "rgb(120 48 56 / 0.75)"
-              : isSelected
-                ? "rgb(212 175 55 / 0.45)"
-                : "rgb(212 175 55 / 0.22)";
-
-          const stroke = !assignable
-            ? "rgb(255 255 255 / 0.18)"
-            : over
-              ? "rgb(251 160 160 / 0.75)"
-              : isSelected
-                ? "rgb(245 230 168 / 0.95)"
-                : "rgb(232 200 114 / 0.65)";
-
-          const titleFill = assignable ? LABEL_FILL : MUTED_FILL;
-          const fontSize =
-            rect.w < 18 ? 5.5 : rect.label.length > 8 ? 5 : 6.5;
-
-          const shapes = (
-            <>
-              <rect
-                x={rect.x}
-                y={rect.y}
-                width={rect.w}
-                height={rect.h}
-                rx={1.5}
-                ry={1.5}
-                fill={fill}
-                stroke={stroke}
-                strokeWidth={isSelected ? 1 : 0.6}
-              />
-              <text
-                x={rect.x + rect.w / 2}
-                y={rect.y + rect.h * (room ? 0.4 : 0.55)}
-                textAnchor="middle"
-                fill={titleFill}
-                fontSize={fontSize}
-                fontWeight={600}
-              >
-                {rect.label}
-              </text>
-              {room ? (
-                <text
-                  x={rect.x + rect.w / 2}
-                  y={rect.y + rect.h * 0.68}
-                  textAnchor="middle"
-                  fill={BODY_FILL}
-                  fontSize={6}
-                >
-                  {room.assignedCount}/{room.capacity} beds
-                </text>
-              ) : null}
-            </>
-          );
-
-          if (!assignable || !room) {
-            return <g key={rect.id}>{shapes}</g>;
-          }
+          const isSelected = selectedRoomId === hotspot.id;
+          const over = room.isOverCapacity;
 
           return (
-            <g
-              key={rect.id}
-              role="button"
-              tabIndex={0}
-              aria-label={`${room.label}, ${room.assignedCount} of ${room.capacity} beds filled`}
+            <button
+              key={hotspot.id}
+              type="button"
+              aria-label={`${room.label}, ${room.assignedCount} of ${room.capacity} beds`}
               aria-pressed={isSelected}
-              style={{ cursor: "pointer" }}
               onClick={() => onSelectRoom(room.id)}
-              onKeyDown={(event) =>
-                handleRoomKeyDown(event, room.id, onSelectRoom)
-              }
+              className={cn(
+                "absolute box-border border-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--admin-gold,#e8c872)]",
+                over
+                  ? "border-rose-300/80 bg-rose-500/25 hover:bg-rose-500/35"
+                  : isSelected
+                    ? "border-[var(--admin-gold-bright,#f5e6a8)] bg-[rgb(212_175_55/0.38)]"
+                    : "border-[rgb(212_175_55/0.55)] bg-[rgb(212_175_55/0.12)] hover:bg-[rgb(212_175_55/0.22)]",
+              )}
+              style={{
+                left: `${hotspot.leftPct}%`,
+                top: `${hotspot.topPct}%`,
+                width: `${hotspot.widthPct}%`,
+                height: `${hotspot.heightPct}%`,
+              }}
             >
-              {shapes}
-            </g>
+              <span
+                className={cn(
+                  "absolute bottom-0.5 right-0.5 rounded-sm px-1 py-px text-[0.55rem] font-semibold leading-none shadow-sm",
+                  over
+                    ? "bg-rose-950/80 text-rose-100"
+                    : "bg-[rgb(7_14_26/0.75)] text-[var(--admin-gold-bright,#f5e6a8)]",
+                )}
+              >
+                {room.assignedCount}/{room.capacity}
+              </span>
+            </button>
           );
         })}
-
-        <text
-          x={FLOOR_PLAN_LABELS.front.x}
-          y={FLOOR_PLAN_LABELS.front.y}
-          textAnchor="middle"
-          fill={MUTED_FILL}
-          fontSize={7}
-          letterSpacing="0.12em"
-        >
-          {FLOOR_PLAN_LABELS.front.text.toUpperCase()}
-        </text>
-      </svg>
+      </div>
       <figcaption
         className={cn(
           "mt-2 text-center text-xs text-[var(--admin-muted,#9aa8bc)]",
         )}
       >
-        Gold boxes are guest rooms (tap to assign). Gray areas match the venue
-        guide — sauna, getting ready, exits, and stairs.
+        Same ROOM LAYOUT as your Bella Cosa lodging guide — tap a room box to
+        assign guests. Gold highlights show selection; the badge is beds filled.
       </figcaption>
     </figure>
   );
