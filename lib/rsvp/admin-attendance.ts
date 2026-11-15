@@ -127,3 +127,52 @@ export function flattenAcceptedGuestRows(
     a.fullName.localeCompare(b.fullName, undefined, { sensitivity: "base" }),
   );
 }
+
+export interface InvitedGuestListRow extends AcceptedGuestListRow {
+  householdRsvpStatus: string;
+  isChild: boolean;
+  isPlusOne: boolean;
+}
+
+export interface HouseholdForInvitedList extends HouseholdForAcceptedList {
+  rsvpStatus: string;
+  guests: Array<
+    HouseholdForAcceptedList["guests"][number] & {
+      isChild?: boolean;
+      isPlusOne?: boolean;
+    }
+  >;
+}
+
+/** One row per invited guest on each filtered household. */
+export function flattenInvitedGuestRows(
+  households: HouseholdForInvitedList[],
+): InvitedGuestListRow[] {
+  const rows: InvitedGuestListRow[] = [];
+
+  for (const household of households) {
+    for (const guest of household.guests) {
+      rows.push({
+        guestId: guest.id,
+        fullName: guest.fullName.trim(),
+        householdId: household.id,
+        householdName: household.displayName,
+        ceremonyAttending: guestAttendingForEvent(guest, CEREMONY_EVENT_ID),
+        welcomeAttending: guestAttendingForEvent(
+          guest,
+          WELCOME_PARTY_EVENT_ID,
+        ),
+        dietaryNotes: guest.dietaryNotes?.trim() ?? "",
+        accessibilityNotes: guest.accessibilityNotes?.trim() ?? "",
+        submittedAt: household.submittedAt,
+        householdRsvpStatus: household.rsvpStatus,
+        isChild: Boolean(guest.isChild),
+        isPlusOne: Boolean(guest.isPlusOne),
+      });
+    }
+  }
+
+  return rows.sort((a, b) =>
+    a.fullName.localeCompare(b.fullName, undefined, { sensitivity: "base" }),
+  );
+}

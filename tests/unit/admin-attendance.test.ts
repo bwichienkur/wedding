@@ -68,4 +68,37 @@ describe("admin attendance helpers", () => {
     expect(rows[0]?.fullName).toBe("Alex Example");
     expect(rows[0]?.dietaryNotes).toBe("Vegetarian");
   });
+
+  it("flattens every invited guest into individual rows", async () => {
+    const { flattenInvitedGuestRows } = await import("@/lib/rsvp/admin-attendance");
+    const rows = flattenInvitedGuestRows([
+      {
+        id: "h1",
+        displayName: "Example Family",
+        submittedAt: null,
+        rsvpStatus: "partial",
+        guests: [
+          {
+            id: "g1",
+            fullName: "Alex Example",
+            events: [
+              { eventId: WELCOME_PARTY_EVENT_ID, attending: "yes" },
+              { eventId: CEREMONY_EVENT_ID, attending: "unknown" },
+            ],
+          },
+          {
+            id: "g2",
+            fullName: "No Show",
+            events: [
+              { eventId: WELCOME_PARTY_EVENT_ID, attending: "no" },
+              { eventId: CEREMONY_EVENT_ID, attending: "no" },
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(rows).toHaveLength(2);
+    expect(rows.map((r) => r.fullName)).toEqual(["Alex Example", "No Show"]);
+    expect(rows[0]?.householdRsvpStatus).toBe("partial");
+  });
 });
