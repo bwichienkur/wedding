@@ -16,6 +16,7 @@ import {
 } from "@/components/admin/admin-styles";
 import {
   flattenAcceptedGuestRows,
+  flattenInvitedGuestRows,
   sumCeremonyAcrossHouseholds,
   sumWelcomeAcrossHouseholds,
 } from "@/lib/rsvp/admin-attendance";
@@ -69,6 +70,7 @@ type StatusFilter = (typeof STATUS_FILTERS)[number]["value"];
 
 const VIEW_MODES = [
   { value: "invitations", label: "By invitation" },
+  { value: "all-guests", label: "All guests" },
   { value: "accepted", label: "Accepted guests" },
 ] as const;
 
@@ -175,13 +177,22 @@ export function RsvpGuestListAdmin() {
     });
   }, [households, query, statusFilter]);
 
+  const invitedRows = useMemo(
+    () => flattenInvitedGuestRows(filtered),
+    [filtered],
+  );
+
   const acceptedRows = useMemo(
     () => flattenAcceptedGuestRows(filtered),
     [filtered],
   );
 
   const listForPagination =
-    viewMode === "accepted" ? acceptedRows : filtered;
+    viewMode === "accepted"
+      ? acceptedRows
+      : viewMode === "all-guests"
+        ? invitedRows
+        : filtered;
   const totalPages = Math.max(
     1,
     Math.ceil(listForPagination.length / pageSize),
@@ -197,6 +208,11 @@ export function RsvpGuestListAdmin() {
     const start = (pageIndex - 1) * pageSize;
     return acceptedRows.slice(start, start + pageSize);
   }, [acceptedRows, pageIndex, pageSize]);
+
+  const pageInvitedRows = useMemo(() => {
+    const start = (pageIndex - 1) * pageSize;
+    return invitedRows.slice(start, start + pageSize);
+  }, [invitedRows, pageIndex, pageSize]);
 
   const rangeStart =
     listForPagination.length === 0 ? 0 : (pageIndex - 1) * pageSize + 1;
@@ -445,6 +461,7 @@ export function RsvpGuestListAdmin() {
                 }}
               >
                 {label}
+                {value === "all-guests" ? ` (${invitedRows.length})` : ""}
                 {value === "accepted" ? ` (${acceptedRows.length})` : ""}
               </button>
             ))}
@@ -506,6 +523,10 @@ export function RsvpGuestListAdmin() {
             {filtered.length}
           </span>
           <span>
+            <span className={adminLabelClass}>Invited guests </span>
+            {invitedRows.length}
+          </span>
+          <span>
             <span className={adminLabelClass}>Welcome party </span>
             {attendanceTotals.welcome} guest
             {attendanceTotals.welcome === 1 ? "" : "s"}
@@ -520,11 +541,103 @@ export function RsvpGuestListAdmin() {
         <p className={`border-b border-white/10 px-3 py-2 text-xs ${adminMutedClass}`}>
           {viewMode === "accepted"
             ? "One row per guest who RSVP’d yes to the welcome party and/or ceremony. Use search and RSVP status to narrow invitations first."
-            : "Expand a row to edit guest names and view full RSVP detail. Ceremony names column lists everyone marked attending the ceremony."}
+            : viewMode === "all-guests"
+              ? "One row per invited guest (every name on each invitation). Use search and RSVP status to narrow households first."
+              : "Expand a row to edit guest names and view full RSVP detail. Ceremony names column lists everyone marked attending the ceremony."}
         </p>
 
         <div className="overflow-x-auto">
-          {viewMode === "accepted" ? (
+          {viewMode === "all-guests" ? (
+            <table className={adminTableClass}>
+              <thead>
+                <tr>
+                  <th className={`${adminThClass} min-w-[9rem]`} scope="col">
+                    Guest
+                  </th>
+                  <th className={`${adminThClass} min-w-[8rem]`} scope="col">
+                    Invitation
+                  </th>
+                  <th className={`${adminThClass} w-20`} scope="col">
+                    RSVP
+                  </th>
+                  <th className={`${adminThClass} w-16 text-center`} scope="col">
+                    Welcome
+                  </th>
+                  <th className={`${adminThClass} w-16 text-center`} scope="col">
+                    Ceremony
+                  </th>
+                  <th className={`${adminThClass} hidden min-w-[5rem] sm:table-cell`} scope="col">
+                    Type
+                  </th>
+                  <th className={`${adminThClass} hidden min-w-[7rem] md:table-cell`} scope="col">
+                    Dietary
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {pageInvitedRows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className={`${adminTdClass} py-10 text-center ${adminMutedClass}`}
+                    >
+                      No guests match your filters.
+                    </td>
+                  </tr>
+                ) : (
+                  pageInvitedRows.map((row) => (
+                    <tr
+                      key={row.guestId}
+                      className="transition-colors hover:bg-white/[0.035]"
+                    >
+                      <td className={adminTdClass}>{row.fullName}</td>
+                      <td className={`${adminTdClass} text-[var(--admin-muted,#9aa8bc)]`}>
+                        {row.householdName}
+                      </td>
+                      <td className={adminTdClass}>
+                        <span
+                          className={cn(
+                            "inline-block rounded-sm border px-1.5 py-0.5 text-[0.625rem] uppercase tracking-wide",
+                            rsvpStatusClass(row.householdRsvpStatus),
+                          )}
+                        >
+                          {row.householdRsvpStatus}
+                        </span>
+                      </td>
+                      <td
+                        className={cn(
+                          adminTdClass,
+                          "text-center tabular-nums",
+                          attendingClass(row.welcomeAttending),
+                        )}
+                      >
+                        {formatAttending(row.welcomeAttending)}
+                      </td>
+                      <td
+                        className={cn(
+                          adminTdClass,
+                          "text-center tabular-nums",
+                          attendingClass(row.ceremonyAttending),
+                        )}
+                      >
+                        {formatAttending(row.ceremonyAttending)}
+                      </td>
+                      <td className={`${adminTdClass} hidden sm:table-cell text-xs ${adminMutedClass}`}>
+                        {row.isChild
+                          ? "Child"
+                          : row.isPlusOne
+                            ? "Plus-one"
+                            : "—"}
+                      </td>
+                      <td className={`${adminTdClass} hidden max-w-[10rem] truncate md:table-cell`}>
+                        {row.dietaryNotes || "—"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          ) : viewMode === "accepted" ? (
             <table className={adminTableClass}>
               <thead>
                 <tr>

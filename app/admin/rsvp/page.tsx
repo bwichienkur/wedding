@@ -19,7 +19,7 @@ export default async function AdminRsvpPage() {
       activeNav="rsvp"
       wide
       title="RSVP"
-      description="Invitations, per-guest accepted list, responses, and export."
+      description="Invitations, full guest list, accepted guests, responses, and export."
     >
       <RsvpAdminPanel />
     </AdminPageShell>
